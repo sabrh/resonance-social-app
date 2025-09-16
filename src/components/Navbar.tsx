@@ -1,18 +1,29 @@
+import { FaRegBell } from "react-icons/fa";
+import { FaRegCircleUser } from "react-icons/fa6";
+import { IoHomeOutline } from "react-icons/io5";
+import { TiMessages } from "react-icons/ti";
 import { Link } from "react-router";
 
 export default function Navbar() {
   return (
     <div className="navbar bg-base-100 shadow">
-      <div className="flex-1">
+      <div className="navbar-start">
         <Link to="/" className="btn btn-ghost text-xl">Resonance</Link>
       </div>
-      <div className="flex-none">
+
+      <div className="navbar-center flex">
         <ul className="menu menu-horizontal px-1">
-          <li><Link to="/profile">Profile</Link></li>
-          <li><Link to="/chat">Chat</Link></li>
-          <li><Link to="/login">Login</Link></li>
+          <li><Link to="/"><IoHomeOutline/></Link></li>
+          <li><Link to="/profile"><FaRegCircleUser/> </Link></li>
+          <li><Link to="/chats"><TiMessages/></Link></li>
         </ul>
       </div>
+
+      <div className="navbar-end">
+        <Link to="/notifications"><FaRegBell/></Link>
+        <Link className="btn btn-outline rounded-full" to="/login">Login</Link>
+      </div>
     </div>
+    
   )
 }
