@@ -9,7 +9,7 @@ const MainLayout: FC = () => {
     <div>
         <header><Navbar /></header>
         <main>
-            <div className='min-h-[calc(100vh-132px)] mx-8 md:mx-16'>
+            <div className='min-h-[calc(100vh-126px)] mx-8 md:mx-18'>
             <Outlet></Outlet>
             </div>
         </main>
