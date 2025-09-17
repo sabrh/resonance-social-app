@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import type { FC } from "react";
 import { FaEye, FaEyeSlash, FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
 
@@ -19,6 +19,8 @@ const Signup: FC = () => {
 
   const { createUser } = authContext;
 
+  const navigate = useNavigate();
+
   const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -33,18 +35,20 @@ const Signup: FC = () => {
       return;
     }
 
-    console.log(fullName, email, password, imageUrl);
+    console.log(fullName, email, imageUrl);
 
     // create user
     createUser(email, password)
       .then((result) => {
         console.log("User created:", result.user);
         toast.success("Account created successfully!");
+        navigate("/login"); 
       })
       .catch((error) => {
         console.error("Signup error:", error);
         toast.error(error.message || "Signup failed!");
       });
+
   };
 
   return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FC, ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebase.init";
 
 interface AuthProviderProps {
@@ -16,9 +16,15 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
+  const signInUser = (email: string, password: string) => {
+    setLoading(true);
+    return signInWithEmailAndPassword(auth, email, password);
+  }
+
   const authInfo = {
     loading,
     createUser,
+    signInUser,
   };
 
   return (
