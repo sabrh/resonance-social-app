@@ -48,10 +48,17 @@ const Login: FC = () => {
           <button type="submit" className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition">
             Login
           </button>
-          <p className="text-lg">Don't have an account? <Link to='/signup'><span className="text-blue-500">Signup</span></Link> Here!</p>
+          <p className="text-lg text-center">Don't have an account?{" "}
+            <Link to="/signup">
+              <span className="text-blue-500">Signup</span>
+            </Link>
+          </p>
         </form>
-        <div className="mt-4 flex">
-          <p className="text-gray-600 text-lg mr-4">Or join us using </p><button><FcGoogle size={30}/></button><button><FaFacebookF className="text-blue-700 ml-4" size={30} /></button>
+          
+        <div className="mt-4 flex items-center justify-center">
+          <p className="text-gray-600 text-lg mr-4">Or join us using</p>
+          <button className="cursor-pointer"><FcGoogle size={30} /></button>
+          <button className="cursor-pointer ml-4"><FaFacebookF className="text-blue-700" size={30} /></button>
         </div>
       </div>
     </div>
