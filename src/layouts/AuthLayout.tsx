@@ -1,12 +1,22 @@
 import React from 'react';
 import type { FC } from 'react';
-import { Outlet } from 'react-router';
+import { Link, Outlet } from 'react-router';
 
 const AuthLayout: FC = () => {
   return (
-    <div className='w-120 mx-auto mt-10'>
+    <div>
+      <header>
+        <div className="navbar bg-base-100 shadow px-8 md:px-18"> 
+            <div className="navbar-start"> 
+              <Link to="/" className="font-bold text-3xl">Resonance</Link> 
+            </div>
+        </div>
+      </header>
+      <div className='w-120 mx-auto mt-10'>
         <Outlet></Outlet>
     </div>
+    </div>
+    
   );
 };
 
