@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { FC } from "react";
 import { FaEye, FaEyeSlash, FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
