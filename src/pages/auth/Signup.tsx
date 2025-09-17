@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash, FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
+import toast from "react-hot-toast";
 
 const Signup: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +29,7 @@ const Signup: FC = () => {
     const imageUrl = formData.get("imageUrl") as string;
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
 
@@ -38,9 +39,11 @@ const Signup: FC = () => {
     createUser(email, password)
       .then((result) => {
         console.log("User created:", result.user);
+        toast.success("Account created successfully!");
       })
       .catch((error) => {
         console.error("Signup error:", error);
+        toast.error(error.message || "Signup failed!");
       });
   };
 
