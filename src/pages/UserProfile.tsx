@@ -25,11 +25,10 @@ const UserProfile: FC = () => {
         <p className="text-gray-600 mb-5">
           Frontend Developer | Tech Enthusiast
         </p>
-<div className="flex items-center gap-6 mt-4 text-gray-700">
+        <div className="flex items-center gap-6 mt-4 text-gray-700">
           <span>500 Followers</span>
           <span>300 Following</span>
         </div>
-
       </div>
     </div>
   );
