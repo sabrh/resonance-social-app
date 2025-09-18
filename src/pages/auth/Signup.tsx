@@ -160,4 +160,4 @@ const Signup: FC = () => {
   );
 };
 
-export default Signup;
+export default Signup
