@@ -1,9 +1,12 @@
 import { createContext } from "react";
-import type { UserCredential } from "firebase/auth";
+import type { User, UserCredential } from "firebase/auth";
 
-interface AuthContextType {
+export interface AuthContextType {
   loading: boolean;
+  user: User | null;
   createUser: (email: string, password: string) => Promise<UserCredential>;
+  signInUser: (email: string, password: string) => Promise<UserCredential>;
+  signOutUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);

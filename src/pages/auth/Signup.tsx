@@ -5,12 +5,14 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
+import { updateProfile } from "firebase/auth";
 
 const Signup: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // if context is not ready yet
   if (!authContext) {
@@ -18,8 +20,6 @@ const Signup: FC = () => {
   }
 
   const { createUser } = authContext;
-
-  const navigate = useNavigate();
 
   const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,15 +39,26 @@ const Signup: FC = () => {
 
     // create user
     createUser(email, password)
-      .then((result) => {
-        console.log("User created:", result.user);
-        toast.success("Account created successfully!");
-        navigate("/login"); 
-      })
-      .catch((error) => {
-        console.error("Signup error:", error);
-        toast.error(error.message || "Signup failed!");
-      });
+  .then((result) => {
+    const currentUser = result.user;
+    // Update displayName and photoURL
+    updateProfile(currentUser, {
+      displayName: fullName,
+      photoURL: imageUrl,
+    })
+    .then(() => {
+      console.log("Profile updated!");
+      toast.success("Account created successfully!");
+      navigate("/login");
+    })
+    .catch((err) => {
+      console.error("Profile update error:", err);
+    });
+  })
+  .catch((error) => {
+    console.error("Signup error:", error);
+    toast.error(error.message || "Signup failed!");
+  });
 
   };
 

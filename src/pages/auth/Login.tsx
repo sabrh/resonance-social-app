@@ -9,13 +9,13 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 const Login: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
 
   if (!authContext) {
     return <p>Loading...</p>;
   }
 
   const { signInUser } = authContext;
-  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
