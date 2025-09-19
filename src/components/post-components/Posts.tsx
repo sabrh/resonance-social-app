@@ -1,40 +1,44 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import PostCard from "./PostCard";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
+
+type Comment = {
+  _id: string;
+  authorName: string;
+  text: string;
+  createdAt: string;
+};
 
 type Post = {
   _id: string;
   text: string;
-  image?: string;      // base64-encoded image data
-  mimetype?: string;   // e.g. "image/png"
-  filename?: string;   // optional filename
+  image?: string;
+  mimetype?: string;
+  filename?: string;
+  likes?: string[];
+  comments?: Comment[];
 };
 
 const Posts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const authContext = useContext(AuthContext);
 
-
+  // Get current user id from context
+  const currentUserId = authContext?.user?.uid ?? "";
 
   useEffect(() => {
     fetch("http://localhost:3000/socialPost")
       .then((res) => res.json())
       .then((data) => {
-        console.log(data); // array of posts
-        setPosts(data); // store in state if needed
+        setPosts(data);
       })
       .catch((err) => console.error(err));
   }, []);
+
   return (
-    <div >
+    <div>
       {posts.map((post) => (
-        <div key={post._id} className="mt-8">
-          <p>{post.text}</p>
-          {post.image && (
-            <img
-              src={`data:${post.mimetype};base64,${post.image}`}
-              alt={post.filename}
-              className="w-[500px] h-[600px] object-cover mt-4"
-            />
-          )}
-        </div>
+        <PostCard key={post._id} post={post} currentUserId={currentUserId} />
       ))}
     </div>
   );

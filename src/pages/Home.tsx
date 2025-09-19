@@ -2,7 +2,7 @@ import { useState, type ChangeEvent, type FC, type FormEvent } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
-import Posts from "../components/post-components/posts";
+import Posts from "../components/post-components/Posts";
 
 const Home: FC = () => {
   const [image, setImage] = useState<string | null>(null);
