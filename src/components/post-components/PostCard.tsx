@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaHeart, FaRegHeart, FaRegCommentDots } from "react-icons/fa";
 
 type Comment = {
   _id: string;
@@ -29,6 +30,7 @@ const PostCard = ({ post, currentUserId }: Props) => {
   const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
   const [comments, setComments] = useState<Comment[]>(post.comments ?? []);
   const [newComment, setNewComment] = useState("");
+  const [openComments, setOpenComments] = useState(false);
 
   // Like/Unlike handler
   const handleLike = async () => {
@@ -36,11 +38,11 @@ const PostCard = ({ post, currentUserId }: Props) => {
       const res = await fetch(
         `http://localhost:3000/socialPost/${post._id}/like`,
         {
-          method: "PUT", //  PUT
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: currentUserId }), // body হিসেবে userId পাঠাতে হবে
+          body: JSON.stringify({ userId: currentUserId }),
         }
       );
       const data = await res.json();
@@ -65,12 +67,11 @@ const PostCard = ({ post, currentUserId }: Props) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${currentUserId}`,
           },
-          body: JSON.stringify({ userId: currentUserId, text: newComment }), // add userId
+          body: JSON.stringify({ userId: currentUserId, text: newComment }),
         }
       );
 
       const data = await res.json();
-      console.log(data);
       setComments([data.comment, ...comments]);
       setNewComment("");
     } catch (err) {
@@ -99,49 +100,70 @@ const PostCard = ({ post, currentUserId }: Props) => {
         />
       )}
 
-      {/* Like Section */}
-      <div className="flex gap-4 mt-4">
+      {/* Like + Comment Section */}
+      <div className="flex gap-6 items-center mt-4 text-xl">
+        <button onClick={handleLike} className="flex items-center gap-1">
+          {liked ? (
+            <FaHeart className="text-red-500" />
+          ) : (
+            <FaRegHeart className="text-gray-500" />
+          )}
+          <span className="text-sm">{likesCount}</span>
+        </button>
+
         <button
-          onClick={handleLike}
-          aria-pressed={liked}
-          className={`px-3 py-1 rounded ${
-            liked ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
+          onClick={() => setOpenComments(true)}
+          className="flex items-center gap-1"
         >
-          {liked ? "Unlike" : "Like"} ({likesCount})
+          <FaRegCommentDots className="text-gray-600" />
+          <span className="text-sm">{comments.length}</span>
         </button>
       </div>
 
-      {/* Comment Section */}
-      <form onSubmit={handleAddComment} className="mt-4 flex gap-2">
-        <input
-          type="text"
-          placeholder="Write a comment..."
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          className="border p-2 rounded flex-1"
-        />
-        <button
-          type="submit"
-          className="px-3 py-1 bg-green-600 text-white rounded"
-          disabled={!newComment.trim()}
-        >
-          Comment
-        </button>
-      </form>
+      {/* Comment Modal */}
+      {openComments && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white w-full max-w-md rounded-lg p-4">
+            <h2 className="text-lg font-semibold mb-3">Comments</h2>
 
-      {/* Show comments */}
-      <div className="mt-4">
-        {comments?.filter(Boolean).map((c) => (
-          <div key={c._id} className="mb-2 border-b pb-2">
-            <p className="font-semibold">{c.authorName ?? "Unknown"}</p>
-            <p>{c.text ?? ""}</p>
-            <p className="text-xs text-gray-500">
-              {c.createdAt ? new Date(c.createdAt).toLocaleString() : ""}
-            </p>
+            <form onSubmit={handleAddComment} className="flex gap-2 mb-4">
+              <input
+                type="text"
+                placeholder="Write a comment..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="border p-2 rounded flex-1"
+              />
+              <button
+                type="submit"
+                className="px-3 py-1 bg-green-600 text-white rounded"
+                disabled={!newComment.trim()}
+              >
+                Post
+              </button>
+            </form>
+
+            <div className="max-h-64 overflow-y-auto">
+              {comments?.map((c) => (
+                <div key={c._id} className="mb-3 border-b pb-2">
+                  <p className="font-semibold">{c.authorName ?? "Unknown"}</p>
+                  <p>{c.text ?? ""}</p>
+                  <p className="text-xs text-gray-500">
+                    {c.createdAt ? new Date(c.createdAt).toLocaleString() : ""}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setOpenComments(false)}
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+            >
+              Close
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
