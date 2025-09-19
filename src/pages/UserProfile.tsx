@@ -134,7 +134,28 @@ const UserProfile: FC = () => {
         </div>
       </div>
 
-      
+      {/* Profile Info */}
+      <div className="p-4 flex items-center mt-8 gap-4">
+        <div className="p-4 flex items-center gap-4">
+          <img
+            src={
+              firebaseUser?.photoURL ||
+              userDoc?.photoURL ||
+              "/avatar-placeholder.png"
+            }
+            alt="avatar"
+            className="w-20 h-20 rounded-full border-4 -mt-10 object-cover"
+          />
+          <div>
+            <h2 className="text-xl font-bold">
+              {userDoc?.displayName || firebaseUser?.displayName || "User"}
+            </h2>
+            <p className="text-sm text-gray-500">
+              {userDoc?.email || firebaseUser?.email}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
