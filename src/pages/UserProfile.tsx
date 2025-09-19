@@ -5,8 +5,94 @@ import {
   AuthContext,
   type AuthContextType,
 } from "../context/AuthContext/AuthContext";
+import PostFeed from "../components/post-components/PostFeed";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app/";
+
+
+
+
+
+const postsData = [
+  {
+    "userId": "u101",
+    "username": "Redoy",
+    "profilePic": "https://i.ibb.co.com/C51shdQh/profile1.png",
+    "postId": "p001",
+    "content": "Just finished a 5k run! Feeling great",
+    "media": "https://i.ibb.co.com/Tq0jKVSB/artifacts-slider5.jpg",
+    "timestamp": "2025-09-19T08:30:00Z",
+    "likes": 120,
+    "comments": 15,
+    "hashtags": ["#fitness", "#morningrun", "#health"]
+  },
+  {
+    "userId": "u102",
+    "username": "Sophia",
+    "profilePic": "https://i.ibb.co.com/F4Xfj7JY/profile4.png",
+    "postId": "p002",
+    "content": "Loving this new autumn outfit",
+    "media": "https://i.ibb.co.com/NP5gKgJ/artifact-slider2.jpg",
+    "timestamp": "2025-09-18T18:45:00Z",
+    "likes": 340,
+    "comments": 28,
+    "hashtags": ["#fashion", "#autumnvibes", "#OOTD"]
+  },
+  {
+    "userId": "u103",
+    "username": "Forhad Hasan",
+    "profilePic": "https://i.ibb.co.com/8n368nrn/images-5.jpg",
+    "postId": "p003",
+    "content": "Exploring the new JavaScript framework today!",
+    "media": "https://i.ibb.co.com/hFhLtg2q/javascript.jpg",
+    "timestamp": "2025-09-19T10:15:00Z",
+    "likes": 85,
+    "comments": 10,
+    "hashtags": ["#javascript", "#webdevelopment", "#coding"]
+  },
+  {
+    "userId": "u104",
+    "username": "Fahim Abdulla",
+    "profilePic": "https://i.ibb.co.com/bMRfw30g/images-2.jpg",
+    "postId": "p004",
+    "content": "Sunset at Bali is breathtaking",
+    "media": "https://i.ibb.co.com/rG2cVTn4/stone-henge.jpg",
+    "timestamp": "2025-09-18T19:30:00Z",
+    "likes": 560,
+    "comments": 65,
+    "hashtags": ["#travel", "#Bali", "#sunsetlover"]
+  },
+  {
+    "userId": "u105",
+    "username": "Arafat Hasan",
+    "profilePic": "https://i.ibb.co.com/0VWYfKv2/images-6.jpg",
+    "postId": "p005",
+    "content": "Homemade pasta night Who wants the recipe?",
+    "media": "https://i.ibb.co.com/0g8Ktrv/slider3.jpg",
+    "timestamp": "2025-09-19T12:00:00Z",
+    "likes": 210,
+    "comments": 40,
+    "hashtags": ["#foodie", "#homemade", "#pasta"]
+  },
+
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 type UserDoc = {
   uid: string;
@@ -16,6 +102,9 @@ type UserDoc = {
   banner?: string;
   bannerMimetype?: string;
 };
+
+
+
 
 const UserProfile: FC = () => {
   const authContext = useContext<AuthContextType | null>(AuthContext);
@@ -101,7 +190,7 @@ const UserProfile: FC = () => {
   return (
     <div className="max-w-5xl mx-auto bg-white shadow rounded-lg overflow-hidden">
       {/* Banner Section */}
-      <div className="h-56 bg-gray-100 relative">
+      <div className="h-100 bg-gray-100 relative">
         {bannerSrc ? (
           <img
             src={bannerSrc}
@@ -137,7 +226,7 @@ const UserProfile: FC = () => {
       </div>
 
       {/* Profile Info */}
-      <div className="p-4 flex items-center mt-8 gap-4">
+      <div className="p-4 flex items-center mt-8 gap-4 border-[#f0f0f0] border-b-2">
         <div className="p-4 flex items-center gap-4">
           <img
             src={
@@ -156,9 +245,20 @@ const UserProfile: FC = () => {
               {userDoc?.email || firebaseUser?.email}
             </p>
           </div>
+          
         </div>
-        
+         
+<div>
+            <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">Follow</button>
+          </div>
+         
       </div>
+      
+
+      {/* Post Feed Section */}
+<div className="mt-6">
+  <PostFeed posts={postsData} />
+</div>
       
     </div>
   );
