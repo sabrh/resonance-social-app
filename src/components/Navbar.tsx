@@ -1,7 +1,8 @@
 import { useContext } from "react";
 import { Link } from "react-router";
-import { FaRegBell } from "react-icons/fa";
 import { FaRegCircleUser } from "react-icons/fa6";
+import { FaRegBell, FaInfoCircle } from "react-icons/fa"; // 👈 About icon
+
 import { IoHomeOutline } from "react-icons/io5";
 import { TiMessages } from "react-icons/ti";
 import { AuthContext } from "../context/AuthContext/AuthContext";
@@ -45,13 +46,18 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link to="/profile">
+            <Link  to="/profile">
               <FaRegCircleUser size={30} />
             </Link>
           </li>
           <li>
             <Link to="/chats">
               <TiMessages size={30} />
+            </Link>
+          </li>
+          <li>
+            <Link  to="/about">
+              <FaInfoCircle size={30} /> {/* 👈 About icon */}
             </Link>
           </li>
         </ul>
