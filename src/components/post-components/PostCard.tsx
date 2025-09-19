@@ -36,7 +36,7 @@ const PostCard = ({ post, currentUserId }: Props) => {
   const handleLike = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/like`,
+        `https://resonance-social-server.vercel.app//socialPost/${post._id}/like`,
         {
           method: "PUT",
           headers: {
@@ -60,7 +60,7 @@ const PostCard = ({ post, currentUserId }: Props) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/comments`,
+        `https://resonance-social-server.vercel.app//socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
