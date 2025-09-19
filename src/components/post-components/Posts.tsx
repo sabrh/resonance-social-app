@@ -20,12 +20,8 @@ type Post = {
 };
 
 const Posts = () => {
-<<<<<<< HEAD
   const [posts, setPosts] = useState<Post[]>([]);
   const authContext = useContext(AuthContext);
-=======
-  const [posts, setPosts] = useState<Post[]>([])
->>>>>>> 667571e7b77a06b2785ea8f1c707690d8cde8ae4
 
   // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
