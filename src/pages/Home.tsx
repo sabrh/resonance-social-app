@@ -1,14 +1,19 @@
-import { useState, type ChangeEvent, type FC, type FormEvent } from "react";
+import { useContext, useState, type ChangeEvent, type FC, type FormEvent } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
 import Posts from "../components/post-components/Posts";
+import { AuthContext } from "../context/AuthContext/AuthContext";
 
 const Home: FC = () => {
+  const { user } = useContext(AuthContext)!;
   const [image, setImage] = useState<string | null>(null);
   const [text, setText] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
+  
+  console.log(user?.displayName);
+  
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = e.target.files?.[0];
@@ -53,7 +58,7 @@ const Home: FC = () => {
   // posting on server
 
   try {
-    const res = await fetch("http://localhost:3000/socialPost", {
+    const res = await fetch("https://resonance-social-server.vercel.app//socialPost", {
       method: "POST",
       body: formData, // DO NOT set Content-Type manually
     });
@@ -80,7 +85,7 @@ const Home: FC = () => {
       <div className="w-full">
         <div></div>
         {/* main post box */}
-        <div className="rounded-sm px-5 py-6">
+        <div className="rounded-sm px-5 py-6 mt-20">
           <button className="btn bg-blue-600 text-white">News feed</button>
           <form onSubmit={handleSubmit} className="mt-3 shadow-2xl bg-[#f6ecec] rounded-xl px-4 py-4">
             <p className="text-xl font-bold">Create New Post</p>
