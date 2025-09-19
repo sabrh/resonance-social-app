@@ -9,7 +9,7 @@ type Post = {
 };
 
 const Posts = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>([])
 
 
 
