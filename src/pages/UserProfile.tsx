@@ -91,6 +91,8 @@ const UserProfile: FC = () => {
     }
   };
 
+ 
+
   // Determine banner to show
   const bannerSrc = userDoc?.banner
     ? `data:${userDoc.bannerMimetype};base64,${userDoc.banner}`
@@ -155,7 +157,9 @@ const UserProfile: FC = () => {
             </p>
           </div>
         </div>
+        
       </div>
+      
     </div>
   );
 };
