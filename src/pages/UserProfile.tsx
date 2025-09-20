@@ -7,7 +7,7 @@ import {
 } from "../context/AuthContext/AuthContext";
 import PostFeed from "../components/post-components/PostFeed";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app/";
+const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
 
 
 

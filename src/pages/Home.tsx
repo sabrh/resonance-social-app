@@ -58,7 +58,7 @@ const Home: FC = () => {
   // posting on server
 
   try {
-    const res = await fetch("https://resonance-social-server.vercel.app//socialPost", {
+    const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
       method: "POST",
       body: formData, // DO NOT set Content-Type manually
     });
