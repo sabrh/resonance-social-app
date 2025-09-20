@@ -27,7 +27,7 @@ const Posts = () => {
   const currentUserId = authContext?.user?.uid ?? "";
 
   useEffect(() => {
-    fetch("http://localhost:3000/socialPost")
+    fetch("https://resonance-social-server.vercel.app/socialPost")
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);
