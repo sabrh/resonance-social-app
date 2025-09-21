@@ -15,6 +15,7 @@ const Home: FC = () => {
   const [postsRefreshKey, setPostsRefreshKey] = useState<number>(0); 
 
   console.log(user?.displayName);
+  console.log(user?.photoURL);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -43,6 +44,13 @@ const Home: FC = () => {
     e.preventDefault();
 
     const formData = new FormData();
+     if(user?.displayName){
+        formData.append("text", user?.displayName)
+     }
+     if(user?.photoURL){
+        formData.append("text", user?.photoURL)
+     }
+     
     if (text) {
       formData.append("text", text);
     }
