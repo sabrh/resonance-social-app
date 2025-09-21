@@ -41,17 +41,17 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+        const res = await fetch("http://localhost:3000/socialPost", {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
-          console.error(err);
-          if (mounted) setError("Failed to load posts");
-        }
+      } catch (err) {
+  if (err instanceof Error && err.name !== "AbortError") {
+    console.error(err);
+    if (mounted) setError("Failed to load posts");
+  }
       } finally {
         if (mounted) setLoading(false); // stop loading after fetch finishes
       }
@@ -81,7 +81,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
   return (
     <div>
       {posts.map((post) => (
-        <PostCard key={post._id} post={post} currentUserId={currentUserId} />
+        <PostCard key={post._id} post={post} currentUserId={currentUserId} onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}/>
       ))}
     </div>
   );
