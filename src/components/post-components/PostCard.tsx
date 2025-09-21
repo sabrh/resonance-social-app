@@ -16,17 +16,23 @@ type Post = {
   filename?: string;
   likes?: string[]; // userIds
   comments?: Comment[];
+  userName:string;
+  userPhoto:string;
+  createdAt:string;
 };
 
 type Props = {
   post: Post;
   currentUserId: string;
+  onDelete?: (id: string) => void;
 };
 
-const PostCard = ({ post, currentUserId }: Props) => {
+const PostCard = ({ post, currentUserId ,onDelete }: Props) => {
+  const [info, setInfo] = useState(false);
   const [liked, setLiked] = useState(
     post.likes?.includes(currentUserId) ?? false
   );
+  
   const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
   const [comments, setComments] = useState<Comment[]>(post.comments ?? []);
   const [newComment, setNewComment] = useState("");
@@ -89,9 +95,42 @@ const PostCard = ({ post, currentUserId }: Props) => {
     }
   }
 
+  // Delete post
+
+  const handleDelete = async () => {
+  try {
+    const res = await fetch(`https://resonance-social-server.vercel.app/socialPost/${post._id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      onDelete?.(post._id) // inform parent to remove post
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
   return (
     <div className="p-4 border rounded-md shadow mt-6">
-      <p>{post.text}</p>
+      {/* for info section */}
+      <div className={`float-right relative `}>
+        <p onClick={()=>setInfo(!info)} className=" text-3xl cursor-pointer"><i className="fa-solid fa-circle-info"></i></p>
+       <div className={`absolute top-10 right-4 h-[100px] w-[150px] bg-white shadow-2xl rounded-2xl ${info ? "":"hidden"}`}>
+         <p className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4"><i className="fa-solid fa-pen-to-square"></i><span>Edit post</span></p>
+         <p onClick={handleDelete} className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4"><i className="fa-solid fa-trash"></i><span>delete post</span></p>
+       </div>
+      </div>
+
+      {/* for post body */}
+      <div className="mt-3 flex items-center gap-3">
+        <img className="h-[55px] w-[55px] rounded-full" src={post?.userPhoto}  />
+        <div>
+          <p className="text-2xl font-bold">{post?.userName}</p>
+          <p>{post.createdAt}</p>
+        </div>
+      </div>
+      <p className="mt-4">{post.text}</p>
       {imageSrc && (
         <img
           src={imageSrc}

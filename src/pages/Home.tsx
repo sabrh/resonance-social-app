@@ -11,15 +11,17 @@ const Home: FC = () => {
   const [text, setText] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  
+  // simple counter used to tell Posts to re-fetch when incremented
+  const [postsRefreshKey, setPostsRefreshKey] = useState<number>(0); 
+
   console.log(user?.displayName);
-  
+  console.log(user?.photoURL);
+
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = e.target.files?.[0];
-    console.log(file);
     if (file) {
-      if (file) setImageFile(file);
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result as string);
@@ -30,54 +32,54 @@ const Home: FC = () => {
 
   const removeImage = () => {
     setImage(null);
+    setImageFile(null);
   };
-
-  
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
 
+  // form submission
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-// form submission ,...................................................
-  
-  const handleSubmit = async(e: FormEvent)=> {
-     e.preventDefault();
-     
     const formData = new FormData();
+     if(user?.displayName){
+        formData.append("text", user?.displayName)
+     }
+     if(user?.photoURL){
+        formData.append("text", user?.photoURL)
+     }
+     
     if (text) {
       formData.append("text", text);
     }
     if (imageFile) {
       formData.append("photo", imageFile);
     }
-    
-    console.log(...formData.entries());
 
-
-  // posting on server
-
-  try {
-    const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
-      method: "POST",
-      body: formData, // DO NOT set Content-Type manually
-    });
-    const data = await res.json();
-    console.log(data);
-    if(data.insertedId) {
-      toast.success("Your post is updated successfully!");
+    try {
+      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+        method: "POST",
+        body: formData, // DO NOT set Content-Type manually
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.insertedId) {
+        toast.success("Your post is updated successfully!");
+        // reset form and signal Posts to refetch
+        setText("");
+        setImage(null);
+        setImageFile(null);
+        setPostsRefreshKey((k) => k + 1); // refresh posts
+      } else {
+        toast.error("Could not add post. Try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to post. Check console.");
     }
-  } catch (err) {
-    console.error(err);
-  }
-
-  }
-
-
-
-
-
-
+  };
 
   return (
     <div className="mt-12 lg:px-20 2xl:px-20 ">
@@ -90,28 +92,21 @@ const Home: FC = () => {
           <form onSubmit={handleSubmit} className="mt-3 shadow-2xl bg-[#f6ecec] rounded-xl px-4 py-4">
             <p className="text-xl font-bold">Create New Post</p>
 
-            
-              
-              <TextareaAutosize
-                value={text}
-                onChange={handleChange}
-                minRows={3} // starting height
-                placeholder="white your update here..."
-                className="bg-white rounded-2xl   w-full mt-3 p-5"
-              />
-            
-            
-            {/* preview box */}
+            <TextareaAutosize
+              value={text}
+              onChange={handleChange}
+              minRows={3}
+              placeholder="write your update here..."
+              className="bg-white rounded-2xl w-full mt-3 p-5"
+            />
 
+            {/* preview box */}
             {image && (
               <div className="relative mt-5">
-                <img
-                  src={image}
-                  alt="preview"
-                  className="w-48 h-48 object-cover rounded-xl shadow-lg"
-                />
+                <img src={image} alt="preview" className="w-48 h-48 object-cover rounded-xl shadow-lg" />
                 <button
                   onClick={removeImage}
+                  type="button"
                   className="absolute top-2 left-2 bg-red-600 text-white bg-opacity-50 rounded-full p-1 hover:bg-opacity-70 cursor-pointer"
                 >
                   <X className="w-5 h-5 text-white" />
@@ -120,7 +115,6 @@ const Home: FC = () => {
             )}
 
             {/* button section */}
-
             <div className="mt-5 ml-6 md:flex justify-between">
               <div className="flex items-center gap-8">
                 <label className="cursor-pointer ">
@@ -128,12 +122,7 @@ const Home: FC = () => {
                     <i className="fa-solid fa-images md:text-4xl text-xl text-green-600"></i>
                     <span>Photos</span>
                   </p>
-                  <input
-                    onChange={handleImageChange}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                  />
+                  <input onChange={handleImageChange} type="file" accept="image/*" className="hidden" />
                 </label>
 
                 <p className="md:text-xl text-sm font-bold flex gap-2 items-center cursor-pointer">
@@ -142,10 +131,7 @@ const Home: FC = () => {
                 </p>
               </div>
 
-              <button
-                type="submit"
-                className="btn bg-green-600 text-white mt-4"
-              >
+              <button type="submit" className="btn bg-green-600 text-white mt-4">
                 Update Post
               </button>
             </div>
@@ -153,14 +139,14 @@ const Home: FC = () => {
         </div>
         <div></div>
       </div>
-   
 
-   {/* Show Post section */}
-     <section className="mt-10">
-      <p className="text-3xl font-bold">News Feed</p>
-      <Posts></Posts>
-     </section>
+      {/* Show Post section */}
+      <section className="mt-10">
+        <p className="text-3xl font-bold">News Feed</p>
 
+        {/* pass refreshKey to Posts so it knows when to refetch */}
+        <Posts refreshKey={postsRefreshKey} />
+      </section>
     </div>
   );
 };
