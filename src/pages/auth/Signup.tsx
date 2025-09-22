@@ -7,6 +7,10 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
 import { updateProfile } from "firebase/auth";
 
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
+
+
 const Signup: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -37,28 +41,62 @@ const Signup: FC = () => {
 
     console.log(fullName, email, imageUrl);
 
-    // create user
-    createUser(email, password)
-  .then((result) => {
+//     // create user
+//     createUser(email, password)
+//   .then( async (result) => {
+//     const currentUser = result.user;
+//     // Update displayName and photoURL
+//     await updateProfile(currentUser, {
+//   displayName: fullName,
+//   photoURL: imageUrl,
+// })
+
+//     .then(() => {
+//       console.log("Profile updated!");
+//       toast.success("Account created successfully!");
+//       navigate("/login");
+//     })
+//     .catch((err) => {
+//       console.error("Profile update error:", err);
+//     });
+//   })
+//   .catch((error) => {
+//     console.error("Signup error:", error);
+//     toast.error(error.message || "Signup failed!");
+//   });
+
+
+
+// New create user 
+createUser(email, password)
+  .then(async (result) => {
     const currentUser = result.user;
-    // Update displayName and photoURL
-    updateProfile(currentUser, {
+
+    // 1. Update Firebase profile
+    await updateProfile(currentUser, {
       displayName: fullName,
       photoURL: imageUrl,
-    })
-    .then(() => {
-      console.log("Profile updated!");
-      toast.success("Account created successfully!");
-      navigate("/login");
-    })
-    .catch((err) => {
-      console.error("Profile update error:", err);
     });
+
+    // 2. Send to backend
+    try {
+      await axios.post(`${API_URL}/users`, {
+        uid: currentUser.uid,
+        displayName: fullName,
+        email: currentUser.email,
+        photoURL: imageUrl || null,
+      });
+    } catch (err) {
+      console.error("Backend user create error:", err);
+    }
+
+    toast.success("Account created successfully!");
+    navigate("/login");
   })
-  .catch((error) => {
-    console.error("Signup error:", error);
-    toast.error(error.message || "Signup failed!");
-  });
+  .catch(err => console.error(err));
+
+
+
 
   };
 
@@ -160,4 +198,4 @@ const Signup: FC = () => {
   );
 };
 
-export default Signup;
+export default Signup
