@@ -8,6 +8,7 @@ import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import ErrorPage from "../pages/ErrorPage";
 import Notifications from "../pages/Notifications";
+import About from "../pages/About";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { path: "profile", element: <UserProfile /> },
       { path: "chats", element: <Chats /> },
       { path: "notifications", element: <Notifications /> },
+      { path: "about", element: <About></About> },
     ],
   },
   {
