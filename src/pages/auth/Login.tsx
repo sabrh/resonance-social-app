@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import type { FC } from "react";
 import toast from "react-hot-toast";
-import { FaEye, FaEyeSlash, FaFacebookF } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaFacebookF, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -15,7 +15,7 @@ const Login: FC = () => {
     return <p>Loading...</p>;
   }
 
-  const { signInUser, googleSign } = authContext;
+  const { signInUser, googleSign, githubSign } = authContext;
 
   // ✅ Google login handler (moved outside of handleLogin)
   const handleGoogle = async (): Promise<void> => {
@@ -24,6 +24,19 @@ const Login: FC = () => {
       // triggerSuccessLottie();
       toast.success("Logged in with Google!");
       navigate("/home");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Login failed!");
+      }
+    }
+  };
+
+  const handleGithub = async (): Promise<void> => {
+    try {
+      await githubSign();
+      toast.success("Logged in with GitHub!");
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -125,8 +138,8 @@ const Login: FC = () => {
           <button onClick={handleGoogle} className="cursor-pointer">
             <FcGoogle size={30} />
           </button>
-          <button className="cursor-pointer ml-4">
-            <FaFacebookF className="text-blue-700" size={30} />
+          <button onClick={handleGithub} className="cursor-pointer ml-4">
+            <FaGithub className="text-blue-700" size={30} />
           </button>
         </div>
       </div>
