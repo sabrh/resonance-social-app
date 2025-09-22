@@ -47,12 +47,18 @@ const Posts = ({ refreshKey = 0 }: Props) => {
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
-          console.error(err);
-          if (mounted) setError("Failed to load posts");
-        }
-      } finally {
+      
+        } catch (err: unknown) {
+  if (err instanceof Error) {
+    console.error(err.message);
+    if (mounted) setError("Failed to load posts");
+  } else {
+    console.error("Unexpected error", err);
+  }
+}
+
+      
+      finally {
         if (mounted) setLoading(false); // stop loading after fetch finishes
       }
     };
