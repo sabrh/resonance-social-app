@@ -16,11 +16,11 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <About /> },
       { path: "profile", element: <UserProfile /> },
       { path: "chats", element: <Chats /> },
       { path: "notifications", element: <Notifications /> },
-      { path: "about", element: <About></About> },
+      { path: "home", element: <Home /> },
     ],
   },
   {
