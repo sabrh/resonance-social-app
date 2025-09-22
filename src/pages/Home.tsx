@@ -82,14 +82,13 @@ const Home: FC = () => {
   };
 
   return (
-    <div className="mt-12 lg:px-20 2xl:px-20 ">
+    <div>
       {/* post section */}
       <div className="w-full">
         <div></div>
         {/* main post box */}
-        <div className="rounded-sm px-5 py-6 mt-20">
-          <button className="btn bg-blue-600 text-white">News feed</button>
-          <form onSubmit={handleSubmit} className="mt-3 shadow-2xl bg-[#f6ecec] rounded-xl px-4 py-4">
+        <div className="rounded-sm  mt-20">
+          <form onSubmit={handleSubmit} className="mt-3 shadow-xl bg-[#f6ecec] rounded-xl px-4 py-4">
             <p className="text-xl font-bold">Create New Post</p>
 
             <TextareaAutosize
@@ -120,19 +119,20 @@ const Home: FC = () => {
                 <label className="cursor-pointer ">
                   <p className="md:text-xl text-sm font-bold flex gap-2 items-center cursor-pointer">
                     <i className="fa-solid fa-images md:text-4xl text-xl text-green-600"></i>
-                    <span>Photos</span>
+                    <span>Add Photos</span>
                   </p>
                   <input onChange={handleImageChange} type="file" accept="image/*" className="hidden" />
                 </label>
-
+                {/*
                 <p className="md:text-xl text-sm font-bold flex gap-2 items-center cursor-pointer">
                   <i className="fa-regular fa-face-smile md:text-4xl text-xl text-yellow-600"></i>
                   <span>Feelings/Activity</span>
                 </p>
+                */}
               </div>
 
               <button type="submit" className="btn bg-green-600 text-white mt-4">
-                Update Post
+                 Post Now
               </button>
             </div>
           </form>

@@ -188,7 +188,7 @@ const UserProfile: FC = () => {
     : preview || null;
 
   return (
-    <div className="max-w-5xl mx-auto bg-white shadow rounded-lg overflow-hidden">
+    <div className="mx-auto bg-white shadow rounded-lg overflow-hidden">
       {/* Banner Section */}
       <div className="h-100 bg-gray-100 relative">
         {bannerSrc ? (

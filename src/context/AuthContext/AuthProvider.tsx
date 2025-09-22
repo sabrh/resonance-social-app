@@ -47,6 +47,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     signOutUser, 
   };
 
+console.log(user);
   return (
     <AuthContext.Provider value={authInfo}>
       {children}
