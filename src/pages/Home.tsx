@@ -47,6 +47,7 @@ const Home: FC = () => {
      if(user?.displayName){
         formData.append("text", user?.displayName)
      }
+     
      if(user?.photoURL){
         formData.append("text", user?.photoURL)
      }
@@ -54,12 +55,15 @@ const Home: FC = () => {
     if (text) {
       formData.append("text", text);
     }
+    if(user?.email){
+        formData.append("text", user?.email)
+     }
     if (imageFile) {
       formData.append("photo", imageFile);
     }
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+      const res = await fetch("http://localhost:3000/socialPost", {
         method: "POST",
         body: formData, // DO NOT set Content-Type manually
       });
