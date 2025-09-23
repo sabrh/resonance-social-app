@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FC, ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 import type { User, UserCredential } from "firebase/auth";
 import { auth } from "../../firebase/firebase.init";
 
@@ -10,6 +10,7 @@ interface AuthProviderProps {
 }
 
 const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
@@ -46,6 +47,15 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     return await signInWithPopup(auth, googleProvider);
   };
 
+  const githubSign = async (): Promise<UserCredential> => {
+    setLoading(true);
+    return signInWithPopup(auth, githubProvider);
+  };
+
+  const forgotPassword = (email: string): Promise<void> => {
+    return sendPasswordResetEmail(auth, email);
+  };
+
 
   const authInfo = {
     loading,
@@ -53,7 +63,9 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     createUser,
     signInUser,
     signOutUser,
-    googleSign
+    googleSign,
+    githubSign,
+    forgotPassword
   };
 
   console.log(user);

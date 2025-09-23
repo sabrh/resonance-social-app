@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import type { FC } from "react";
 import toast from "react-hot-toast";
-import { FaEye, FaEyeSlash, FaFacebookF } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaFacebookF, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -10,12 +10,13 @@ const Login: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
+  const [emailInputValue, setEmailInputValue] = useState("");
 
   if (!authContext) {
     return <p>Loading...</p>;
   }
 
-  const { signInUser, googleSign } = authContext;
+  const { signInUser, googleSign, githubSign } = authContext;
 
   // ✅ Google login handler (moved outside of handleLogin)
   const handleGoogle = async (): Promise<void> => {
@@ -24,6 +25,19 @@ const Login: FC = () => {
       // triggerSuccessLottie();
       toast.success("Logged in with Google!");
       navigate("/home");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Login failed!");
+      }
+    }
+  };
+
+  const handleGithub = async (): Promise<void> => {
+    try {
+      await githubSign();
+      toast.success("Logged in with GitHub!");
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -68,6 +82,7 @@ const Login: FC = () => {
               name="email"
               placeholder="Enter your email"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              onChange={(e) => setEmailInputValue(e.target.value)}
               required
             />
           </div>
@@ -98,10 +113,9 @@ const Login: FC = () => {
 
           {/* Forgot password */}
           <div className="text-right">
-            <a href="#" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-              Forgot password?
-            </a>
+            <Link to="/auth/forget-password" state={{ email: emailInputValue }}>Forget password?</Link>
           </div>
+
 
           {/* Submit */}
           <button
@@ -125,8 +139,8 @@ const Login: FC = () => {
           <button onClick={handleGoogle} className="cursor-pointer">
             <FcGoogle size={30} />
           </button>
-          <button className="cursor-pointer ml-4">
-            <FaFacebookF className="text-blue-700" size={30} />
+          <button onClick={handleGithub} className="cursor-pointer ml-4">
+            <FaGithub className="text-blue-700" size={30} />
           </button>
         </div>
       </div>

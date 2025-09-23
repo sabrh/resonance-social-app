@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import type { FC } from "react";
-import { FaEye, FaEyeSlash, FaFacebookF } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaFacebookF, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -23,7 +23,36 @@ const Signup: FC = () => {
     return <p>Loading...</p>;
   }
 
-  const { createUser } = authContext;
+  const { createUser, googleSign, githubSign } = authContext;
+
+  const handleGoogle = async (): Promise<void> => {
+    try {
+      await googleSign();
+      // triggerSuccessLottie();
+      toast.success("Logged in with Google!");
+      navigate("/home");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Login failed!");
+      }
+    }
+  };
+
+  const handleGithub = async (): Promise<void> => {
+    try {
+      await githubSign();
+      toast.success("Logged in with GitHub!");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Login failed!");
+      }
+    }
+  };
+
 
   const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,59 +70,59 @@ const Signup: FC = () => {
 
     console.log(fullName, email, imageUrl);
 
-//     // create user
-//     createUser(email, password)
-//   .then( async (result) => {
-//     const currentUser = result.user;
-//     // Update displayName and photoURL
-//     await updateProfile(currentUser, {
-//   displayName: fullName,
-//   photoURL: imageUrl,
-// })
+    //     // create user
+    //     createUser(email, password)
+    //   .then( async (result) => {
+    //     const currentUser = result.user;
+    //     // Update displayName and photoURL
+    //     await updateProfile(currentUser, {
+    //   displayName: fullName,
+    //   photoURL: imageUrl,
+    // })
 
-//     .then(() => {
-//       console.log("Profile updated!");
-//       toast.success("Account created successfully!");
-//       navigate("/login");
-//     })
-//     .catch((err) => {
-//       console.error("Profile update error:", err);
-//     });
-//   })
-//   .catch((error) => {
-//     console.error("Signup error:", error);
-//     toast.error(error.message || "Signup failed!");
-//   });
+    //     .then(() => {
+    //       console.log("Profile updated!");
+    //       toast.success("Account created successfully!");
+    //       navigate("/login");
+    //     })
+    //     .catch((err) => {
+    //       console.error("Profile update error:", err);
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.error("Signup error:", error);
+    //     toast.error(error.message || "Signup failed!");
+    //   });
 
 
 
-// New create user 
-createUser(email, password)
-  .then(async (result) => {
-    const currentUser = result.user;
+    // New create user 
+    createUser(email, password)
+      .then(async (result) => {
+        const currentUser = result.user;
 
-    // 1. Update Firebase profile
-    await updateProfile(currentUser, {
-      displayName: fullName,
-      photoURL: imageUrl,
-    });
+        // 1. Update Firebase profile
+        await updateProfile(currentUser, {
+          displayName: fullName,
+          photoURL: imageUrl,
+        });
 
-    // 2. Send to backend
-    try {
-      await axios.post(`${API_URL}/users`, {
-        uid: currentUser.uid,
-        displayName: fullName,
-        email: currentUser.email,
-        photoURL: imageUrl || null,
-      });
-    } catch (err) {
-      console.error("Backend user create error:", err);
-    }
+        // 2. Send to backend
+        try {
+          await axios.post(`${API_URL}/users`, {
+            uid: currentUser.uid,
+            displayName: fullName,
+            email: currentUser.email,
+            photoURL: imageUrl || null,
+          });
+        } catch (err) {
+          console.error("Backend user create error:", err);
+        }
 
-    toast.success("Account created successfully!");
-    navigate("/login");
-  })
-  .catch(err => console.error(err));
+        toast.success("Account created successfully!");
+        navigate("/login");
+      })
+      .catch(err => console.error(err));
 
 
 
@@ -113,7 +142,7 @@ createUser(email, password)
               name="fullName"
               placeholder="Enter your full name"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              required/>
+              required />
           </div>
 
           {/* Email */}
@@ -124,7 +153,7 @@ createUser(email, password)
               name="email"
               placeholder="Enter your email"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              required/>
+              required />
           </div>
 
           {/* Password */}
@@ -136,7 +165,7 @@ createUser(email, password)
                 name="password"
                 placeholder="Create a password"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                required/>
+                required />
               <button type="button" onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -153,10 +182,10 @@ createUser(email, password)
                 name="confirmPassword"
                 placeholder="Confirm your password"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                required/>
+                required />
               <button type="button" onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                setShowConfirmPassword(!showConfirmPassword)
+              }
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -172,7 +201,7 @@ createUser(email, password)
               type="url"
               name="imageUrl"
               placeholder="Paste your image URL"
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"/>
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
           </div>
 
           {/* Submit */}
@@ -190,8 +219,8 @@ createUser(email, password)
         {/* Social login */}
         <div className="mt-4 flex items-center justify-center">
           <p className="text-gray-600 text-lg mr-4">Or join us using</p>
-          <button className="cursor-pointer"><FcGoogle size={30} /></button>
-          <button className="cursor-pointer ml-4"><FaFacebookF className="text-blue-700" size={30} /></button>
+          <button onClick={handleGoogle} className="cursor-pointer"><FcGoogle size={30} /></button>
+          <button onClick={githubSign} className="cursor-pointer ml-4"><FaGithub className="text-blue-700" size={30} /></button>
         </div>
       </div>
     </div>
