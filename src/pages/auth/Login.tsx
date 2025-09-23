@@ -10,6 +10,7 @@ const Login: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
+  const [emailInputValue, setEmailInputValue] = useState("");
 
   if (!authContext) {
     return <p>Loading...</p>;
@@ -81,6 +82,7 @@ const Login: FC = () => {
               name="email"
               placeholder="Enter your email"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              onChange={(e) => setEmailInputValue(e.target.value)}
               required
             />
           </div>
@@ -111,10 +113,9 @@ const Login: FC = () => {
 
           {/* Forgot password */}
           <div className="text-right">
-            <a href="#" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-              Forgot password?
-            </a>
+            <Link to="/auth/forget-password" state={{ email: emailInputValue }}>Forget password?</Link>
           </div>
+
 
           {/* Submit */}
           <button
