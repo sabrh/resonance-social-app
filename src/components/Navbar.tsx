@@ -43,9 +43,9 @@ export default function Navbar() {
   return (
     <div className="navbar bg-base-100 shadow px-8 md:px-36 fixed top-0 left-0 w-full z-50">
       {/* Left side */}
-      <div className="navbar-start">
-        <Link to="/" className="font-bold md:text-3xl">
-          resonance
+      <div className="hidden md:navbar-start">
+        <Link to="/" className="font-bold text-3xl flex items-center gap-2">
+            <img className="h-[40px] w-[40px] rounded-2xl" src="../logo.png" /><span>Reso<span className="text-[#9810fa]">Nance</span></span>
         </Link>
       </div>
 
