@@ -8,11 +8,6 @@ import {
 
 import PostProfile from "../components/post-components/PostProfile";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
-
-
-
-
 
 
 
@@ -23,6 +18,12 @@ type UserDoc = {
   email?: string;
   banner?: string;
   bannerMimetype?: string;
+  education?: string;
+  location?: string;
+  gender?: string;
+  relationshipStatus?: string;
+  followers?: string[];   
+  following?: string[];
 };
 
 
@@ -37,24 +38,49 @@ const UserProfile: FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+const [isFollowing, setIsFollowing] = useState(false);
 
-  // Ensure user exists in backend + fetch user doc
+  // modal state
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    education: "",
+    location: "",
+    gender: "",
+    relationshipStatus: "",
+  });
+
   useEffect(() => {
     if (!firebaseUser?.uid) return;
 
     const syncUser = async () => {
       try {
-        // Step 1: Ensure user doc exists in MongoDB
-        await axios.post(`${API_URL}/users`, {
+        //  Ensure user doc exists in MongoDB
+        await axios.post("https://resonance-social-server.vercel.app/users", {
           uid: firebaseUser.uid,
           displayName: firebaseUser.displayName,
           email: firebaseUser.email,
           photoURL: firebaseUser.photoURL,
         });
 
-        // Step 2: Fetch user document
-        const res = await axios.get(`${API_URL}/users/${firebaseUser.uid}`);
+        //  Fetch user document
+        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`);
         setUserDoc(res.data);
+
+        console.log(res.data)
+        // preload bio values
+        setFormData({
+          education: res.data.education || "",
+          location: res.data.location || "",
+          gender: res.data.gender || "",
+          relationshipStatus: res.data.relationshipStatus || "",
+        });
+
+         setFollowersCount(res.data.followers?.length || 0);
+         // check if current user is already following
+        setIsFollowing(res.data.followers?.includes(firebaseUser?.uid) || false);
+
+
       } catch (err) {
         console.error("User sync error:", err);
       }
@@ -86,12 +112,13 @@ const UserProfile: FC = () => {
     form.append("banner", file);
 
     try {
-      await axios.post(`${API_URL}/users/${uid}/banner`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.post(`https://resonance-social-server.vercel.app/users/${uid}/banner`, form, {
+  headers: { "Content-Type": "multipart/form-data" },
+});
       // refresh user data
-      const res = await axios.get(`${API_URL}/users/${uid}`);
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
       setUserDoc(res.data);
+      console.log(res.data)
       setFile(null);
       setPreview(null);
     } catch (err) {
@@ -101,6 +128,38 @@ const UserProfile: FC = () => {
       setLoading(false);
     }
   };
+
+
+  // handle bio update
+  const handleBioSave = async () => {
+    if (!uid) return;
+    try {
+      await axios.put(`https://resonance-social-server.vercel.app/users/${uid}/details`, formData);
+
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
+      console.log(res)
+      setUserDoc(res.data);
+      setShowModal(false);
+    } catch (err) {
+      console.error("Bio update failed:", err);
+      alert("Failed to update bio");
+    }
+  };
+
+  const handleFollowToggle = async () => {
+  if (!uid || !userDoc?.uid) return;
+  try {
+    const res = await axios.put(
+      `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+      { currentUid: uid }
+    );
+
+    setIsFollowing(res.data.isFollowing);
+    setFollowersCount(res.data.followersCount);
+  } catch (err) {
+    console.error("Follow toggle failed:", err);
+  }
+};
 
  
 
@@ -168,18 +227,20 @@ const UserProfile: FC = () => {
             </p>
           </div>
           
-        </div> 
-        <div>
-          <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">Follow</button>
-        </div> 
+        </div>
+         
+<div>
+            <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">Follow</button>
+          </div>
+         
       </div>
       
 
       {/* Post Feed Section */}
-      <div className="mt-6">
-        <PostProfile></PostProfile>
-      </div>
-            
+<div className="mt-6">
+  <PostProfile></PostProfile>
+</div>
+      
     </div>
   );
 };
