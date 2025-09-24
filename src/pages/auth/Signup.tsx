@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import type { FC } from "react";
-import { FaEye, FaEyeSlash, FaFacebookF, FaGithub } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -220,7 +220,7 @@ const Signup: FC = () => {
         <div className="mt-4 flex items-center justify-center">
           <p className="text-gray-600 text-lg mr-4">Or join us using</p>
           <button onClick={handleGoogle} className="cursor-pointer"><FcGoogle size={30} /></button>
-          <button onClick={githubSign} className="cursor-pointer ml-4"><FaGithub className="text-blue-700" size={30} /></button>
+          <button onClick={githubSign} className="cursor-pointer ml-4"><FaGithub className="text-gray-700" size={30} /></button>
         </div>
       </div>
     </div>

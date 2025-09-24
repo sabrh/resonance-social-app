@@ -17,13 +17,15 @@ const Banner: FC = () => {
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
           Resonance Social
         </h1>
-        <p className="text-lg md:text-2xl mb-6 max-w-2xl mx-auto">
+        <p className="text-lg md:text-2xl mb-5 max-w-2xl mx-auto">
           A community-driven platform to connect, share, and resonate with the
           world. Join us and be part of something meaningful.
         </p>
-        <button className="btn btn-info text-white rounded-full px-8 py-3 text-lg">
+        <a href='#join-us'>
+          <button className="btn btn-info text-white rounded-full px-8 py-3 text-lg">
           Get Started
         </button>
+        </a>
       </div>
     </div>
   );

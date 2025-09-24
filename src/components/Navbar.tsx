@@ -47,7 +47,7 @@ export default function Navbar() {
       </div>
 
       {/* Center links */}
-      <div className="navbar-center flex"> 
+      <div className="navbar-center hidden md:flex flex-1 justify-center"> 
         <ul className="menu menu-horizontal px-1 md:gap-4 text-lg"> 
           {links}
         </ul> 
@@ -55,7 +55,7 @@ export default function Navbar() {
     
 
       {/* Right side */}
-      <div className="navbar-end gap-4">
+      <div className="navbar-end ml-auto gap-4">
 
         {user ? (
           <>
@@ -91,7 +91,7 @@ export default function Navbar() {
         ) : (
           <>
           <Link className="btn btn-neutral text-white rounded-full mr-4" to="/login">
-            Login
+            Login / Signup
           </Link>
           </>
         )}
