@@ -228,145 +228,15 @@ const [isFollowing, setIsFollowing] = useState(false);
           </div>
           
         </div>
-
-
-      {/* Follow     */}
-        <div className="mb-5">
-        <button
-      onClick={handleFollowToggle}
-      className={`px-2 py-1 rounded-sm font-semibold ${
-        isFollowing ? "bg-red-400 text-white" : "bg-blue-400 text-white"
-          }`}
-          >
-        {isFollowing ? "Unfollow" : "Follow"}
-        </button>
-      </div>
-
          
-      </div>
-
-        {/* Bio Section */}
-      <div className="p-4 border-b-2 border-[#f0f0f0]">
-        <h3 className="text-lg font-semibold mb-3">Bio</h3>
-        <div className="space-y-2 text-gray-700">
-
-          <div className="flex">
-<p>
-            <span className="font-medium">Followers:</span>{" "}
-            {followersCount}
-          </p>
-           <p>
-            <span className="font-medium">Following:</span>{" "}
-            {userDoc?.following?.length || 0}
-          </p>
-
-
+<div>
+            <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">Follow</button>
           </div>
-
-          
          
-          <p>
-            <span className="font-medium">Education:</span>{" "}
-            {userDoc?.education || (
-              <span className="text-gray-400">Add education</span>
-            )}
-          </p>
-          <p>
-            <span className="font-medium">Location:</span>{" "}
-            {userDoc?.location || (
-              <span className="text-gray-400">Add location</span>
-            )}
-          </p>
-          <p>
-            <span className="font-medium">Gender:</span>{" "}
-            {userDoc?.gender || <span className="text-gray-400">Add gender</span>}
-          </p>
-          <p>
-            <span className="font-medium">Relationship Status:</span>{" "}
-            {userDoc?.relationshipStatus || (
-              <span className="text-gray-400">Add relationship status</span>
-            )}
-          </p>
-        </div>
-        <div className="mt-4">
-          <button
-            onClick={() => setShowModal(true)}
-            className="btn btn-sm btn-outline"
-          >
-            Edit details
-          </button>
-        </div>
       </div>
       
 
       {/* Post Feed Section */}
-        {/* <div className="mt-6">
-          <PostFeed posts={postsData} />
-        </div> */}
-
-
-     {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Edit Bio</h2>
-
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Education"
-                value={formData.education}
-                onChange={(e) =>
-                  setFormData({ ...formData, education: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="text"
-                placeholder="Location"
-                value={formData.location}
-                onChange={(e) =>
-                  setFormData({ ...formData, location: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="text"
-                placeholder="Gender"
-                value={formData.gender}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="text"
-                placeholder="Relationship Status"
-                value={formData.relationshipStatus}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    relationshipStatus: e.target.value,
-                  })
-                }
-                className="input input-bordered w-full"
-              />
-            </div>
-
-            <div className="mt-6 flex justify-end gap-2">
-              <button
-                onClick={() => setShowModal(false)}
-                className="btn btn-sm btn-ghost"
-              >
-                Cancel
-              </button>
-              <button onClick={handleBioSave} className="btn btn-sm btn-primary">
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 <div className="mt-6">
   <PostProfile></PostProfile>
 </div>

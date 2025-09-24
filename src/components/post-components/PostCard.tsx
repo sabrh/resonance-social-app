@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaHeart, FaRegHeart, FaRegCommentDots } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 type Comment = {
   _id: string;
@@ -138,9 +139,9 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       <div className="float-right relative">
         <p
           onClick={() => setInfo(!info)}
-          className="text-3xl cursor-pointer"
+          className="text-xl cursor-pointer"
         >
-          <i className="fa-solid fa-circle-info"></i>
+          <BsThreeDotsVertical />
         </p>
         <div
           className={`absolute top-10 right-4 h-[100px] w-[150px] bg-white shadow-2xl rounded-2xl ${
@@ -169,18 +170,18 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           alt="User"
         />
         <div>
-          <p className="text-2xl font-bold">{post?.userName}</p>
-          <p>{post.createdAt}</p>
+          <p className="text-lg text-blue-400 font-bold">{post?.userName}</p>
+          <p className="text-gray-500 text-sm">{post.createdAt}</p>
         </div>
       </div>
 
       {/* Post body */}
-      <p className="mt-4">{post.text}</p>
+      <p className="mt-2">{post.text}</p>
       {imageSrc && (
         <img
           src={imageSrc}
           alt={post.filename}
-          className="max-w-full max-h-[400px] object-cover mt-4 rounded"
+          className="max-w-full max-h-[400px] object-cover mt-2 rounded"
         />
       )}
 

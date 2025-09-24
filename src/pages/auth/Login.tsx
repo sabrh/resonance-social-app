@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import type { FC } from "react";
 import toast from "react-hot-toast";
-import { FaEye, FaEyeSlash, FaFacebookF, FaGithub } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -140,7 +140,7 @@ const Login: FC = () => {
             <FcGoogle size={30} />
           </button>
           <button onClick={handleGithub} className="cursor-pointer ml-4">
-            <FaGithub className="text-blue-700" size={30} />
+            <FaGithub className="text-gray-700" size={30} />
           </button>
         </div>
       </div>
