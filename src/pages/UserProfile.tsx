@@ -168,20 +168,18 @@ const UserProfile: FC = () => {
             </p>
           </div>
           
-        </div>
-         
-<div>
-            <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">Follow</button>
-          </div>
-         
+        </div> 
+        <div>
+          <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">Follow</button>
+        </div> 
       </div>
       
 
       {/* Post Feed Section */}
-<div className="mt-6">
-  <PostProfile></PostProfile>
-</div>
-      
+      <div className="mt-6">
+        <PostProfile></PostProfile>
+      </div>
+            
     </div>
   );
 };

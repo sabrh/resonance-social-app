@@ -1,9 +1,10 @@
 import { useContext } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import { BsBell } from "react-icons/bs";
 
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
+import { FaArrowRightToBracket } from "react-icons/fa6";
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
@@ -31,9 +32,14 @@ export default function Navbar() {
   <>
       {user && (
         <>
-          <li><Link to="/home">News Feed</Link></li> 
-          <li><Link to="/profile">My Profile</Link></li> 
-          <li><Link to="/chats">Messages</Link></li> 
+        <li><NavLink to="/home" className={({ isActive }) => isActive ? 
+        "text-blue-400 underline-offset-4 font-bold" : "" }>Newsfeed</NavLink></li>
+            
+        <li><NavLink to="/profile" className={({ isActive }) => isActive ? 
+        "text-blue-400 underline-offset-4 font-bold" : "" }>My Profile</NavLink></li>
+
+        <li><NavLink to="/messages" className={({ isActive }) => isActive ? 
+        "text-blue-400 underline-offset-4 font-bold" : "" }>Messages</NavLink></li> 
         </>
       )}
   </>
@@ -47,8 +53,8 @@ export default function Navbar() {
       </div>
 
       {/* Center links */}
-      <div className="navbar-center hidden md:flex flex-1 justify-center"> 
-        <ul className="menu menu-horizontal px-1 md:gap-4 text-lg"> 
+      <div className="navbar-center flex md:hidden"> 
+        <ul className="menu menu-horizontal px-1 md:gap-4 md:text-md"> 
           {links}
         </ul> 
       </div> 
@@ -60,7 +66,7 @@ export default function Navbar() {
         {user ? (
           <>
           <Link to="/notifications">
-          <BsBell size={30} />
+          <BsBell size={25} />
           </Link>
           <div className="dropdown dropdown-end">
             <div
@@ -77,13 +83,13 @@ export default function Navbar() {
             </div>
             <ul
               tabIndex={0}
-              className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+              className="mt-3 z-[1] p-2 shadow menu menu-md dropdown-content bg-base-100 rounded-box w-52"
             >
-              <li>
+              <li className="font-bold">
                 <Link to="/profile">{user.displayName ?? "Profile"}</Link>
               </li>
-              <li className="bg-red-600 rounded text-white p-1">
-                <button onClick={handleLogout}>Logout</button>
+              <li className="bg-red-600 rounded text-white p-1 font-bold flex items-center gap-1">
+                <button onClick={handleLogout}>Logout <FaArrowRightToBracket /> </button>
               </li>
             </ul>
           </div>

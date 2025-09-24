@@ -4,18 +4,16 @@ import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
 import Posts from "../components/post-components/Posts";
 import { AuthContext } from "../context/AuthContext/AuthContext";
+import { MdAddPhotoAlternate } from "react-icons/md";
+import LeftSidebar from "../components/LeftSidebar";
+import RightSidebar from "../components/RightSidebar";
 
 const Home: FC = () => {
   const { user } = useContext(AuthContext)!;
   const [image, setImage] = useState<string | null>(null);
   const [text, setText] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-
-  // simple counter used to tell Posts to re-fetch when incremented
-  const [postsRefreshKey, setPostsRefreshKey] = useState<number>(0); 
-
-  console.log(user?.displayName);
-  console.log(user?.photoURL);
+  const [postsRefreshKey, setPostsRefreshKey] = useState<number>(0);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -23,9 +21,7 @@ const Home: FC = () => {
     if (file) {
       setImageFile(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
+      reader.onloadend = () => setImage(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -39,43 +35,27 @@ const Home: FC = () => {
     setText(e.target.value);
   };
 
-  // form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     const formData = new FormData();
-     if(user?.displayName){
-        formData.append("text", user?.displayName)
-     }
-     
-     if(user?.photoURL){
-        formData.append("text", user?.photoURL)
-     }
-     
-    if (text) {
-      formData.append("text", text);
-    }
-    if(user?.email){
-        formData.append("text", user?.email)
-     }
-    if (imageFile) {
-      formData.append("photo", imageFile);
-    }
+    if (user?.displayName) formData.append("text", user.displayName);
+    if (user?.photoURL) formData.append("text", user.photoURL);
+    if (text) formData.append("text", text);
+    if (user?.email) formData.append("text", user.email);
+    if (imageFile) formData.append("photo", imageFile);
 
     try {
       const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
         method: "POST",
-        body: formData, // DO NOT set Content-Type manually
+        body: formData,
       });
       const data = await res.json();
-      console.log(data);
       if (data.insertedId) {
         toast.success("Your post is updated successfully!");
-        // reset form and signal Posts to refetch
         setText("");
         setImage(null);
         setImageFile(null);
-        setPostsRefreshKey((k) => k + 1); // refresh posts
+        setPostsRefreshKey((k) => k + 1);
       } else {
         toast.error("Could not add post. Try again.");
       }
@@ -86,71 +66,75 @@ const Home: FC = () => {
   };
 
   return (
-    <div>
-      {/* post section */}
-      <div className="w-full">
-        <div></div>
-        {/* main post box */}
-        <div className="rounded-sm  mt-20">
-          <form onSubmit={handleSubmit} className="mt-3 shadow-xl bg-[#f6ecec] rounded-xl px-4 py-4">
-            <p className="text-xl font-bold">Create New Post</p>
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mt-20 ">
+      {/* Left Sidebar (sticky, hidden on mobile) */}
+      <LeftSidebar />
 
-            <TextareaAutosize
-              value={text}
-              onChange={handleChange}
-              minRows={3}
-              placeholder="write your update here..."
-              className="bg-white rounded-2xl w-full mt-3 p-5"
-            />
+      {/* Main Content */}
+      <main className="col-span-1 md:col-span-6">
+        <div className="w-full">
+          <div className="rounded-sm">
+            <form
+              onSubmit={handleSubmit}
+              className="shadow-sm bg-gray-100 rounded-xl px-4 py-4"
+            >
+              <p className="text-lg font-bold">Create New Post</p>
 
-            {/* preview box */}
-            {image && (
-              <div className="relative mt-5">
-                <img src={image} alt="preview" className="w-48 h-48 object-cover rounded-xl shadow-lg" />
-                <button
-                  onClick={removeImage}
-                  type="button"
-                  className="absolute top-2 left-2 bg-red-600 text-white bg-opacity-50 rounded-full p-1 hover:bg-opacity-70 cursor-pointer"
-                >
-                  <X className="w-5 h-5 text-white" />
+              <TextareaAutosize
+                value={text}
+                onChange={handleChange}
+                minRows={3}
+                placeholder="Write your update here..."
+                className="bg-white rounded-2xl w-full mt-3 p-5"
+              />
+
+              {image && (
+                <div className="relative mt-5">
+                  <img
+                    src={image}
+                    alt="preview"
+                    className="w-48 h-48 object-cover rounded-xl shadow-lg"
+                  />
+                  <button
+                    onClick={removeImage}
+                    type="button"
+                    className="absolute top-2 left-2 bg-red-600 text-white bg-opacity-50 rounded-full p-1 hover:bg-opacity-70 cursor-pointer"
+                  >
+                    <X className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+              )}
+
+              <div className="mt-2 flex justify-between">
+                <div className="flex items-center gap-8">
+                  <label className="cursor-pointer">
+                    <p className="md:text-xl text-sm font-bold flex gap-2 items-center cursor-pointer">
+                      <MdAddPhotoAlternate size={30} />
+                    </p>
+                    <input
+                      onChange={handleImageChange}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                <button type="submit" className="btn btn-info rounded-full text-white mt-4">
+                  Post Now
                 </button>
               </div>
-            )}
-
-            {/* button section */}
-            <div className="mt-5 ml-6 md:flex justify-between">
-              <div className="flex items-center gap-8">
-                <label className="cursor-pointer ">
-                  <p className="md:text-xl text-sm font-bold flex gap-2 items-center cursor-pointer">
-                    <i className="fa-solid fa-images md:text-4xl text-xl text-green-600"></i>
-                    <span>Add Photos</span>
-                  </p>
-                  <input onChange={handleImageChange} type="file" accept="image/*" className="hidden" />
-                </label>
-                {/*
-                <p className="md:text-xl text-sm font-bold flex gap-2 items-center cursor-pointer">
-                  <i className="fa-regular fa-face-smile md:text-4xl text-xl text-yellow-600"></i>
-                  <span>Feelings/Activity</span>
-                </p>
-                */}
-              </div>
-
-              <button type="submit" className="btn bg-green-600 text-white mt-4">
-                 Post Now
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
-        <div></div>
-      </div>
 
-      {/* Show Post section */}
-      <section className="mt-10">
-        <p className="text-3xl font-bold">News Feed</p>
+        <section className="mt-5">
+          <Posts refreshKey={postsRefreshKey} />
+        </section>
+      </main>
 
-        {/* pass refreshKey to Posts so it knows when to refetch */}
-        <Posts refreshKey={postsRefreshKey} />
-      </section>
+      {/* Right Sidebar (sticky, hidden on mobile) */}
+      <RightSidebar />
     </div>
   );
 };
