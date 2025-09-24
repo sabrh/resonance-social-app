@@ -47,6 +47,7 @@ const Home: FC = () => {
      if(user?.displayName){
         formData.append("text", user?.displayName)
      }
+     
      if(user?.photoURL){
         formData.append("text", user?.photoURL)
      }
@@ -54,6 +55,9 @@ const Home: FC = () => {
     if (text) {
       formData.append("text", text);
     }
+    if(user?.email){
+        formData.append("text", user?.email)
+     }
     if (imageFile) {
       formData.append("photo", imageFile);
     }

@@ -7,6 +7,8 @@ export interface AuthContextType {
   createUser: (email: string, password: string) => Promise<UserCredential>;
   signInUser: (email: string, password: string) => Promise<UserCredential>;
   signOutUser: () => Promise<void>;
+  googleSign: () => Promise<UserCredential>;
+  githubSign: () => Promise<UserCredential>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
