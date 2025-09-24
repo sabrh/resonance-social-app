@@ -43,8 +43,8 @@ export default function Navbar() {
   return (
     <div className="navbar bg-base-100 shadow px-8 md:px-36 fixed top-0 left-0 w-full z-50">
       {/* Left side */}
-      <div className="hidden md:navbar-start">
-        <Link to="/" className="font-bold text-3xl">
+      <div className="navbar-start">
+        <Link to="/" className="font-bold md:text-3xl">
           resonance
         </Link>
       </div>
@@ -92,9 +92,14 @@ export default function Navbar() {
           </div>
           </>
         ) : (
-          <Link className="btn btn-outline rounded-full" to="/login">
+          <>
+          <Link className="btn rounded-full mr-4" to="/login">
             Login
           </Link>
+          <Link className="btn btn-outline rounded-full" to="/signup">
+            Signup
+          </Link>
+          </>
         )}
       </div>
     </div>
