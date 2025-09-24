@@ -1,4 +1,10 @@
-import { useContext, useState, type ChangeEvent, type FC, type FormEvent } from "react";
+import {
+  useContext,
+  useState,
+  type ChangeEvent,
+  type FC,
+  type FormEvent,
+} from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
@@ -12,7 +18,7 @@ const Home: FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   // simple counter used to tell Posts to re-fetch when incremented
-  const [postsRefreshKey, setPostsRefreshKey] = useState<number>(0); 
+  const [postsRefreshKey, setPostsRefreshKey] = useState<number>(0);
 
   console.log(user?.displayName);
   console.log(user?.photoURL);
@@ -44,22 +50,26 @@ const Home: FC = () => {
     e.preventDefault();
 
     const formData = new FormData();
-     if(user?.displayName){
-        formData.append("text", user?.displayName)
-     }
-     if(user?.photoURL){
-        formData.append("text", user?.photoURL)
-     }
-     
+    if (user?.displayName) {
+      formData.append("text", user?.displayName);
+    }
+
+    if (user?.photoURL) {
+      formData.append("text", user?.photoURL);
+    }
+
     if (text) {
       formData.append("text", text);
+    }
+    if (user?.email) {
+      formData.append("text", user?.email);
     }
     if (imageFile) {
       formData.append("photo", imageFile);
     }
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+      const res = await fetch("http://localhost:3000/socialPost", {
         method: "POST",
         body: formData, // DO NOT set Content-Type manually
       });
@@ -88,7 +98,10 @@ const Home: FC = () => {
         <div></div>
         {/* main post box */}
         <div className="rounded-sm  mt-20">
-          <form onSubmit={handleSubmit} className="mt-3 shadow-xl bg-[#f6ecec] rounded-xl px-4 py-4">
+          <form
+            onSubmit={handleSubmit}
+            className="mt-3 shadow-xl bg-[#f6ecec] rounded-xl px-4 py-4"
+          >
             <p className="text-xl font-bold">Create New Post</p>
 
             <TextareaAutosize
@@ -102,7 +115,11 @@ const Home: FC = () => {
             {/* preview box */}
             {image && (
               <div className="relative mt-5">
-                <img src={image} alt="preview" className="w-48 h-48 object-cover rounded-xl shadow-lg" />
+                <img
+                  src={image}
+                  alt="preview"
+                  className="w-48 h-48 object-cover rounded-xl shadow-lg"
+                />
                 <button
                   onClick={removeImage}
                   type="button"
@@ -121,7 +138,12 @@ const Home: FC = () => {
                     <i className="fa-solid fa-images md:text-4xl text-xl text-green-600"></i>
                     <span>Add Photos</span>
                   </p>
-                  <input onChange={handleImageChange} type="file" accept="image/*" className="hidden" />
+                  <input
+                    onChange={handleImageChange}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                  />
                 </label>
                 {/*
                 <p className="md:text-xl text-sm font-bold flex gap-2 items-center cursor-pointer">
@@ -131,8 +153,11 @@ const Home: FC = () => {
                 */}
               </div>
 
-              <button type="submit" className="btn bg-green-600 text-white mt-4">
-                 Post Now
+              <button
+                type="submit"
+                className="btn bg-green-600 text-white mt-4"
+              >
+                Post Now
               </button>
             </div>
           </form>
