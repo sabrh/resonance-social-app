@@ -328,14 +328,21 @@ const [isFollowing, setIsFollowing] = useState(false);
         <h3 className="text-lg font-semibold mb-3">Bio</h3>
         <div className="space-y-2 text-gray-700">
 
-          <p>
+          <div className="flex">
+<p>
             <span className="font-medium">Followers:</span>{" "}
             {followersCount}
           </p>
-          <p>
+           <p>
             <span className="font-medium">Following:</span>{" "}
             {userDoc?.following?.length || 0}
           </p>
+
+
+          </div>
+
+          
+         
           <p>
             <span className="font-medium">Education:</span>{" "}
             {userDoc?.education || (
