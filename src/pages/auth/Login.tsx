@@ -28,7 +28,7 @@ const Login: FC = () => {
       .then((result) => {
         console.log("Login Successful:", result.user);
         toast.success("Logged in successfully!");
-        navigate("/"); // redirect to home
+        navigate("/home"); // redirect to home
       })
       .catch((error) => {
         console.error("Login error:", error);

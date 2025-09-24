@@ -18,6 +18,9 @@ type Post = {
   filename?: string;
   likes?: string[];
   comments?: Comment[];
+  userName:string;
+  userPhoto:string;
+  createdAt:string;
 };
 
 type Props = {
@@ -47,18 +50,12 @@ const Posts = ({ refreshKey = 0 }: Props) => {
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);
-      
-        } catch (err: unknown) {
-  if (err instanceof Error) {
-    console.error(err.message);
+      } catch (err) {
+  if (err instanceof Error && err.name !== "AbortError") {
+    console.error(err);
     if (mounted) setError("Failed to load posts");
-  } else {
-    console.error("Unexpected error", err);
   }
-}
-
-      
-      finally {
+      } finally {
         if (mounted) setLoading(false); // stop loading after fetch finishes
       }
     };
@@ -87,7 +84,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
   return (
     <div>
       {posts.map((post) => (
-        <PostCard key={post._id} post={post} currentUserId={currentUserId} />
+        <PostCard key={post._id} post={post} currentUserId={currentUserId} onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}/>
       ))}
     </div>
   );

@@ -1,4 +1,3 @@
-
 import type { FC } from 'react';
 import Navbar from '../components/Navbar';
 import { Outlet } from 'react-router';
@@ -9,7 +8,7 @@ const MainLayout: FC = () => {
     <div>
         <header><Navbar /></header>
         <main>
-          <div className='min-h-[calc(100vh-126px)] mx-8 md:mx-18'>
+          <div className='min-h-[calc(100vh-68px)] mx-8 md:mx-36 my-2'>
           <Outlet></Outlet>
           </div>
         </main>
