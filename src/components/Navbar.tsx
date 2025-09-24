@@ -1,10 +1,7 @@
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router";
-import { FaRegCircleUser } from "react-icons/fa6";
-import { FaRegBell } from "react-icons/fa"; 
+import { BsBell } from "react-icons/bs";
 
-import { IoHomeOutline } from "react-icons/io5";
-import { TiMessages } from "react-icons/ti";
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
 
@@ -34,24 +31,24 @@ export default function Navbar() {
   <>
       {user && (
         <>
-          <li><Link to="/home"><IoHomeOutline size={30}/></Link></li> 
-          <li><Link to="/profile"><FaRegCircleUser size={30}/></Link></li> 
-          <li><Link to="/chats"><TiMessages size={30}/></Link></li> 
+          <li><Link to="/home">News Feed</Link></li> 
+          <li><Link to="/profile">My Profile</Link></li> 
+          <li><Link to="/chats">Messages</Link></li> 
         </>
       )}
   </>
   return (
-    <div className="navbar bg-base-100 shadow px-8 md:px-36 fixed top-0 left-0 w-full z-50">
+    <div className="navbar bg-base-100/70 backdrop-blur-md shadow px-8 md:px-36 fixed top-0 left-0 w-full z-50">
       {/* Left side */}
       <div className="hidden md:navbar-start">
         <Link to="/" className="font-bold text-3xl flex items-center gap-2">
-            <img className="h-[40px] w-[40px] rounded-2xl" src="../logo.png" /><span>Reso<span className="text-[#9810fa]">Nance</span></span>
+            resonance
         </Link>
       </div>
 
       {/* Center links */}
       <div className="navbar-center flex"> 
-        <ul className="menu menu-horizontal px-1 md:gap-4"> 
+        <ul className="menu menu-horizontal px-1 md:gap-4 text-lg"> 
           {links}
         </ul> 
       </div> 
@@ -63,7 +60,7 @@ export default function Navbar() {
         {user ? (
           <>
           <Link to="/notifications">
-          <FaRegBell size={30} />
+          <BsBell size={30} />
           </Link>
           <div className="dropdown dropdown-end">
             <div
@@ -93,11 +90,8 @@ export default function Navbar() {
           </>
         ) : (
           <>
-          <Link className="btn rounded-full mr-4" to="/login">
+          <Link className="btn btn-neutral text-white rounded-full mr-4" to="/login">
             Login
-          </Link>
-          <Link className="btn btn-outline rounded-full" to="/signup">
-            Signup
           </Link>
           </>
         )}
