@@ -53,7 +53,7 @@ export default function Navbar() {
       </div>
 
       {/* Center links */}
-      <div className="navbar-center flex md:hidden"> 
+      <div className="navbar-center flex"> 
         <ul className="menu menu-horizontal px-1 md:gap-4 md:text-md"> 
           {links}
         </ul> 

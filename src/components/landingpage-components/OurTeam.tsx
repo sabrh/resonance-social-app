@@ -11,7 +11,7 @@ const OurTeam: FC = () => {
     {
       name: "Rahat Khan",
       title: "Backend Developer",
-      img: "https://via.placeholder.com/150x150.png?text=Rahat",
+      img: "https://i.ibb.co.com/Q7P9rtDV/Screenshot-2025-01-22-215148.png",
     },
     {
       name: "Muhammad Rifat",

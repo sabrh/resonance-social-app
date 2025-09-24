@@ -103,12 +103,12 @@ const LeftSidebar: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-2 px-3 py-2 rounded-md transition ${
                     isActive
-                      ? "text-green-500 font-semibold bg-gray-200 dark:bg-gray-700"
+                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
                       : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`
                 }
               >
-                <IoNewspaperOutline size={20} /> Newsfeed
+                <IoNewspaperOutline className='text-green-500' size={20} /> Newsfeed
               </NavLink>
             </li>
             <li>
@@ -117,12 +117,12 @@ const LeftSidebar: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-2 px-3 py-2 rounded-md transition ${
                     isActive
-                      ? "text-blue-500 font-semibold bg-gray-200 dark:bg-gray-700"
+                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
                       : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`
                 }
               >
-                <FaRegUser size={20} /> My Profile
+                <FaRegUser className="text-blue-500" size={20} /> My Profile
               </NavLink>
             </li>
             <li>
@@ -131,12 +131,12 @@ const LeftSidebar: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-2 px-3 py-2 rounded-md transition ${
                     isActive
-                      ? "text-blue-500 font-semibold bg-gray-200 dark:bg-gray-700"
+                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
                       : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`
                 }
               >
-                <TiMessages size={20} /> Messages
+                <TiMessages className="text-red-500" size={20} /> Messages
               </NavLink>
             </li>
           </ul>
