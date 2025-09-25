@@ -331,7 +331,8 @@ const UserProfile: FC = () => {
 
       {/* About Section */}
       {/* Tabs */}
-      <div className="w-full mt-6">
+      <div className="w-full">
+        {/* Tabs */}
         <div className="flex border-b border-gray-300 mb-4">
           {["posts", "about", "friends"].map((tab) => (
             <button
@@ -348,55 +349,61 @@ const UserProfile: FC = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {activeTab === "posts" && (
-            <div className="lg:col-span-2 ">
-              <PostProfile />
-            </div>
-          )}
-          {activeTab === "about" && (
-            <div className="lg:col-span-1 p-4 border border-[#f0f0f0] mx-4 mb-4 rounded-lg bg-white shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">About</h3>
-              <div className="space-y-2 text-gray-700">
-                <p>
-                  <span className="font-medium">Email:</span>{" "}
-                  {userDoc?.email || firebaseUser?.email}
-                </p>
-                <p>
-                  <span className="font-medium">Education:</span>{" "}
-                  {userDoc?.education || (
-                    <span className="text-gray-400">Add education</span>
-                  )}
-                </p>
-                <p>
-                  <span className="font-medium">Location:</span>{" "}
-                  {userDoc?.location || (
-                    <span className="text-gray-400">Add location</span>
-                  )}
-                </p>
-                <p>
-                  <span className="font-medium">Gender:</span>{" "}
-                  {userDoc?.gender || (
-                    <span className="text-gray-400">Add gender</span>
-                  )}
-                </p>
-                <p>
-                  <span className="font-medium">Relationship Status:</span>{" "}
-                  {userDoc?.relationshipStatus || (
-                    <span className="text-gray-400">
-                      Add relationship status
-                    </span>
-                  )}
-                </p>
+        {/* Centered Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-5">
+          {/* Left empty */}
+          <div className="hidden lg:block"></div>
+
+          {/* Middle column */}
+          <div className="lg:col-span-1">
+            {activeTab === "posts" && <PostProfile />}
+            {activeTab === "about" && (
+              <div className="p-4 border border-[#f0f0f0] mb-4 rounded-lg bg-white shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">About</h3>
+                <div className="space-y-2 text-gray-700">
+                  <p>
+                    <span className="font-medium">Email:</span>{" "}
+                    {userDoc?.email || firebaseUser?.email}
+                  </p>
+                  <p>
+                    <span className="font-medium">Education:</span>{" "}
+                    {userDoc?.education || (
+                      <span className="text-gray-400">Add education</span>
+                    )}
+                  </p>
+                  <p>
+                    <span className="font-medium">Location:</span>{" "}
+                    {userDoc?.location || (
+                      <span className="text-gray-400">Add location</span>
+                    )}
+                  </p>
+                  <p>
+                    <span className="font-medium">Gender:</span>{" "}
+                    {userDoc?.gender || (
+                      <span className="text-gray-400">Add gender</span>
+                    )}
+                  </p>
+                  <p>
+                    <span className="font-medium">Relationship Status:</span>{" "}
+                    {userDoc?.relationshipStatus || (
+                      <span className="text-gray-400">
+                        Add relationship status
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-          {activeTab === "friends" && (
-            <div className="lg:col-span-1 p-4 border border-[#f0f0f0] mx-4 mb-4 rounded-lg bg-white shadow-sm">
-              <h3 className="text-lg font-semibold mb-3">Friends</h3>
-              <p className="text-gray-500 text-sm">No friends added yet.</p>
-            </div>
-          )}
+            )}
+            {activeTab === "friends" && (
+              <div className="p-4 border border-[#f0f0f0] mb-4 rounded-lg bg-white shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">Friends</h3>
+                <p className="text-gray-500 text-sm">No friends added yet.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Right empty */}
+          <div className="hidden lg:block"></div>
         </div>
       </div>
     </div>
