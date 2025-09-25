@@ -9,6 +9,8 @@ import Signup from "../pages/auth/Signup";
 import ErrorPage from "../pages/ErrorPage";
 import Notifications from "../pages/Notifications";
 import About from "../pages/About";
+import PasswordForget from "../pages/auth/PasswordForget";
+
 
 export const router = createBrowserRouter([
   {
@@ -16,11 +18,12 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <About /> },
       { path: "profile", element: <UserProfile /> },
-      { path: "chats", element: <Chats /> },
+      { path: "messages", element: <Chats /> },
       { path: "notifications", element: <Notifications /> },
-      { path: "about", element: <About></About> },
+      { path: "home", element: <Home /> },
+
     ],
   },
   {
@@ -28,6 +31,10 @@ export const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [
       { path: "login", element: <Login /> },
+      {
+        path: '/auth/forget-password',
+        element: <PasswordForget />
+      },
       { path: "signup", element: <Signup /> },
     ],
   },

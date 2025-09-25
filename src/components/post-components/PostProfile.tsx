@@ -21,19 +21,24 @@ type Post = {
   userName: string;
   userPhoto: string;
   createdAt: string;
+  userEmail: string;
 };
 
 type Props = {
   refreshKey?: number; //  when this changes Posts re-fetches
 };
 
-const Posts = ({ refreshKey = 0 }: Props) => {
+const PostProfile = ({ refreshKey = 0 }: Props) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const authContext = useContext(AuthContext);
-  console.log("auth", AuthContext);
+  const { user } = useContext(AuthContext)!;
 
+  console.log(posts);
+
+  const matchPost = posts.filter((post) => post?.userEmail === user?.email);
+  console.log(matchPost);
   // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
 
@@ -87,7 +92,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
 
   return (
     <div>
-      {posts.map((post) => (
+      {matchPost.map((post) => (
         <PostCard
           key={post._id}
           post={post}
@@ -99,4 +104,4 @@ const Posts = ({ refreshKey = 0 }: Props) => {
   );
 };
 
-export default Posts;
+export default PostProfile;

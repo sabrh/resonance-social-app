@@ -6,9 +6,9 @@ const AuthLayout: FC = () => {
   return (
     <div>
       <header>
-        <div className="navbar bg-base-100 shadow px-8 md:px-18"> 
+        <div className="navbar bg-base-100 shadow px-8 md:px-36"> 
             <div className="navbar-start"> 
-              <Link to="/" className="font-bold text-3xl">Resonance</Link> 
+              <Link to="/" className="font-bold text-3xl">resonance</Link> 
             </div>
         </div>
       </header>
