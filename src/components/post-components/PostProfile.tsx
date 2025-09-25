@@ -3,7 +3,6 @@ import PostCard from "./PostCard";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import Loading from "../Loading";
 
-
 type Comment = {
   _id: string;
   authorName: string;
@@ -19,10 +18,10 @@ type Post = {
   filename?: string;
   likes?: string[];
   comments?: Comment[];
-  userName:string;
-  userPhoto:string;
-  createdAt:string;
-  userEmail:string;
+  userName: string;
+  userPhoto: string;
+  createdAt: string;
+  userEmail: string;
 };
 
 type Props = {
@@ -31,15 +30,14 @@ type Props = {
 
 const PostProfile = ({ refreshKey = 0 }: Props) => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); 
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const authContext = useContext(AuthContext);
   const { user } = useContext(AuthContext)!;
 
-
   console.log(posts);
 
-  const matchPost = posts.filter(post => post?.userEmail === user?.email );
+  const matchPost = posts.filter((post) => post?.userEmail === user?.email);
   console.log(matchPost);
   // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
@@ -52,17 +50,20 @@ const PostProfile = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          "https://resonance-social-server.vercel.app/socialPost",
+          {
+            signal: controller.signal,
+          }
+        );
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);
       } catch (err) {
-  if (err instanceof Error && err.name !== "AbortError") {
-    console.error(err);
-    if (mounted) setError("Failed to load posts");
-  }
+        if (err instanceof Error && err.name !== "AbortError") {
+          console.error(err);
+          if (mounted) setError("Failed to load posts");
+        }
       } finally {
         if (mounted) setLoading(false); // stop loading after fetch finishes
       }
@@ -92,7 +93,12 @@ const PostProfile = ({ refreshKey = 0 }: Props) => {
   return (
     <div>
       {matchPost.map((post) => (
-        <PostCard key={post._id} post={post} currentUserId={currentUserId} onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}/>
+        <PostCard
+          key={post._id}
+          post={post}
+          currentUserId={currentUserId}
+          onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}
+        />
       ))}
     </div>
   );
