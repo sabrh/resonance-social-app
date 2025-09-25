@@ -8,9 +8,6 @@ import {
 
 import PostProfile from "../components/post-components/PostProfile";
 
-
-
-
 type UserDoc = {
   uid: string;
   displayName?: string;
@@ -22,12 +19,9 @@ type UserDoc = {
   location?: string;
   gender?: string;
   relationshipStatus?: string;
-  followers?: string[];   
+  followers?: string[];
   following?: string[];
 };
-
-
-
 
 const UserProfile: FC = () => {
   const authContext = useContext<AuthContextType | null>(AuthContext);
@@ -39,7 +33,7 @@ const UserProfile: FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
-const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   // modal state
   const [showModal, setShowModal] = useState(false);
@@ -64,10 +58,12 @@ const [isFollowing, setIsFollowing] = useState(false);
         });
 
         //  Fetch user document
-        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`);
+        const res = await axios.get(
+          `https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`
+        );
         setUserDoc(res.data);
 
-        console.log(res.data)
+        console.log(res.data);
         // preload bio values
         setFormData({
           education: res.data.education || "",
@@ -76,11 +72,11 @@ const [isFollowing, setIsFollowing] = useState(false);
           relationshipStatus: res.data.relationshipStatus || "",
         });
 
-         setFollowersCount(res.data.followers?.length || 0);
-         // check if current user is already following
-        setIsFollowing(res.data.followers?.includes(firebaseUser?.uid) || false);
-
-
+        setFollowersCount(res.data.followers?.length || 0);
+        // check if current user is already following
+        setIsFollowing(
+          res.data.followers?.includes(firebaseUser?.uid) || false
+        );
       } catch (err) {
         console.error("User sync error:", err);
       }
@@ -112,13 +108,19 @@ const [isFollowing, setIsFollowing] = useState(false);
     form.append("banner", file);
 
     try {
-      await axios.post(`https://resonance-social-server.vercel.app/users/${uid}/banner`, form, {
-  headers: { "Content-Type": "multipart/form-data" },
-});
+      await axios.post(
+        `https://resonance-social-server.vercel.app/users/${uid}/banner`,
+        form,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       // refresh user data
-      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
+      const res = await axios.get(
+        `https://resonance-social-server.vercel.app/users/${uid}`
+      );
       setUserDoc(res.data);
-      console.log(res.data)
+      console.log(res.data);
       setFile(null);
       setPreview(null);
     } catch (err) {
@@ -129,15 +131,19 @@ const [isFollowing, setIsFollowing] = useState(false);
     }
   };
 
-
   // handle bio update
   const handleBioSave = async () => {
     if (!uid) return;
     try {
-      await axios.put(`https://resonance-social-server.vercel.app/users/${uid}/details`, formData);
+      await axios.put(
+        `https://resonance-social-server.vercel.app/users/${uid}/details`,
+        formData
+      );
 
-      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
-      console.log(res)
+      const res = await axios.get(
+        `https://resonance-social-server.vercel.app/users/${uid}`
+      );
+      console.log(res);
       setUserDoc(res.data);
       setShowModal(false);
     } catch (err) {
@@ -147,21 +153,19 @@ const [isFollowing, setIsFollowing] = useState(false);
   };
 
   const handleFollowToggle = async () => {
-  if (!uid || !userDoc?.uid) return;
-  try {
-    const res = await axios.put(
-      `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
-      { currentUid: uid }
-    );
+    if (!uid || !userDoc?.uid) return;
+    try {
+      const res = await axios.put(
+        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+        { currentUid: uid }
+      );
 
-    setIsFollowing(res.data.isFollowing);
-    setFollowersCount(res.data.followersCount);
-  } catch (err) {
-    console.error("Follow toggle failed:", err);
-  }
-};
-
- 
+      setIsFollowing(res.data.isFollowing);
+      setFollowersCount(res.data.followersCount);
+    } catch (err) {
+      console.error("Follow toggle failed:", err);
+    }
+  };
 
   // Determine banner to show
   const bannerSrc = userDoc?.banner
@@ -226,21 +230,19 @@ const [isFollowing, setIsFollowing] = useState(false);
               {userDoc?.email || firebaseUser?.email}
             </p>
           </div>
-          
         </div>
-         
-<div>
-            <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">Follow</button>
-          </div>
-         
+
+        <div>
+          <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">
+            Follow
+          </button>
+        </div>
       </div>
-      
 
       {/* Post Feed Section */}
-<div className="mt-6">
-  <PostProfile></PostProfile>
-</div>
-      
+      <div className="mt-6">
+        <PostProfile></PostProfile>
+      </div>
     </div>
   );
 };

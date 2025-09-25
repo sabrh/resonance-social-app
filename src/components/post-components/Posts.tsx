@@ -13,6 +13,7 @@ type Comment = {
 type Post = {
   _id: string;
   text: string;
+  userEmail:string;
   image?: string;
   mimetype?: string;
   filename?: string;
