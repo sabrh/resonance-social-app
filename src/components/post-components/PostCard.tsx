@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { FaHeart, FaRegHeart, FaRegCommentDots, FaShare } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 type Comment = {
   _id: string;
@@ -63,7 +64,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleLike = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/like`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -85,7 +86,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/comments`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
@@ -112,7 +113,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleShare = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/share`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/share`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -163,7 +164,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `http://localhost:3000/socialPost/${post._id}`,
+                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
                   {
                     method: "DELETE",
                   }
@@ -192,8 +193,10 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     <div className="bg-white shadow rounded-lg p-4 max-w-2xl mx-auto mt-6">
       {/* Info dropdown */}
       <div className="float-right relative">
-        <p onClick={() => setInfo(!info)} className="text-3xl cursor-pointer">
-          <i className="fa-solid fa-circle-info"></i>
+        {/* <p onClick={() => setInfo(!info)} className="text-3xl cursor-pointer">
+          <i className="fa-solid fa-circle-info"></i> */}
+        <p onClick={() => setInfo(!info)} className="text-xl cursor-pointer">
+          <BsThreeDotsVertical />
         </p>
         <div
           className={`absolute top-10 right-4 h-[100px] w-[150px] bg-white shadow-2xl rounded-2xl ${
@@ -222,8 +225,8 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           alt="User"
         />
         <div>
-          <p className="text-2xl font-bold">{post?.userName}</p>
-          <p>{post.createdAt}</p>
+          <p className="text-lg text-blue-400 font-bold">{post?.userName}</p>
+          <p className="text-gray-500 text-sm">{post.createdAt}</p>
         </div>
       </div>
 
@@ -231,11 +234,12 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       <p className="mt-4">{post.text}</p>
 
       {/* Original post image */}
+      {/* <p className="mt-2">{post.text}</p> */}
       {imageSrc && (
         <img
           src={imageSrc}
           alt={post.filename}
-          className="max-w-full max-h-[400px] object-cover mt-4 rounded"
+          className="max-w-full max-h-[400px] object-cover mt-2 rounded"
         />
       )}
 

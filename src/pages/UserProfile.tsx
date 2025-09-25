@@ -8,9 +8,6 @@ import {
 
 import PostProfile from "../components/post-components/PostProfile";
 
-
-
-
 type UserDoc = {
   uid: string;
   displayName?: string;
@@ -22,7 +19,7 @@ type UserDoc = {
   location?: string;
   gender?: string;
   relationshipStatus?: string;
-  followers?: string[];   
+  followers?: string[];
   following?: string[];
 };
 
@@ -36,7 +33,7 @@ const UserProfile: FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
-const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   // modal state
   const [showModal, setShowModal] = useState(false);
@@ -53,7 +50,7 @@ const [isFollowing, setIsFollowing] = useState(false);
     const syncUser = async () => {
       try {
         //  Ensure user doc exists in MongoDB
-        await axios.post("http://localhost:3000/users", {
+        await axios.post("https://resonance-social-server.vercel.app/users", {
           uid: firebaseUser.uid,
           displayName: firebaseUser.displayName,
           email: firebaseUser.email,
@@ -61,10 +58,12 @@ const [isFollowing, setIsFollowing] = useState(false);
         });
 
         //  Fetch user document
-        const res = await axios.get(`http://localhost:3000/users/${firebaseUser.uid}`);
+        const res = await axios.get(
+          `https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`
+        );
         setUserDoc(res.data);
 
-        console.log(res.data)
+        console.log(res.data);
         // preload bio values
         setFormData({
           education: res.data.education || "",
@@ -73,11 +72,11 @@ const [isFollowing, setIsFollowing] = useState(false);
           relationshipStatus: res.data.relationshipStatus || "",
         });
 
-         setFollowersCount(res.data.followers?.length || 0);
-         // check if current user is already following
-        setIsFollowing(res.data.followers?.includes(firebaseUser?.uid) || false);
-
-
+        setFollowersCount(res.data.followers?.length || 0);
+        // check if current user is already following
+        setIsFollowing(
+          res.data.followers?.includes(firebaseUser?.uid) || false
+        );
       } catch (err) {
         console.error("User sync error:", err);
       }
@@ -109,13 +108,19 @@ const [isFollowing, setIsFollowing] = useState(false);
     form.append("banner", file);
 
     try {
-      await axios.post(`http://localhost:3000/users/${uid}/banner`, form, {
-  headers: { "Content-Type": "multipart/form-data" },
-});
+      await axios.post(
+        `https://resonance-social-server.vercel.app/users/${uid}/banner`,
+        form,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       // refresh user data
-      const res = await axios.get(`http://localhost:3000/users/${uid}`);
+      const res = await axios.get(
+        `https://resonance-social-server.vercel.app/users/${uid}`
+      );
       setUserDoc(res.data);
-      console.log(res.data)
+      console.log(res.data);
       setFile(null);
       setPreview(null);
     } catch (err) {
@@ -126,15 +131,19 @@ const [isFollowing, setIsFollowing] = useState(false);
     }
   };
 
-
   // handle bio update
   const handleBioSave = async () => {
     if (!uid) return;
     try {
-      await axios.put(`http://localhost:3000/users/${uid}/details`, formData);
+      await axios.put(
+        `https://resonance-social-server.vercel.app/users/${uid}/details`,
+        formData
+      );
 
-      const res = await axios.get(`http://localhost:3000/users/${uid}`);
-      console.log(res)
+      const res = await axios.get(
+        `https://resonance-social-server.vercel.app/users/${uid}`
+      );
+      console.log(res);
       setUserDoc(res.data);
       setShowModal(false);
     } catch (err) {
@@ -144,21 +153,19 @@ const [isFollowing, setIsFollowing] = useState(false);
   };
 
   const handleFollowToggle = async () => {
-  if (!uid || !userDoc?.uid) return;
-  try {
-    const res = await axios.put(
-      `http://localhost:3000/users/${userDoc.uid}/follow`,
-      { currentUid: uid }
-    );
+    if (!uid || !userDoc?.uid) return;
+    try {
+      const res = await axios.put(
+        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+        { currentUid: uid }
+      );
 
-    setIsFollowing(res.data.isFollowing);
-    setFollowersCount(res.data.followersCount);
-  } catch (err) {
-    console.error("Follow toggle failed:", err);
-  }
-};
-
- 
+      setIsFollowing(res.data.isFollowing);
+      setFollowersCount(res.data.followersCount);
+    } catch (err) {
+      console.error("Follow toggle failed:", err);
+    }
+  };
 
   // Determine banner to show
   const bannerSrc = userDoc?.banner
@@ -225,147 +232,17 @@ const [isFollowing, setIsFollowing] = useState(false);
           </div>
         </div>
 
-
-      {/* Follow     */}
-        <div className="mb-5">
-        <button
-      onClick={handleFollowToggle}
-      className={`px-2 py-1 rounded-sm font-semibold ${
-        isFollowing ? "bg-red-400 text-white" : "bg-blue-400 text-white"
-          }`}
-          >
-        {isFollowing ? "Unfollow" : "Follow"}
-        </button>
-      </div>
-
-         
-      </div>
-
-        {/* Bio Section */}
-      <div className="p-4 border-b-2 border-[#f0f0f0]">
-        <h3 className="text-lg font-semibold mb-3">Bio</h3>
-        <div className="space-y-2 text-gray-700">
-
-          <div className="flex">
-<p>
-            <span className="font-medium">Followers:</span>{" "}
-            {followersCount}
-          </p>
-           <p>
-            <span className="font-medium">Following:</span>{" "}
-            {userDoc?.following?.length || 0}
-          </p>
-
-
-          </div>
-
-          
-         
-          <p>
-            <span className="font-medium">Education:</span>{" "}
-            {userDoc?.education || (
-              <span className="text-gray-400">Add education</span>
-            )}
-          </p>
-          <p>
-            <span className="font-medium">Location:</span>{" "}
-            {userDoc?.location || (
-              <span className="text-gray-400">Add location</span>
-            )}
-          </p>
-          <p>
-            <span className="font-medium">Gender:</span>{" "}
-            {userDoc?.gender || <span className="text-gray-400">Add gender</span>}
-          </p>
-          <p>
-            <span className="font-medium">Relationship Status:</span>{" "}
-            {userDoc?.relationshipStatus || (
-              <span className="text-gray-400">Add relationship status</span>
-            )}
-          </p>
-        </div>
-        <div className="mt-4">
-          <button
-            onClick={() => setShowModal(true)}
-            className="btn btn-sm btn-outline"
-          >
-            Edit details
+        <div>
+          <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">
+            Follow
           </button>
         </div>
       </div>
 
       {/* Post Feed Section */}
-        {/* <div className="mt-6">
-          <PostFeed posts={postsData} />
-        </div> */}
-
-
-     {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Edit Bio</h2>
-
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Education"
-                value={formData.education}
-                onChange={(e) =>
-                  setFormData({ ...formData, education: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="text"
-                placeholder="Location"
-                value={formData.location}
-                onChange={(e) =>
-                  setFormData({ ...formData, location: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="text"
-                placeholder="Gender"
-                value={formData.gender}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
-                className="input input-bordered w-full"
-              />
-              <input
-                type="text"
-                placeholder="Relationship Status"
-                value={formData.relationshipStatus}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    relationshipStatus: e.target.value,
-                  })
-                }
-                className="input input-bordered w-full"
-              />
-            </div>
-
-            <div className="mt-6 flex justify-end gap-2">
-              <button
-                onClick={() => setShowModal(false)}
-                className="btn btn-sm btn-ghost"
-              >
-                Cancel
-              </button>
-              <button onClick={handleBioSave} className="btn btn-sm btn-primary">
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-<div className="mt-6">
-  <PostProfile></PostProfile>
-</div>
-      
+      <div className="mt-6">
+        <PostProfile></PostProfile>
+      </div>
     </div>
   );
 };

@@ -1,12 +1,10 @@
 import { useContext } from "react";
-import { Link, useNavigate } from "react-router";
-import { FaRegCircleUser } from "react-icons/fa6";
-import { FaRegBell } from "react-icons/fa"; 
+import { Link, NavLink, useNavigate } from "react-router";
+import { BsBell } from "react-icons/bs";
 
-import { IoHomeOutline } from "react-icons/io5";
-import { TiMessages } from "react-icons/ti";
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
+import { FaArrowRightToBracket } from "react-icons/fa6";
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
@@ -34,36 +32,41 @@ export default function Navbar() {
   <>
       {user && (
         <>
-          <li><Link to="/home"><IoHomeOutline size={30}/></Link></li> 
-          <li><Link to="/profile"><FaRegCircleUser size={30}/></Link></li> 
-          <li><Link to="/chats"><TiMessages size={30}/></Link></li> 
+        <li><NavLink to="/home" className={({ isActive }) => isActive ? 
+        "text-blue-400 underline-offset-4 font-bold" : "" }>Newsfeed</NavLink></li>
+            
+        <li><NavLink to="/profile" className={({ isActive }) => isActive ? 
+        "text-blue-400 underline-offset-4 font-bold" : "" }>My Profile</NavLink></li>
+
+        <li><NavLink to="/messages" className={({ isActive }) => isActive ? 
+        "text-blue-400 underline-offset-4 font-bold" : "" }>Messages</NavLink></li> 
         </>
       )}
   </>
   return (
-    <div className="navbar bg-base-100 shadow px-8 md:px-36 fixed top-0 left-0 w-full z-50">
+    <div className="navbar bg-base-100/70 backdrop-blur-md shadow px-8 md:px-36 fixed top-0 left-0 w-full z-50">
       {/* Left side */}
       <div className="hidden md:navbar-start">
         <Link to="/" className="font-bold text-3xl flex items-center gap-2">
-            <img className="h-[40px] w-[40px] rounded-2xl" src="../logo.png" /><span>Reso<span className="text-[#9810fa]">Nance</span></span>
+            resonance
         </Link>
       </div>
 
       {/* Center links */}
       <div className="navbar-center flex"> 
-        <ul className="menu menu-horizontal px-1 md:gap-4"> 
+        <ul className="menu menu-horizontal px-1 md:gap-4 md:text-md"> 
           {links}
         </ul> 
       </div> 
     
 
       {/* Right side */}
-      <div className="navbar-end gap-4">
+      <div className="navbar-end ml-auto gap-4">
 
         {user ? (
           <>
           <Link to="/notifications">
-          <FaRegBell size={30} />
+          <BsBell size={25} />
           </Link>
           <div className="dropdown dropdown-end">
             <div
@@ -80,21 +83,23 @@ export default function Navbar() {
             </div>
             <ul
               tabIndex={0}
-              className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+              className="mt-3 z-[1] p-2 shadow menu menu-md dropdown-content bg-base-100 rounded-box w-52"
             >
-              <li>
+              <li className="font-bold">
                 <Link to="/profile">{user.displayName ?? "Profile"}</Link>
               </li>
-              <li className="bg-red-600 rounded text-white p-1">
-                <button onClick={handleLogout}>Logout</button>
+              <li className="bg-red-600 rounded text-white p-1 font-bold flex items-center gap-1">
+                <button onClick={handleLogout}>Logout <FaArrowRightToBracket /> </button>
               </li>
             </ul>
           </div>
           </>
         ) : (
-          <Link className="btn btn-outline rounded-full" to="/login">
-            Login
+          <>
+          <Link className="btn btn-neutral text-white rounded-full mr-4" to="/login">
+            Login / Signup
           </Link>
+          </>
         )}
       </div>
     </div>

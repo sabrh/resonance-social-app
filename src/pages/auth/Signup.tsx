@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import type { FC } from "react";
-import { FaEye, FaEyeSlash, FaFacebookF, FaGithub } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -8,7 +8,8 @@ import toast from "react-hot-toast";
 import { updateProfile } from "firebase/auth";
 
 import axios from "axios";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL =
+  import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
 
 const Signup: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -52,7 +53,6 @@ const Signup: FC = () => {
     }
   };
 
-
   const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -93,9 +93,7 @@ const Signup: FC = () => {
     //     toast.error(error.message || "Signup failed!");
     //   });
 
-
-
-    // New create user 
+    // New create user
     createUser(email, password)
       .then(async (result) => {
         const currentUser = result.user;
@@ -121,7 +119,7 @@ const Signup: FC = () => {
         toast.success("Account created successfully!");
         navigate("/login");
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
 
     // New create user
     createUser(email, password)
@@ -172,7 +170,8 @@ const Signup: FC = () => {
               name="fullName"
               placeholder="Enter your full name"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              required />
+              required
+            />
           </div>
 
           {/* Email */}
@@ -188,7 +187,8 @@ const Signup: FC = () => {
               name="email"
               placeholder="Enter your email"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              required />
+              required
+            />
           </div>
 
           {/* Password */}
@@ -205,9 +205,13 @@ const Signup: FC = () => {
                 name="password"
                 placeholder="Create a password"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                required />
-              <button type="button" onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
@@ -227,11 +231,13 @@ const Signup: FC = () => {
                 name="confirmPassword"
                 placeholder="Confirm your password"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                required />
-              <button type="button" onClick={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
@@ -249,7 +255,8 @@ const Signup: FC = () => {
               type="url"
               name="imageUrl"
               placeholder="Paste your image URL"
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" />
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            />
           </div>
 
           {/* Submit */}
@@ -271,8 +278,12 @@ const Signup: FC = () => {
         {/* Social login */}
         <div className="mt-4 flex items-center justify-center">
           <p className="text-gray-600 text-lg mr-4">Or join us using</p>
-          <button onClick={handleGoogle} className="cursor-pointer"><FcGoogle size={30} /></button>
-          <button onClick={githubSign} className="cursor-pointer ml-4"><FaGithub className="text-blue-700" size={30} /></button>
+          <button onClick={handleGoogle} className="cursor-pointer">
+            <FcGoogle size={30} />
+          </button>
+          <button onClick={githubSign} className="cursor-pointer ml-4">
+            <FaGithub className="text-gray-700" size={30} />
+          </button>
         </div>
       </div>
     </div>
