@@ -54,7 +54,7 @@ const Home: FC = () => {
 
     try {
       const res = await fetch(
-        "https://resonance-social-server.vercel.app/socialPost",
+        "http://localhost:3000/socialPost",
         {
           method: "POST",
           body: formData,
