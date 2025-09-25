@@ -128,7 +128,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
       const data = await res.json();
       if (res.ok) {
-        toast.success("Post shared successfully!");
+        toast.success("Post shared in your profile !");
         setSharesCount(data.sharesCount); // main post share count increment
       } else {
         toast.error(data.error || "Failed to share");
