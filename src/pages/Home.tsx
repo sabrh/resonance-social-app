@@ -9,6 +9,8 @@ import LeftSidebar from "../components/LeftSidebar";
 import RightSidebar from "../components/RightSidebar";
 
 const Home: FC = () => {
+  const userConst = useContext(AuthContext);
+  console.log(userConst);
   const { user } = useContext(AuthContext)!;
   const [image, setImage] = useState<string | null>(null);
   const [text, setText] = useState<string>("");

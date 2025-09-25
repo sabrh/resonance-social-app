@@ -40,6 +40,7 @@ const PostProfile = ({ refreshKey = 0 }: Props) => {
   console.log(posts);
 
   const matchPost = posts.filter(post => post?.userEmail === user?.email );
+  
   console.log(matchPost);
   // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
