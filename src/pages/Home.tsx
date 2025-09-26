@@ -51,13 +51,10 @@ const Home: FC = () => {
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch(
-        "https://resonance-social-server.vercel.app/socialPost",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch("http://localhost:3000/socialPost", {
+        method: "POST",
+        body: formData,
+      });
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Your post is updated successfully!");
