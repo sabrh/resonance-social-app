@@ -108,7 +108,8 @@ const LeftSidebar: React.FC = () => {
                   }`
                 }
               >
-                <IoNewspaperOutline className='text-green-500' size={20} /> Newsfeed
+                <IoNewspaperOutline className="text-green-500" size={20} />{" "}
+                Newsfeed
               </NavLink>
             </li>
             <li>

@@ -1,4 +1,10 @@
-import { useContext, useState, type ChangeEvent, type FC, type FormEvent } from "react";
+import {
+  useContext,
+  useState,
+  type ChangeEvent,
+  type FC,
+  type FormEvent,
+} from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
@@ -120,7 +126,10 @@ const Home: FC = () => {
                   </label>
                 </div>
 
-                <button type="submit" className="btn btn-info rounded-full text-white mt-4">
+                <button
+                  type="submit"
+                  className="btn btn-info rounded-full text-white mt-4"
+                >
                   Post Now
                 </button>
               </div>
