@@ -10,6 +10,11 @@ type Comment = {
   text: string;
   createdAt: string;
 };
+type Like = {
+  userId: string;
+  userName: string;
+  userPhoto?: string;
+};
 
 type Share = {
   userId: string;
@@ -50,14 +55,35 @@ type Props = {
 
 const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const [info, setInfo] = useState(false);
+  // const [liked, setLiked] = useState(
+  //   post.likes?.includes(currentUserId) ?? false
+  // );
   const [liked, setLiked] = useState(
-    post.likes?.includes(currentUserId) ?? false
+    // যদি likes เป็น string[] (পুরনো) বা Like[] (নতুন)
+    post.likes
+      ? post.likes.some((l: any) =>
+          typeof l === "string"
+            ? l === currentUserId
+            : l.userId === currentUserId
+        )
+      : false
   );
+  // const [likes, setLikes] = useState<Like[]>(post.likes ?? []);
+  const [likes, setLikes] = useState<Like[]>(
+    post.likes?.map((l) =>
+      typeof l === "string"
+        ? { userId: l, userName: "Unknown", userPhoto: undefined }
+        : l
+    ) ?? []
+  );
+
   const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
   const [comments, setComments] = useState<Comment[]>(post.comments ?? []);
   const [sharesCount, setSharesCount] = useState(post.shares?.length ?? 0);
   const [newComment, setNewComment] = useState("");
   const [openComments, setOpenComments] = useState(false);
+  const [openLikesModal, setOpenLikesModal] = useState(false);
+
   const { user } = useContext(AuthContext)!;
 
   // Like/Unlike handler
@@ -68,12 +94,18 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: currentUserId }),
+          body: JSON.stringify({
+            userId: currentUserId,
+            userName: user?.displayName,
+            userPhoto: user?.photoURL,
+          }),
         }
       );
       const data = await res.json();
       setLiked(data.liked);
       setLikesCount(data.likesCount);
+      // setLikes(data.likes as Like[]); // <-- type assertion
+      setLikes(data.likes as Like[]);
     } catch (err) {
       console.error(err);
     }
@@ -113,7 +145,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleShare = async () => {
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/share`,
+        `http://localhost:3000/socialPost/${post._id}/share`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -186,6 +218,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       </div>
     ));
   };
+  console.log("likes:", likes);
 
   return (
     <div className="bg-white shadow rounded-lg p-4 max-w-2xl mx-auto mt-6">
@@ -284,14 +317,29 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       <div className="flex gap-6 items-center mt-4 text-xl">
         {/* Like */}
         <button onClick={handleLike} className="flex items-center gap-1">
+          {/* {liked ? (
+            <FaHeart className="text-red-500" />
+          ) : (
+            <FaRegHeart className="text-gray-500" />
+          )} */}
+
           {liked ? (
             <FaHeart className="text-red-500" />
           ) : (
             <FaRegHeart className="text-gray-500" />
           )}
-          <span className="text-sm">{likesCount}</span>
-        </button>
 
+          <span className="text-sm">{likesCount}</span>
+        </button>{" "}
+        {/* View Likes link */}
+        {likesCount > 0 && (
+          <button
+            onClick={() => setOpenLikesModal(true)}
+            className="text-blue-500 hover:underline"
+          >
+            View Likes
+          </button>
+        )}
         {/* Comment */}
         <button
           onClick={() => setOpenComments(true)}
@@ -300,7 +348,6 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           <FaRegCommentDots className="text-gray-600" />
           <span className="text-sm">{comments.length}</span>
         </button>
-
         {/* Share */}
         <button
           onClick={handleShare}
@@ -310,6 +357,34 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           <span className="text-sm">{sharesCount}</span>
         </button>
       </div>
+      {/* Likes modal */}
+      {openLikesModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white w-full max-w-sm rounded-lg p-4">
+            <h2 className="text-lg font-semibold mb-4">Liked by</h2>
+
+            <div className="flex flex-col gap-3 max-h-64 overflow-y-auto">
+              {likes.map((l) => (
+                <div key={l.userId} className="flex items-center gap-3">
+                  <img
+                    src={l.userPhoto}
+                    alt={l.userName}
+                    className="h-10 w-10 rounded-full"
+                  />
+                  <span className="font-medium">{l.userName}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setOpenLikesModal(false)}
+              className="mt-4 w-full py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Comment modal */}
       {openComments && (
