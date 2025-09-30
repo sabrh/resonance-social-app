@@ -13,14 +13,15 @@ type Comment = {
 type Post = {
   _id: string;
   text: string;
+  userEmail:string;
   image?: string;
   mimetype?: string;
   filename?: string;
   likes?: string[];
   comments?: Comment[];
-  userName: string;
-  userPhoto: string;
-  createdAt: string;
+  userName:string;
+  userPhoto:string;
+  createdAt:string;
 };
 
 type Props = {
@@ -29,10 +30,9 @@ type Props = {
 
 const Posts = ({ refreshKey = 0 }: Props) => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true); 
   const [error, setError] = useState<string | null>(null);
   const authContext = useContext(AuthContext);
-  console.log("auth", AuthContext);
 
   // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
@@ -52,10 +52,10 @@ const Posts = ({ refreshKey = 0 }: Props) => {
         const data = await res.json();
         if (mounted) setPosts(data);
       } catch (err) {
-        if (err instanceof Error && err.name !== "AbortError") {
-          console.error(err);
-          if (mounted) setError("Failed to load posts");
-        }
+  if (err instanceof Error && err.name !== "AbortError") {
+    console.error(err);
+    if (mounted) setError("Failed to load posts");
+  }
       } finally {
         if (mounted) setLoading(false); // stop loading after fetch finishes
       }
@@ -85,12 +85,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
   return (
     <div>
       {posts.map((post) => (
-        <PostCard
-          key={post._id}
-          post={post}
-          currentUserId={currentUserId}
-          onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}
-        />
+        <PostCard key={post._id} post={post} currentUserId={currentUserId} onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}/>
       ))}
     </div>
   );

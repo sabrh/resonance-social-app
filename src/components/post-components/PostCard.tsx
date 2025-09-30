@@ -21,6 +21,7 @@ type Share = {
 type Post = {
   _id: string;
   text: string;
+  userEmail:string;
   image?: string;
   mimetype?: string;
   filename?: string;
@@ -64,7 +65,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleLike = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/like`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -86,7 +87,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/comments`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
@@ -164,7 +165,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `http://localhost:3000/socialPost/${post._id}`,
+                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
                   { method: "DELETE" }
                 );
 
@@ -190,7 +191,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   return (
     <div className="bg-white shadow rounded-lg p-4 max-w-2xl mx-auto mt-6">
       {/* Info dropdown */}
-      <div className="float-right relative">
+      <div className={`float-right relative ${(post?.userEmail === user?.email) ? "":"hidden"}`}>
         {/* <p onClick={() => setInfo(!info)} className="text-3xl cursor-pointer">
           <i className="fa-solid fa-circle-info"></i> */}
         <p onClick={() => setInfo(!info)} className="text-xl cursor-pointer">

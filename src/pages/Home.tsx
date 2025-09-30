@@ -15,6 +15,8 @@ import LeftSidebar from "../components/LeftSidebar";
 import RightSidebar from "../components/RightSidebar";
 
 const Home: FC = () => {
+  const userConst = useContext(AuthContext);
+  console.log(userConst);
   const { user } = useContext(AuthContext)!;
   const [image, setImage] = useState<string | null>(null);
   const [text, setText] = useState<string>("");
@@ -51,7 +53,7 @@ const Home: FC = () => {
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch("http://localhost:3000/socialPost", {
+      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
         method: "POST",
         body: formData,
       });

@@ -11,7 +11,7 @@ import { TiMessages } from "react-icons/ti";
 
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:3000";
+  "https://resonance-social-server.vercel.app";
 
 type UserDoc = {
   uid: string;
@@ -25,7 +25,7 @@ type UserDoc = {
 const LeftSidebar: React.FC = () => {
   const authContext = useContext<AuthContextType | null>(AuthContext);
   const firebaseUser = authContext?.user;
-  const uid = firebaseUser?.uid;
+  // const uid = firebaseUser?.uid;
 
   const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
   const navigate = useNavigate();
