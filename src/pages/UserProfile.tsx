@@ -5,7 +5,6 @@ import {
   AuthContext,
   type AuthContextType,
 } from "../context/AuthContext/AuthContext";
-
 import PostProfile from "../components/post-components/PostProfile";
 
 type UserDoc = {
@@ -44,13 +43,16 @@ const UserProfile: FC = () => {
     relationshipStatus: "",
   });
 
+  // tab state
+  const [activeTab, setActiveTab] = useState("posts");
+
   useEffect(() => {
     if (!firebaseUser?.uid) return;
 
     const syncUser = async () => {
       try {
         //  Ensure user doc exists in MongoDB
-        await axios.post("http://localhost:3000/users", {
+        await axios.post("https://resonance-social-server.vercel.app/users", {
           uid: firebaseUser.uid,
           displayName: firebaseUser.displayName,
           email: firebaseUser.email,
@@ -59,7 +61,7 @@ const UserProfile: FC = () => {
 
         //  Fetch user document
         const res = await axios.get(
-          `http://localhost:3000/users/${firebaseUser.uid}`
+          `https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`
         );
         setUserDoc(res.data);
 
@@ -109,7 +111,7 @@ const UserProfile: FC = () => {
 
     try {
       await axios.post(
-        `http://localhost:3000/users/${uid}/banner`,
+        `https://resonance-social-server.vercel.app/users/${uid}/banner`,
         form,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -117,7 +119,7 @@ const UserProfile: FC = () => {
       );
       // refresh user data
       const res = await axios.get(
-        `http://localhost:3000/users/${uid}`
+        `https://resonance-social-server.vercel.app/users/${uid}`
       );
       setUserDoc(res.data);
       console.log(res.data);
@@ -136,12 +138,12 @@ const UserProfile: FC = () => {
     if (!uid) return;
     try {
       await axios.put(
-        `http://localhost:3000/users/${uid}/details`,
+        `https://resonance-social-server.vercel.app/users/${uid}/details`,
         formData
       );
 
       const res = await axios.get(
-        `http://localhost:3000/users/${uid}`
+        `https://resonance-social-server.vercel.app/users/${uid}`
       );
       console.log(res);
       setUserDoc(res.data);
@@ -156,7 +158,7 @@ const UserProfile: FC = () => {
     if (!uid || !userDoc?.uid) return;
     try {
       const res = await axios.put(
-        `http://localhost:3000/users/${userDoc.uid}/follow`,
+        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
         { currentUid: uid }
       );
 
@@ -211,8 +213,9 @@ const UserProfile: FC = () => {
       </div>
 
       {/* Profile Info */}
-      <div className="p-4 flex items-center mt-8 gap-4 border-[#f0f0f0] border-b-2">
-        <div className="p-4 flex items-center gap-4">
+      <div className="p-4 mt-8 border-b-2 border-[#f0f0f0] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {/* Left side: Avatar + Info */}
+        <div className="flex items-start sm:items-center gap-4 relative">
           <img
             src={
               firebaseUser?.photoURL ||
@@ -220,28 +223,187 @@ const UserProfile: FC = () => {
               "/avatar-placeholder.png"
             }
             alt="avatar"
-            className="w-20 h-20 rounded-full border-4 -mt-10 object-cover"
+            className="w-24 h-24 lg:w-35 lg:h-35 rounded-full border-4 object-cover -mt-18 sm:-mt-25 md:-mt-25 lg:-mt-25"
           />
           <div>
-            <h2 className="text-xl font-bold">
+            <h2 className="text-lg sm:text-xl font-bold">
               {userDoc?.displayName || firebaseUser?.displayName || "User"}
             </h2>
-            <p className="text-sm text-gray-500">
-              {userDoc?.email || firebaseUser?.email}
-            </p>
+
+            {/* followers */}
+            <div className="flex gap-6 mt-1 text-sm sm:text-base">
+              <p>
+                <span className="font-medium">Followers:</span> {followersCount}
+              </p>
+              <p>
+                <span className="font-medium">Following:</span>{" "}
+                {userDoc?.following?.length || 0}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div>
-          <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">
-            Follow
+        {/* Right side: Buttons */}
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          <button
+            onClick={handleFollowToggle}
+            className={`px-3 py-1 rounded-md font-semibold ${
+              isFollowing ? "bg-red-500 text-white" : "bg-blue-500 text-white"
+            }`}
+          >
+            {isFollowing ? "Unfollow" : "Follow"}
+          </button>
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="btn btn-sm btn-outline"
+          >
+            Edit about
           </button>
         </div>
       </div>
 
-      {/* Post Feed Section */}
-      <div className="mt-6">
-        <PostProfile></PostProfile>
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-[#000000a9] bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">Edit Bio</h2>
+
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Education"
+                value={formData.education}
+                onChange={(e) =>
+                  setFormData({ ...formData, education: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Location"
+                value={formData.location}
+                onChange={(e) =>
+                  setFormData({ ...formData, location: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Gender"
+                value={formData.gender}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Relationship Status"
+                value={formData.relationshipStatus}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    relationshipStatus: e.target.value,
+                  })
+                }
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setShowModal(false)}
+                className="btn btn-sm btn-ghost"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBioSave}
+                className="btn btn-sm btn-primary"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* About Section */}
+      <div className="w-full">
+        {/* Tabs */}
+        <div className="flex border-b border-gray-300 mb-4">
+          {["posts", "about", "friends"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex-1 py-2 text-center font-medium capitalize ${
+                activeTab === tab
+                  ? "border-b-2 border-blue-500 text-blue-500"
+                  : "text-gray-600 hover:text-blue-400"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Centered Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-5">
+          {/* Left empty */}
+          <div className="hidden lg:block"></div>
+
+          {/* Middle column */}
+          <div className="lg:col-span-1">
+            {activeTab === "posts" && <PostProfile />}
+            {activeTab === "about" && (
+              <div className="p-4 border border-[#f0f0f0] mb-4 rounded-lg bg-white shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">About</h3>
+                <div className="space-y-2 text-gray-700">
+                  <p>
+                    <span className="font-medium">Email:</span>{" "}
+                    {userDoc?.email || firebaseUser?.email}
+                  </p>
+                  <p>
+                    <span className="font-medium">Education:</span>{" "}
+                    {userDoc?.education || (
+                      <span className="text-gray-400">Add education</span>
+                    )}
+                  </p>
+                  <p>
+                    <span className="font-medium">Location:</span>{" "}
+                    {userDoc?.location || (
+                      <span className="text-gray-400">Add location</span>
+                    )}
+                  </p>
+                  <p>
+                    <span className="font-medium">Gender:</span>{" "}
+                    {userDoc?.gender || (
+                      <span className="text-gray-400">Add gender</span>
+                    )}
+                  </p>
+                  <p>
+                    <span className="font-medium">Relationship Status:</span>{" "}
+                    {userDoc?.relationshipStatus || (
+                      <span className="text-gray-400">
+                        Add relationship status
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+            {activeTab === "friends" && (
+              <div className="p-4 border border-[#f0f0f0] mb-4 rounded-lg bg-white shadow-sm">
+                <h3 className="text-lg font-semibold mb-3">Friends</h3>
+                <p className="text-gray-500 text-sm">No friends added yet.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Right empty */}
+          <div className="hidden lg:block"></div>
+        </div>
       </div>
     </div>
   );
