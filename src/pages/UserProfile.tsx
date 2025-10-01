@@ -34,6 +34,7 @@ const UserProfile: FC = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
 
+
   // modal state
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -173,6 +174,7 @@ const UserProfile: FC = () => {
   const bannerSrc = userDoc?.banner
     ? `data:${userDoc.bannerMimetype};base64,${userDoc.banner}`
     : preview || null;
+
 
   return (
     <div className="mx-auto bg-white shadow rounded-lg overflow-hidden">
