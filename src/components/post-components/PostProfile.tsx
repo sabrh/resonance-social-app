@@ -14,6 +14,7 @@ type Post = {
   _id: string;
   text: string;
   image?: string;
+  privacy:string;
   mimetype?: string;
   filename?: string;
   likes?: string[];
