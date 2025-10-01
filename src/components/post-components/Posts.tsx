@@ -8,14 +8,17 @@ type Comment = {
   authorName: string;
   text: string;
   createdAt: string;
+  authorId: string;
 };
 
 type Post = {
   _id: string;
   text: string;
+  
   image?: string;
   mimetype?: string;
   filename?: string;
+  userId: string;
   likes?: string[];
   comments?: Comment[];
   userName: string;
@@ -45,11 +48,14 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
+        console.log("👉 Fetch starting..."); // step 1
         const res = await fetch("http://localhost:3000/socialPost", {
           signal: controller.signal,
         });
+        console.log("👉 Fetch response object:", res); // step 2
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
+        console.log("Fetched posts:", data);
         if (mounted) setPosts(data);
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {

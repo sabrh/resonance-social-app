@@ -3,10 +3,12 @@ import { FaHeart, FaRegHeart, FaRegCommentDots, FaShare } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import axios from "axios";
 
 type Comment = {
   _id: string;
   authorName: string;
+  authorId: string;
   text: string;
   createdAt: string;
 };
@@ -26,6 +28,8 @@ type Share = {
 type Post = {
   _id: string;
   text: string;
+  userEmail: string;
+  userId: string;
   image?: string;
   mimetype?: string;
   filename?: string;
@@ -36,7 +40,6 @@ type Post = {
   userPhoto: string;
   createdAt: string;
   sharedPostData?: {
-    // ✅ add this
     userName: string;
     userPhoto?: string;
     text: string;
@@ -59,7 +62,6 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   //   post.likes?.includes(currentUserId) ?? false
   // );
   const [liked, setLiked] = useState(
-    // যদি likes เป็น string[] (পুরনো) বা Like[] (নতুন)
     post.likes
       ? post.likes.some((l: any) =>
           typeof l === "string"
@@ -136,6 +138,20 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       const data = await res.json();
       setComments([data.comment, ...comments]);
       setNewComment("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      await axios.delete(
+        `http://localhost:3000/socialPost/${post._id}/comment/${commentId}`,
+        {
+          data: { userId: currentUserId },
+        }
+      );
+
+      setComments(comments.filter((c) => c._id !== commentId));
     } catch (err) {
       console.error(err);
     }
@@ -410,15 +426,37 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             </form>
 
             <div className="max-h-64 overflow-y-auto">
-              {comments?.map((c) => (
-                <div key={c._id} className="mb-3 border-b pb-2">
-                  <p className="font-semibold">{c.authorName ?? "Unknown"}</p>
-                  <p>{c.text ?? ""}</p>
-                  <p className="text-xs text-gray-500">
-                    {c.createdAt ? new Date(c.createdAt).toLocaleString() : ""}
-                  </p>
-                </div>
-              ))}
+              {comments?.map((c) => {
+                console.log(
+                  "authorId:",
+                  c.authorId,
+                  "currentUserId:",
+                  currentUserId,
+                  "post.userId:",
+                  post.userId
+                );
+                return (
+                  <div key={c._id} className="mb-3 border-b pb-2">
+                    <p className="font-semibold">{c.authorName ?? "Unknown"}</p>
+                    <p>{c.text ?? ""}</p>
+                    <p className="text-xs text-gray-500">
+                      {c.createdAt
+                        ? new Date(c.createdAt).toLocaleString()
+                        : ""}
+                    </p>
+                    {/* delete button condition */}
+                    {(c.authorId === currentUserId ||
+                      post.userEmail === user.email) && (
+                      <button
+                        onClick={() => handleDeleteComment(c._id)}
+                        className="text-red-500 text-sm"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <button
