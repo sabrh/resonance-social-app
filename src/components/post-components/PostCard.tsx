@@ -22,6 +22,7 @@ type Post = {
   _id: string;
   text: string;
   userEmail:string;
+  privacy:string;
   image?: string;
   mimetype?: string;
   filename?: string;
@@ -226,6 +227,19 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         <div>
           <p className="text-lg text-blue-400 font-bold">{post?.userName}</p>
           <p className="text-gray-500 text-sm">{post.createdAt}</p>
+          <div className="text-gray-500 text-sm bg-gray-200 p-1 px-2 mt-1 rounded-xl w-fit">
+            {
+              (post.privacy === "public") ?
+              <div className="flex gap-1 items-center">
+                <i className="fa-solid fa-earth-americas"></i>
+                <span>Public</span>
+              </div> : 
+              <div className="flex gap-1 items-center">
+                <i className="fa-solid fa-lock"></i>
+                <span>Private</span>
+              </div>
+            }
+          </div>
         </div>
       </div>
 
