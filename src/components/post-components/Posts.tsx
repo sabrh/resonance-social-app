@@ -16,6 +16,7 @@ type Post = {
   _id: string;
   text: string;
   userEmail: string;
+  privacy: string;
   image?: string;
   mimetype?: string;
   filename?: string;
@@ -49,14 +50,9 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        console.log("👉 Fetch starting..."); // step 1
-        const res = await fetch(
-          "https://resonance-social-server.vercel.app/socialPost",
-          {
-            signal: controller.signal,
-          }
-        );
-        console.log("👉 Fetch response object:", res); // step 2
+        const res = await fetch("http://localhost:3000/socialPost", {
+          signal: controller.signal,
+        });
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         console.log("Fetched posts:", data);
@@ -88,13 +84,15 @@ const Posts = ({ refreshKey = 0 }: Props) => {
     return <div className="text-center text-red-500 mt-6">{error}</div>;
   }
 
-  if (posts.length === 0) {
+  const matchPost = posts.filter((post) => post?.privacy === "public");
+
+  if (matchPost.length === 0) {
     return <p className="text-gray-500 mt-6">No posts yet.</p>;
   }
 
   return (
     <div>
-      {posts.map((post) => (
+      {matchPost.map((post) => (
         <PostCard
           key={post._id}
           post={post}

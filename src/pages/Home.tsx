@@ -18,6 +18,7 @@ const Home: FC = () => {
   const userConst = useContext(AuthContext);
   // console.log(userConst);
   const { user } = useContext(AuthContext)!;
+  const [privacy, setPrivacy] = useState<string>("public");
   const [image, setImage] = useState<string | null>(null);
   const [text, setText] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -46,20 +47,18 @@ const Home: FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
-    if (user?.displayName) formData.append("text", user.displayName);
-    if (user?.photoURL) formData.append("text", user.photoURL);
+    if (user) formData.append("privacy", privacy);
+    if (user?.displayName) formData.append("userName", user.displayName);
+    if (user?.photoURL) formData.append("userPhoto", user.photoURL);
     if (text) formData.append("text", text);
-    if (user?.email) formData.append("text", user.email);
+    if (user?.email) formData.append("userEmail", user.email);
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch(
-        "https://resonance-social-server.vercel.app/socialPost",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch("http://localhost:3000/socialPost", {
+        method: "POST",
+        body: formData,
+      });
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Your post is updated successfully!");
@@ -90,6 +89,24 @@ const Home: FC = () => {
               className="shadow-sm bg-gray-100 rounded-xl px-4 py-4"
             >
               <p className="text-lg font-bold">Create New Post</p>
+
+              {(text || image) && (
+                <div className="w-[100px] float-right">
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                    Select Privacy
+                  </label>
+                  <select
+                    id="privacy"
+                    name="privacy"
+                    value={privacy}
+                    onChange={(e) => setPrivacy(e.target.value)}
+                    className="block w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  >
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                  </select>
+                </div>
+              )}
 
               <TextareaAutosize
                 value={text}
