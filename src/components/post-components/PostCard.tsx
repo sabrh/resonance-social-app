@@ -8,6 +8,7 @@ import axios from "axios";
 type Comment = {
   _id: string;
   authorName: string;
+  authorEmail: string;
   authorId: string;
   text: string;
   createdAt: string;
@@ -28,10 +29,10 @@ type Share = {
 type Post = {
   _id: string;
   text: string;
-  userEmail: string;
   userId: string;
   image?: string;
   mimetype?: string;
+  userEmail: string;
   filename?: string;
   likes?: string[];
   comments?: Comment[];
@@ -92,7 +93,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleLike = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/like`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -112,6 +113,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       console.error(err);
     }
   };
+  console.log("useremail:", user?.email, user);
 
   // Add comment
   const handleAddComment = async (e: React.FormEvent) => {
@@ -120,7 +122,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/comments`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
@@ -129,8 +131,9 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           },
           body: JSON.stringify({
             userId: currentUserId,
+            authorEmail: user?.email ?? "unknown@example.com",
             text: newComment,
-            userName: user?.displayName,
+            userName: user?.displayName ?? "Anonymous",
           }),
         }
       );
@@ -142,18 +145,22 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       console.error(err);
     }
   };
-  const handleDeleteComment = async (commentId: string) => {
+  const handleDeleteComment = async (
+    commentId: string,
+    authorEmail: string
+  ) => {
     try {
       await axios.delete(
-        `http://localhost:3000/socialPost/${post._id}/comment/${commentId}`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}`,
         {
-          data: { userId: currentUserId },
+          data: { userEmail: user?.email },
         }
       );
 
       setComments(comments.filter((c) => c._id !== commentId));
     } catch (err) {
       console.error(err);
+      toast.error("Failed to delete comment");
     }
   };
 
@@ -161,7 +168,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleShare = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/share`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/share`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -212,7 +219,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `http://localhost:3000/socialPost/${post._id}`,
+                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
                   { method: "DELETE" }
                 );
 
@@ -428,12 +435,13 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             <div className="max-h-64 overflow-y-auto">
               {comments?.map((c) => {
                 console.log(
-                  "authorId:",
-                  c.authorId,
-                  "currentUserId:",
-                  currentUserId,
-                  "post.userId:",
-                  post.userId
+                  c,
+                  "comment author:",
+                  c.authorEmail,
+                  "post owner:",
+                  post.userEmail,
+                  "current user:",
+                  user?.email
                 );
                 return (
                   <div key={c._id} className="mb-3 border-b pb-2">
@@ -445,10 +453,12 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
                         : ""}
                     </p>
                     {/* delete button condition */}
-                    {(c.authorId === currentUserId ||
-                      post.userEmail === user.email) && (
+                    {(c.authorEmail === user?.email ||
+                      post.userEmail === user?.email) && (
                       <button
-                        onClick={() => handleDeleteComment(c._id)}
+                        onClick={() =>
+                          handleDeleteComment(c._id, c.authorEmail)
+                        }
                         className="text-red-500 text-sm"
                       >
                         Delete

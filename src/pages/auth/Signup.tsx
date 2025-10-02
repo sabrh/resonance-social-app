@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { updateProfile } from "firebase/auth";
 
 import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
 
 
 const Signup: FC = () => {
@@ -40,18 +40,18 @@ const Signup: FC = () => {
     }
   };
 
-  const handleGithub = async (): Promise<void> => {
-    try {
-      await githubSign();
-      toast.success("Logged in with GitHub!");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Login failed!");
-      }
-    }
-  };
+  // const handleGithub = async (): Promise<void> => {
+  //   try {
+  //     await githubSign();
+  //     toast.success("Logged in with GitHub!");
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error) {
+  //       toast.error(error.message);
+  //     } else {
+  //       toast.error("Login failed!");
+  //     }
+  //   }
+  // };
 
   const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

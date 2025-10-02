@@ -38,6 +38,7 @@ const PostProfile = ({ refreshKey = 0 }: Props) => {
   console.log(posts);
 
   const matchPost = posts.filter((post) => post?.userEmail === user?.email);
+
   console.log(matchPost);
   // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
@@ -50,9 +51,12 @@ const PostProfile = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch("http://localhost:3000/socialPost", {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          "https://resonance-social-server.vercel.app/socialPost",
+          {
+            signal: controller.signal,
+          }
+        );
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);

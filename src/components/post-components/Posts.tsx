@@ -8,13 +8,14 @@ type Comment = {
   authorName: string;
   text: string;
   createdAt: string;
+  authorEmail: string;
   authorId: string;
 };
 
 type Post = {
   _id: string;
   text: string;
-  
+  userEmail: string;
   image?: string;
   mimetype?: string;
   filename?: string;
@@ -35,7 +36,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const authContext = useContext(AuthContext);
-  console.log("auth", AuthContext);
+  // console.log("auth", AuthContext);
 
   // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
@@ -49,9 +50,12 @@ const Posts = ({ refreshKey = 0 }: Props) => {
         setLoading(true); // start loading before fetch
         setError(null);
         console.log("👉 Fetch starting..."); // step 1
-        const res = await fetch("http://localhost:3000/socialPost", {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          "https://resonance-social-server.vercel.app/socialPost",
+          {
+            signal: controller.signal,
+          }
+        );
         console.log("👉 Fetch response object:", res); // step 2
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
