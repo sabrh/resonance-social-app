@@ -6,6 +6,7 @@ import {
   type AuthContextType,
 } from "../context/AuthContext/AuthContext";
 import PostProfile from "../components/post-components/PostProfile";
+import { useParams } from "react-router";
 
 type UserDoc = {
   uid: string;
@@ -25,7 +26,10 @@ type UserDoc = {
 const UserProfile: FC = () => {
   const authContext = useContext<AuthContextType | null>(AuthContext);
   const firebaseUser = authContext?.user; // get user from context
+
+  const { uid: routeUid } = useParams<{ uid?: string }>(); // route uid, may be undefined
   const uid = firebaseUser?.uid;
+  const targetUid = routeUid || uid; // final user id to load
 
   const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -33,7 +37,7 @@ const UserProfile: FC = () => {
   const [loading, setLoading] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
-
+  
 
   // modal state
   const [showModal, setShowModal] = useState(false);
@@ -47,46 +51,50 @@ const UserProfile: FC = () => {
   // tab state
   const [activeTab, setActiveTab] = useState("posts");
 
+  // added for navigate
   useEffect(() => {
-    if (!firebaseUser?.uid) return;
+    if (!targetUid) return;
 
-    const syncUser = async () => {
+    const fetchUser = async () => {
       try {
-        //  Ensure user doc exists in MongoDB
-        await axios.post("https://resonance-social-server.vercel.app/users", {
-          uid: firebaseUser.uid,
-          displayName: firebaseUser.displayName,
-          email: firebaseUser.email,
-          photoURL: firebaseUser.photoURL,
-        });
+        // Only ensure user exists in DB if it's your own profile
+        if (targetUid === uid && firebaseUser) {
+          await axios.post("http://localhost:3000/users", {
+            uid: firebaseUser.uid,
+            displayName: firebaseUser.displayName,
+            email: firebaseUser.email,
+            photoURL: firebaseUser.photoURL,
+          });
+        }
 
-        //  Fetch user document
-        const res = await axios.get(
-          `https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`
-        );
+        // fetch the profile we want to show
+        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
         setUserDoc(res.data);
 
-        console.log(res.data);
-        // preload bio values
-        setFormData({
-          education: res.data.education || "",
-          location: res.data.location || "",
-          gender: res.data.gender || "",
-          relationshipStatus: res.data.relationshipStatus || "",
-        });
+        // preload form values only for your own profile
+        if (targetUid === uid) {
+          setFormData({
+            education: res.data.education || "",
+            location: res.data.location || "",
+            gender: res.data.gender || "",
+            relationshipStatus: res.data.relationshipStatus || "",
+          });
+        }
 
+        // followers + follow status
         setFollowersCount(res.data.followers?.length || 0);
-        // check if current user is already following
-        setIsFollowing(
-          res.data.followers?.includes(firebaseUser?.uid) || false
-        );
+        if (uid && targetUid !== uid) {
+          setIsFollowing(res.data.followers?.includes(uid) || false);
+        } else {
+          setIsFollowing(false);
+        }
       } catch (err) {
-        console.error("User sync error:", err);
+        console.error("Fetch user error:", err);
       }
     };
 
-    syncUser();
-  }, [firebaseUser]);
+    fetchUser();
+  }, [targetUid, uid, firebaseUser]);
 
   // Handle preview of selected file
   useEffect(() => {
@@ -111,17 +119,11 @@ const UserProfile: FC = () => {
     form.append("banner", file);
 
     try {
-      await axios.post(
-        `https://resonance-social-server.vercel.app/users/${uid}/banner`,
-        form,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      await axios.post(`http://localhost:3000/users/${uid}/banner`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       // refresh user data
-      const res = await axios.get(
-        `https://resonance-social-server.vercel.app/users/${uid}`
-      );
+      const res = await axios.get(`http://localhost:3000/users/${uid}`);
       setUserDoc(res.data);
       console.log(res.data);
       setFile(null);
@@ -138,14 +140,9 @@ const UserProfile: FC = () => {
   const handleBioSave = async () => {
     if (!uid) return;
     try {
-      await axios.put(
-        `https://resonance-social-server.vercel.app/users/${uid}/details`,
-        formData
-      );
+      await axios.put(`http://localhost:3000/users/${uid}/details`, formData);
 
-      const res = await axios.get(
-        `https://resonance-social-server.vercel.app/users/${uid}`
-      );
+      const res = await axios.get(`http://localhost:3000/users/${uid}`);
       console.log(res);
       setUserDoc(res.data);
       setShowModal(false);
@@ -159,7 +156,7 @@ const UserProfile: FC = () => {
     if (!uid || !userDoc?.uid) return;
     try {
       const res = await axios.put(
-        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+        `http://localhost:3000/users/${userDoc.uid}/follow`,
         { currentUid: uid }
       );
 
@@ -220,8 +217,8 @@ const UserProfile: FC = () => {
         <div className="flex items-start sm:items-center gap-4 relative">
           <img
             src={
-              firebaseUser?.photoURL ||
               userDoc?.photoURL ||
+              firebaseUser?.photoURL ||
               "/avatar-placeholder.png"
             }
             alt="avatar"
@@ -247,21 +244,25 @@ const UserProfile: FC = () => {
 
         {/* Right side: Buttons */}
         <div className="flex items-center gap-3 self-end sm:self-auto">
-          <button
-            onClick={handleFollowToggle}
-            className={`px-3 py-1 rounded-md font-semibold ${
-              isFollowing ? "bg-red-500 text-white" : "bg-blue-500 text-white"
-            }`}
-          >
-            {isFollowing ? "Unfollow" : "Follow"}
-          </button>
+          {targetUid !== uid && (
+            <button
+              onClick={handleFollowToggle}
+              className={`px-3 py-1 rounded-md font-semibold ${
+                isFollowing ? "bg-red-500 text-white" : "bg-blue-500 text-white"
+              }`}
+            >
+              {isFollowing ? "Unfollow" : "Follow"}
+            </button>
+          )}
 
-          <button
-            onClick={() => setShowModal(true)}
-            className="btn btn-sm btn-outline"
-          >
-            Edit about
-          </button>
+          {targetUid === uid && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="btn btn-sm btn-outline"
+            >
+              Edit about
+            </button>
+          )}
         </div>
       </div>
 
@@ -357,7 +358,7 @@ const UserProfile: FC = () => {
 
           {/* Middle column */}
           <div className="lg:col-span-1">
-            {activeTab === "posts" && <PostProfile />}
+            {activeTab === "posts" && <PostProfile targetUid={targetUid} />}
             {activeTab === "about" && (
               <div className="p-4 border border-[#f0f0f0] mb-4 rounded-lg bg-white shadow-sm">
                 <h3 className="text-lg font-semibold mb-3">About</h3>
@@ -366,6 +367,7 @@ const UserProfile: FC = () => {
                     <span className="font-medium">Email:</span>{" "}
                     {userDoc?.email || firebaseUser?.email}
                   </p>
+
                   <p>
                     <span className="font-medium">Education:</span>{" "}
                     {userDoc?.education || (

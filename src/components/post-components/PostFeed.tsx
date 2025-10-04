@@ -1,7 +1,7 @@
 import  { type FC } from "react";
 
 type Post = {
-  userId: string;
+  userId: string;  // added for userId
   username: string;
   profilePic: string;
   postId: string;
