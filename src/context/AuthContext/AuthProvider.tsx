@@ -68,7 +68,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     forgotPassword
   };
 
-  console.log(user);
+  // console.log(user);
   return (
     <AuthContext.Provider value={authInfo}>
       {children}
