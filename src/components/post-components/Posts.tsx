@@ -56,9 +56,12 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch("http://localhost:3000/socialPost", {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          "https://resonance-social-server.vercel.app/socialPost",
+          {
+            signal: controller.signal,
+          }
+        );
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);
