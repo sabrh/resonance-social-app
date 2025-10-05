@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 
+interface User {
+  _id: string;
+  uid: string;
+  displayName: string;
+  email: string;
+  photoURL: string;
+}
 
 export default function Search() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -20,7 +27,7 @@ export default function Search() {
         const res = await fetch(
           `http://localhost:3000/search/users?q=${encodeURIComponent(query)}`
         );
-        const data = await res.json();
+        const data: User[] = await res.json();
         setResults(data);
       } catch (err) {
         console.error("Search failed:", err);
@@ -45,7 +52,7 @@ export default function Search() {
         className="input input-bordered w-full rounded-full px-4 py-2 text-sm md:text-base"
       />
 
-      {/* Dropdown results */}
+
       {showDropdown && query && (
         <div className="absolute mt-1 w-full bg-white shadow-lg rounded-md max-h-60 overflow-y-auto z-50">
           {loading && <p className="p-2 text-gray-500">Searching...</p>}
@@ -56,7 +63,7 @@ export default function Search() {
             results.map((user) => (
               <Link
                 key={user._id}
-                to={`/profile/${user.uid}`} // navigate to dynamic profile
+                to={`/profile/${user.uid}`}
                 className="flex items-center gap-3 p-2 hover:bg-gray-100"
                 onClick={() => setShowDropdown(false)}
               >
