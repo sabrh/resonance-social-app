@@ -21,7 +21,7 @@ const OurTeam: FC = () => {
     {
       name: "Redoy Ghosh Antu",
       title: "Fullstack Developer",
-      img: "https://via.placeholder.com/150x150.png?text=Antu",
+      img: "https://i.ibb.co.com/9kRxwfYm/Redoy-Ghosh-Antu.jpg",
     },
     {
       name: "Md Jamiluddin",

@@ -52,6 +52,7 @@ const Home: FC = () => {
     if (user?.photoURL) formData.append("userPhoto", user.photoURL);
     if (text) formData.append("text", text);
     if (user?.email) formData.append("userEmail", user.email);
+    if (user?.uid) formData.append("userId", user.uid); // added for userId
     if (imageFile) formData.append("photo", imageFile);
 
     try {

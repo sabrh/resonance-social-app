@@ -13,6 +13,7 @@ type Comment = {
 type Post = {
   _id: string;
   text: string;
+  userId:string;
   userEmail:string;
   privacy:string;
   image?: string;
@@ -46,7 +47,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+        const res = await fetch("http://localhost:3000/socialPost", {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
