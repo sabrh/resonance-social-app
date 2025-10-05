@@ -5,6 +5,7 @@ import { BsBell } from "react-icons/bs";
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
 import { FaArrowRightToBracket } from "react-icons/fa6";
+import Search from "./Search";
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
@@ -50,6 +51,9 @@ export default function Navbar() {
         <Link to="/" className="font-bold text-3xl flex items-center gap-2">
             resonance
         </Link>
+        <div className="ml-5 hidden md:hidden lg:block">
+          <Search></Search>
+        </div>
       </div>
 
       {/* Center links */}
@@ -57,7 +61,10 @@ export default function Navbar() {
         <ul className="menu menu-horizontal px-1 md:gap-4 md:text-md"> 
           {links}
         </ul> 
+        
       </div> 
+
+     
     
 
       {/* Right side */}

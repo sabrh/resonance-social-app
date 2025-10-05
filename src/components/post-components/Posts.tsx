@@ -13,6 +13,7 @@ type Comment = {
 
 type Post = {
   _id: string;
+  userId: string; //added for userId
   text: string;
   userEmail: string;
   privacy: string;
@@ -56,12 +57,9 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch(
-          "https://resonance-social-server.vercel.app/socialPost",
-          {
-            signal: controller.signal,
-          }
-        );
+        const res = await fetch("http://localhost:3000/socialPost", {
+          signal: controller.signal,
+        });
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);
@@ -92,7 +90,11 @@ const Posts = ({ refreshKey = 0 }: Props) => {
     return <div className="text-center text-red-500 mt-6">{error}</div>;
   }
 
-  const matchPost = posts.filter((post) => post?.privacy === "public");
+
+  const matchPost = posts.filter(post => post?.privacy === "public")
+  // console.log(posts)
+
+
 
   if (matchPost.length === 0) {
     return <p className="text-gray-500 mt-6">No posts yet.</p>;

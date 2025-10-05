@@ -12,6 +12,7 @@ type Comment = {
 
 type Post = {
   _id: string;
+  userId: string; //added for userId
   text: string;
   image?: string;
   privacy: string;
@@ -27,9 +28,10 @@ type Post = {
 
 type Props = {
   refreshKey?: number; //  when this changes Posts re-fetches
+  targetUid?: string; // added for userId
 };
 
-const PostProfile = ({ refreshKey = 0 }: Props) => {
+const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +40,9 @@ const PostProfile = ({ refreshKey = 0 }: Props) => {
 
   console.log(posts);
 
-  const matchPost = posts.filter((post) => post?.userEmail === user?.email);
+  const profileUid = targetUid || user?.uid; // added for userId
+  // const matchPost = posts.filter(post => post?.userEmail === user?.email );
+  const matchPost = posts.filter((post) => post?.userId === profileUid); // added for userId
 
   console.log(matchPost);
   // Get current user id from context
@@ -52,12 +56,9 @@ const PostProfile = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch(
-          "https://resonance-social-server.vercel.app/socialPost",
-          {
-            signal: controller.signal,
-          }
-        );
+        const res = await fetch("http://localhost:3000/socialPost", {
+          signal: controller.signal,
+        });
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);

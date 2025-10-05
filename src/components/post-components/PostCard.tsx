@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import ReplyItem from "./comments/ReplyItem";
+import { Link } from "react-router";
 
 export type Comment = {
   _id: string;
@@ -29,6 +30,7 @@ type Share = {
 
 type Post = {
   _id: string;
+  userId: string; // added for userId
   text: string;
   userEmail: string;
   privacy: string;
@@ -41,8 +43,8 @@ type Post = {
   userName: string;
   userPhoto: string;
   createdAt: string;
-  sharedPost?: {
-    // ✅ add this
+  sharedPostData?: {
+    //  add this
     userName: string;
     userPhoto?: string;
     text: string;
@@ -84,7 +86,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleLike = async () => {
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
+        `http://localhost:3000/socialPost/${post._id}/like`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -117,7 +119,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
+        `http://localhost:3000/socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
@@ -460,7 +462,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleShare = async () => {
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/share`,
+        `http://localhost:3000/socialPost/${post._id}/share`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -519,7 +521,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
+                  `http://localhost:3000/socialPost/${post._id}`,
                   { method: "DELETE" }
                 );
 
@@ -578,13 +580,29 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
       {/* Post header */}
       <div className="mt-3 flex items-center gap-3">
-        <img
+        {/* <img
           className="h-[55px] w-[55px] rounded-full"
           src={post?.userPhoto}
           alt="User"
-        />
+        /> */}
+
+        <Link to={`/profile/${post.userId}`}>
+          <img
+            className="h-[55px] w-[55px] rounded-full cursor-pointer"
+            src={post?.userPhoto}
+            alt="User"
+          />
+        </Link>
         <div>
-          <p className="text-lg text-blue-400 font-bold">{post?.userName}</p>
+          {/* <p className="text-lg text-blue-400 font-bold">{post?.userName}</p> */}
+
+          <Link
+            to={`/profile/${post.userId}`}
+            className="text-lg text-blue-400 font-bold hover:underline"
+          >
+            {post?.userName}
+          </Link>
+
           <p className="text-gray-500 text-sm">{post.createdAt}</p>
           <div className="text-gray-500 text-sm bg-gray-200 p-1 px-2 mt-1 rounded-xl w-fit">
             {post.privacy === "public" ? (
