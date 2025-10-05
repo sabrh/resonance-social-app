@@ -31,6 +31,7 @@ type Share = {
 type Post = {
   _id: string;
   userId: string; // added for userId
+  // sharedPost:string;
   text: string;
   userEmail: string;
   privacy: string;
@@ -66,14 +67,14 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const [liked, setLiked] = useState(
     post.likes?.includes(currentUserId) ?? false
   );
-  const [sharedPost, setSharedPost] = useState<Post["sharedPost"]>(
-    post.sharedPost
-  );
+  // const [sharedPost, setSharedPost] = useState<Post["sharedPost"]>(
+  //   post.sharedPost
+  // );
   const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
 
   const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
   const [comments, setComments] = useState<Comment[]>(post.comments ?? []);
-  const [sharesCount, setSharesCount] = useState(post.shares?.length ?? 0);
+  // const [sharesCount, setSharesCount] = useState(post.shares?.length ?? 0);
   const [newComment, setNewComment] = useState("");
   const [openComments, setOpenComments] = useState(false);
   const [openLikes, setOpenLikes] = useState(false);
@@ -86,7 +87,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleLike = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/like`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -119,7 +120,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/comments`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
@@ -406,7 +407,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     // ✅ Custom confirmation using toast.promise
     const confirm = await new Promise<boolean>((resolve) => {
-      const t = toast(
+       toast(
         (t) => (
           <div className="flex flex-col gap-2">
             <p>Are you sure you want to delete this comment?</p>
@@ -459,41 +460,41 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     }
   };
 
-  const handleShare = async () => {
-    try {
-      const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/share`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: currentUserId,
-            userName: user?.displayName,
-            userPhoto: user?.photoURL,
-            text: post.text || "",
-          }),
-        }
-      );
+  // const handleShare = async () => {
+  //   try {
+  //     const res = await fetch(
+  //       `https://resonance-social-server.vercel.app/socialPost/${post._id}/share`,
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({
+  //           userId: currentUserId,
+  //           userName: user?.displayName,
+  //           userPhoto: user?.photoURL,
+  //           text: post.text || "",
+  //         }),
+  //       }
+  //     );
 
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("Post shared in your profile !");
-        setSharesCount((prev) => prev + 1);
+  //     const data = await res.json();
+  //     if (res.ok) {
+  //       toast.success("Post shared in your profile !");
+  //       setSharesCount((prev) => prev + 1);
 
-        // Shared post update
-        // যদি parent কম্পোনেন্টে posts state থাকে:
-        // setPosts((prev) => [data.post, ...prev]);
+  //       // Shared post update
+  //       // যদি parent কম্পোনেন্টে posts state থাকে:
+  //       // setPosts((prev) => [data.post, ...prev]);
 
-        // অন্যভাবে: PostCard-এর মধ্যে শুধু local shared post দেখাতে চাইলে:
-        setSharedPost(data.post.sharedPost); // <-- useState declare করতে হবে
-      } else {
-        toast.error(data.error || "Failed to share");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong");
-    }
-  };
+  //       // অন্যভাবে: PostCard-এর মধ্যে শুধু local shared post দেখাতে চাইলে:
+  //       setSharedPost(data.post.sharedPost); // <-- useState declare করতে হবে
+  //     } else {
+  //       toast.error(data.error || "Failed to share");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Something went wrong");
+  //   }
+  // };
 
   // Image rendering fix
   let imageSrc: string | undefined;
@@ -521,7 +522,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `http://localhost:3000/socialPost/${post._id}`,
+                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
                   { method: "DELETE" }
                 );
 
@@ -675,15 +676,15 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         </button>
         {/* Share */}
         <button
-          onClick={handleShare}
+          // onClick={handleShare}
           className="flex items-center gap-1 text-gray-600"
         >
           <FaShare />
-          <span className="text-sm">{sharesCount}</span>
+          <span className="text-sm">0</span>
         </button>
       </div>
 
-      {sharedPost && (
+      {/* {sharedPost && (
         <div className="bg-gray-100 p-3 rounded mt-3 border border-gray-300">
           <p className="text-sm text-gray-500 mb-2">
             Shared by {post.userName} on{" "}
@@ -714,7 +715,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             )}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Likes Modal */}
       {openLikes && (
