@@ -11,7 +11,7 @@ import { TiMessages } from "react-icons/ti";
 
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:3000";
+  "https://resonance-social-server.vercel.app";
 
 type UserDoc = {
   uid: string;
