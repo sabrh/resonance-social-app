@@ -52,7 +52,7 @@ const UserProfile: FC = () => {
     const syncUser = async () => {
       try {
         //  Ensure user doc exists in MongoDB
-        await axios.post("https://resonance-social-server.vercel.app/users", {
+        await axios.post("http://localhost:3000/users", {
           uid: firebaseUser.uid,
           displayName: firebaseUser.displayName,
           email: firebaseUser.email,
@@ -61,7 +61,7 @@ const UserProfile: FC = () => {
 
         //  Fetch user document
         const res = await axios.get(
-          `https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`
+          `http://localhost:3000/users/${firebaseUser.uid}`
         );
         setUserDoc(res.data);
 
@@ -110,17 +110,11 @@ const UserProfile: FC = () => {
     form.append("banner", file);
 
     try {
-      await axios.post(
-        `https://resonance-social-server.vercel.app/users/${uid}/banner`,
-        form,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      await axios.post(`http://localhost:3000/users/${uid}/banner`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       // refresh user data
-      const res = await axios.get(
-        `https://resonance-social-server.vercel.app/users/${uid}`
-      );
+      const res = await axios.get(`http://localhost:3000/users/${uid}`);
       setUserDoc(res.data);
       console.log(res.data);
       setFile(null);
@@ -137,14 +131,9 @@ const UserProfile: FC = () => {
   const handleBioSave = async () => {
     if (!uid) return;
     try {
-      await axios.put(
-        `https://resonance-social-server.vercel.app/users/${uid}/details`,
-        formData
-      );
+      await axios.put(`http://localhost:3000/users/${uid}/details`, formData);
 
-      const res = await axios.get(
-        `https://resonance-social-server.vercel.app/users/${uid}`
-      );
+      const res = await axios.get(`http://localhost:3000/users/${uid}`);
       console.log(res);
       setUserDoc(res.data);
       setShowModal(false);
@@ -158,7 +147,7 @@ const UserProfile: FC = () => {
     if (!uid || !userDoc?.uid) return;
     try {
       const res = await axios.put(
-        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+        `http://localhost:3000/users/${userDoc.uid}/follow`,
         { currentUid: uid }
       );
 
