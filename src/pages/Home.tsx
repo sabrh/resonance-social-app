@@ -37,6 +37,11 @@ type Post = {
   userPhoto: string;
   createdAt: string;
   userEmail: string;
+  shared:string;
+  sharedUserName:string;
+  sharedUserPhoto:string;
+  sharedUserText:string;
+  sharedUserId:string;
 };
 
 const Home: FC = () => {
@@ -116,7 +121,7 @@ const Home: FC = () => {
     setText(e.target.value);
   };
 
-  
+  const matchPost = posts.filter(post => post?.privacy === "public");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -251,7 +256,7 @@ const Home: FC = () => {
             <Loading />
           ) : error ? (
             <div className="text-center text-red-500 mt-6">{error}</div>
-          ) : posts.length === 0 ? (
+          ) : matchPost.length === 0 ? (
             <div className="text-center text-gray-500 mt-6 p-4">
               <p>No posts in your feed yet.</p>
               <p className="text-sm mt-2">
@@ -260,7 +265,7 @@ const Home: FC = () => {
             </div>
           ) : (
             <div>
-              {posts.map((post) => (
+              {matchPost.map((post) => (
                 <PostCard
                   key={post._id}
                   post={post}

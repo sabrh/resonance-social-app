@@ -24,6 +24,11 @@ type Post = {
   userPhoto: string;
   createdAt: string;
   userEmail: string;
+  shared:string;
+  sharedUserName:string;
+  sharedUserPhoto:string;
+  sharedUserText:string;
+  sharedUserId:string;
 };
 
 type Props = {
