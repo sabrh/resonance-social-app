@@ -44,22 +44,21 @@ const Home: FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
-    if (user?.displayName) formData.append("text", user.displayName);
-    if (user?.photoURL) formData.append("text", user.photoURL);
+
+    if (user?.uid) formData.append("userId", user.uid);
+    if (user?.displayName) formData.append("userName", user.displayName);
+    if (user?.photoURL) formData.append("userPhoto", user.photoURL);
     if (text) formData.append("text", text);
-    if (user?.email) formData.append("text", user.email);
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch(
-        "https://resonance-social-server.vercel.app/socialPost",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch("http://localhost:3000/socialPost", {
+        method: "POST",
+        body: formData,
+      });
       const data = await res.json();
-      if (data.insertedId) {
+
+      if (data.success) {
         toast.success("Your post is updated successfully!");
         setText("");
         setImage(null);

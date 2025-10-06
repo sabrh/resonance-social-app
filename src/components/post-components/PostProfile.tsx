@@ -51,7 +51,7 @@ const PostProfile = ({ refreshKey = 0 }: Props) => {
         setLoading(true); // start loading before fetch
         setError(null);
         const res = await fetch(
-          "https://resonance-social-server.vercel.app/socialPost",
+          "http://localhost:3000/socialPost",
           {
             signal: controller.signal,
           }

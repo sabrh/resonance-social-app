@@ -2,29 +2,11 @@ import { useEffect, useState, useContext } from "react";
 import PostCard from "./PostCard";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import Loading from "../Loading";
-
-type Comment = {
-  _id: string;
-  authorName: string;
-  text: string;
-  createdAt: string;
-};
-
-type Post = {
-  _id: string;
-  text: string;
-  image?: string;
-  mimetype?: string;
-  filename?: string;
-  likes?: string[];
-  comments?: Comment[];
-  userName: string;
-  userPhoto: string;
-  createdAt: string;
-};
+import type { Post } from "../../types/post";
+// import type { Post } from "../../types/Post";
 
 type Props = {
-  refreshKey?: number; //  when this changes Posts re-fetches
+  refreshKey?: number;
 };
 
 const Posts = ({ refreshKey = 0 }: Props) => {
@@ -32,9 +14,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const authContext = useContext(AuthContext);
-  console.log("auth", AuthContext);
 
-  // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
 
   useEffect(() => {
@@ -43,14 +23,11 @@ const Posts = ({ refreshKey = 0 }: Props) => {
 
     const fetchPosts = async () => {
       try {
-        setLoading(true); // start loading before fetch
+        setLoading(true);
         setError(null);
-        const res = await fetch(
-          "https://resonance-social-server.vercel.app/socialPost",
-          {
-            signal: controller.signal,
-          }
-        );
+        const res = await fetch("http://localhost:3000/socialPost", {
+          signal: controller.signal,
+        });
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);
@@ -60,7 +37,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
           if (mounted) setError("Failed to load posts");
         }
       } finally {
-        if (mounted) setLoading(false); // stop loading after fetch finishes
+        if (mounted) setLoading(false);
       }
     };
 
@@ -70,20 +47,11 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       mounted = false;
       controller.abort();
     };
-  }, [refreshKey]); // Re run when refreshKey toggles
+  }, [refreshKey]);
 
-  if (loading) {
-    // show loader while posts fetch
-    return <Loading />;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500 mt-6">{error}</div>;
-  }
-
-  if (posts.length === 0) {
-    return <p className="text-gray-500 mt-6">No posts yet.</p>;
-  }
+  if (loading) return <Loading />;
+  if (error) return <div className="text-center text-red-500 mt-6">{error}</div>;
+  if (posts.length === 0) return <p className="text-gray-500 mt-6">No posts yet.</p>;
 
   return (
     <div>

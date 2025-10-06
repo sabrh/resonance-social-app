@@ -2,75 +2,37 @@ import { useContext, useState } from "react";
 import { FaHeart, FaRegHeart, FaRegCommentDots, FaShare } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
-import { BsThreeDotsVertical } from "react-icons/bs";
-
-type Comment = {
-  _id: string;
-  authorName: string;
-  text: string;
-  createdAt: string;
-};
-
-type Share = {
-  userId: string;
-  userName: string;
-  userPhoto?: string;
-  sharedAt: string;
-};
-
-type Post = {
-  _id: string;
-  text: string;
-  image?: string;
-  mimetype?: string;
-  filename?: string;
-  likes?: string[];
-  comments?: Comment[];
-  shares?: Share[];
-  userName: string;
-  userPhoto: string;
-  createdAt: string;
-  sharedPostData?: {
-    // ✅ add this
-    userName: string;
-    userPhoto?: string;
-    text: string;
-    image?: string;
-    mimetype?: string;
-    filename?: string;
-    createdAt: string;
-  };
-};
+import type { Post, Comment } from "../../types/post";
 
 type Props = {
   post: Post;
   currentUserId: string;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: string) => void; // optional
 };
 
 const PostCard = ({ post, currentUserId, onDelete }: Props) => {
-  const [info, setInfo] = useState(false);
-  const [liked, setLiked] = useState(
-    post.likes?.includes(currentUserId) ?? false
-  );
+  const { user } = useContext(AuthContext)!;
+
+  // Safety defaults
+  const [liked, setLiked] = useState(post.likes?.includes(currentUserId) ?? false);
   const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
   const [comments, setComments] = useState<Comment[]>(post.comments ?? []);
   const [sharesCount, setSharesCount] = useState(post.shares?.length ?? 0);
   const [newComment, setNewComment] = useState("");
   const [openComments, setOpenComments] = useState(false);
-  const { user } = useContext(AuthContext)!;
 
-  // Like/Unlike handler
+  // 🔹 Like/Unlike
   const handleLike = async () => {
     try {
-      const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: currentUserId }),
-        }
-      );
+      const res = await fetch(`http://localhost:3000/socialPost/${post._id}/like`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: currentUserId,
+          userName: user?.displayName,
+          userPhoto: user?.photoURL
+        })
+      });
       const data = await res.json();
       setLiked(data.liked);
       setLikesCount(data.likesCount);
@@ -79,28 +41,22 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     }
   };
 
-  // Add comment
+  // 🔹 Add comment
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
     try {
-      const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${currentUserId}`,
-          },
-          body: JSON.stringify({
-            userId: currentUserId,
-            text: newComment,
-            userName: user?.displayName,
-          }),
-        }
-      );
-
+      const res = await fetch(`http://localhost:3000/socialPost/${post._id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: currentUserId,
+          userName: user?.displayName,
+          userPhoto: user?.photoURL,
+          text: newComment
+        })
+      });
       const data = await res.json();
       setComments([data.comment, ...comments]);
       setNewComment("");
@@ -109,223 +65,78 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     }
   };
 
-  // Share handler
+  // 🔹 Share
   const handleShare = async () => {
     try {
-      const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/share`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: currentUserId,
-            userName: user?.displayName,
-            userPhoto: user?.photoURL,
-          }),
-        }
-      );
-
+      const res = await fetch(`http://localhost:3000/socialPost/${post._id}/share`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: currentUserId,
+          userName: user?.displayName,
+          userPhoto: user?.photoURL
+        })
+      });
       const data = await res.json();
-      if (res.ok) {
-        toast.success("Post shared successfully!");
-        setSharesCount(data.sharesCount); // main post share count increment
-      } else {
-        toast.error(data.error || "Failed to share");
-      }
+      toast.success("Post shared!");
+      setSharesCount(data.sharesCount);
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong");
+      toast.error("Failed to share post");
     }
   };
 
-  // Image rendering fix
+  // Image handling
   let imageSrc: string | undefined;
   if (post.image) {
-    if (post.image.startsWith("data:")) {
-      imageSrc = post.image;
-    } else if (post.mimetype) {
-      imageSrc = `data:${post.mimetype};base64,${post.image}`;
-    }
+    imageSrc = post.mimetype ? `data:${post.mimetype};base64,${post.image}` : post.image;
   }
-
-  // Delete post confirmation
-  const confirmDelete = () => {
-    toast.custom((t) => (
-      <div className="bg-white shadow-lg rounded-lg p-4 flex flex-col gap-3">
-        <p className="text-lg font-semibold">Are you sure?</p>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={async () => {
-              try {
-                const res = await fetch(
-                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
-                  {
-                    method: "DELETE",
-                  }
-                );
-
-                if (res.ok) {
-                  onDelete?.(post._id);
-                  toast.dismiss(t.id);
-                  toast.success("Post deleted successfully!");
-                }
-              } catch (err) {
-                console.error(err);
-                toast.error("Failed to delete post");
-              }
-            }}
-            className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    ));
-  };
 
   return (
     <div className="bg-white shadow rounded-lg p-4 max-w-2xl mx-auto mt-6">
-      {/* Info dropdown */}
-      <div className="float-right relative">
-        {/* <p onClick={() => setInfo(!info)} className="text-3xl cursor-pointer">
-          <i className="fa-solid fa-circle-info"></i> */}
-        <p onClick={() => setInfo(!info)} className="text-xl cursor-pointer">
-          <BsThreeDotsVertical />
-        </p>
-        <div
-          className={`absolute top-10 right-4 h-[100px] w-[150px] bg-white shadow-2xl rounded-2xl ${
-            info ? "" : "hidden"
-          }`}
-        >
-          <p className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4">
-            <i className="fa-solid fa-pen-to-square"></i>
-            <span>Edit post</span>
-          </p>
-          <p
-            onClick={confirmDelete}
-            className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4"
-          >
-            <i className="fa-solid fa-trash"></i>
-            <span>Delete post</span>
-          </p>
-        </div>
-      </div>
-
-      {/* Post header */}
-      <div className="mt-3 flex items-center gap-3">
-        <img
-          className="h-[55px] w-[55px] rounded-full"
-          src={post?.userPhoto}
-          alt="User"
-        />
+      {/* Post Header */}
+      <div className="flex items-center gap-3">
+        <img src={post.userPhoto} className="h-14 w-14 rounded-full" alt="User" />
         <div>
-          <p className="text-lg text-blue-400 font-bold">{post?.userName}</p>
-          <p className="text-gray-500 text-sm">{post.createdAt}</p>
+          <p className="font-bold text-blue-500">{post.userName}</p>
+          <p className="text-gray-500 text-sm">{new Date(post.createdAt).toLocaleString()}</p>
         </div>
       </div>
 
-      {/* Post body */}
+      {/* Post Body */}
       <p className="mt-4">{post.text}</p>
-
-      {/* Original post image */}
-      {/* <p className="mt-2">{post.text}</p> */}
       {imageSrc && (
-        <img
-          src={imageSrc}
-          alt={post.filename}
-          className="max-w-full max-h-[400px] object-cover mt-2 rounded"
-        />
+        <img src={imageSrc} alt={post.filename} className="max-w-full max-h-96 rounded mt-2" />
       )}
 
-      {/* Shared post (Facebook style) */}
-      {/* Shared post (Facebook style) */}
-      {post.sharedPostData && (
-        <div className="bg-gray-100 p-3 rounded mt-3">
-          <div className="flex items-center gap-2 mb-2">
-            <img
-              src={post.sharedPostData.userPhoto}
-              alt="profile"
-              className="h-8 w-8 rounded-full"
-            />
-            <div>
-              <p className="text-sm font-semibold">
-                {post.sharedPostData.userName}
-              </p>
-              {/* <p className="text-xs text-gray-500">
-                {post.sharedPostData.createdAt
-                  ? new Date(post.sharedPostData.createdAt).toLocaleString(
-                      "en-US",
-                      {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      }
-                    )
-                  : ""}
-              </p> */}
-            </div>
-          </div>
-
-          <p>{post.sharedPostData.text}</p>
-          {post.sharedPostData.image && (
-            <img
-              src={`data:${post.sharedPostData.mimetype};base64,${post.sharedPostData.image}`}
-              alt={post.sharedPostData.filename}
-              className="mt-2 rounded"
-            />
-          )}
-        </div>
-      )}
-
-      {/* Like + Comment + Share */}
+      {/* Like / Comment / Share */}
       <div className="flex gap-6 items-center mt-4 text-xl">
-        {/* Like */}
         <button onClick={handleLike} className="flex items-center gap-1">
-          {liked ? (
-            <FaHeart className="text-red-500" />
-          ) : (
-            <FaRegHeart className="text-gray-500" />
-          )}
-          <span className="text-sm">{likesCount}</span>
+          {liked ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+          <span>{likesCount}</span>
         </button>
-
-        {/* Comment */}
-        <button
-          onClick={() => setOpenComments(true)}
-          className="flex items-center gap-1"
-        >
-          <FaRegCommentDots className="text-gray-600" />
-          <span className="text-sm">{comments.length}</span>
+        <button onClick={() => setOpenComments(true)} className="flex items-center gap-1">
+          <FaRegCommentDots />
+          <span>{comments.length}</span>
         </button>
-
-        {/* Share */}
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-1 text-gray-600"
-        >
+        <button onClick={handleShare} className="flex items-center gap-1">
           <FaShare />
-          <span className="text-sm">{sharesCount}</span>
+          <span>{sharesCount}</span>
         </button>
       </div>
 
-      {/* Comment modal */}
+      {/* Comments Modal */}
       {openComments && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white w-full max-w-md rounded-lg p-4">
+        <div className="fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white max-w-md w-full rounded-lg p-4">
             <h2 className="text-lg font-semibold mb-3">Comments</h2>
-
             <form onSubmit={handleAddComment} className="flex gap-2 mb-4">
               <input
                 type="text"
                 placeholder="Write a comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="border p-2 rounded flex-1"
+                className="border p-2 flex-1 rounded"
               />
               <button
                 type="submit"
@@ -337,12 +148,12 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             </form>
 
             <div className="max-h-64 overflow-y-auto">
-              {comments?.map((c) => (
+              {comments.map((c) => (
                 <div key={c._id} className="mb-3 border-b pb-2">
-                  <p className="font-semibold">{c.authorName ?? "Unknown"}</p>
-                  <p>{c.text ?? ""}</p>
+                  <p className="font-semibold">{c.authorName}</p>
+                  <p>{c.text}</p>
                   <p className="text-xs text-gray-500">
-                    {c.createdAt ? new Date(c.createdAt).toLocaleString() : ""}
+                    {new Date(c.createdAt).toLocaleString()}
                   </p>
                 </div>
               ))}
