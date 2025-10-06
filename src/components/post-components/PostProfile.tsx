@@ -46,7 +46,7 @@ const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
   // Get current user id from context
   const currentUserId = user?.uid || "";
 
-  // Determine which user's posts to show
+  // Determine which user's posts to 
   const profileUid = targetUid || user?.uid;
 
   useEffect(() => {
