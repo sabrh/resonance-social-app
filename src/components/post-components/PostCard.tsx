@@ -5,6 +5,8 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import ReplyItem from "./comments/ReplyItem";
 import { Link } from "react-router";
+import ShareBox from "./ShareBox";
+
 
 export type Comment = {
   _id: string;
@@ -21,12 +23,7 @@ type LikeUser = {
   photoURL?: string;
 };
 
-type Share = {
-  userId: string;
-  userName: string;
-  userPhoto?: string;
-  sharedAt: string;
-};
+
 
 type Post = {
   _id: string;
@@ -40,20 +37,15 @@ type Post = {
   filename?: string;
   likes?: string[];
   comments?: Comment[];
-  shares?: Share[];
+  
   userName: string;
   userPhoto: string;
   createdAt: string;
-  sharedPostData?: {
-    //  add this
-    userName: string;
-    userPhoto?: string;
-    text: string;
-    image?: string;
-    mimetype?: string;
-    filename?: string;
-    createdAt: string;
-  };
+  shared:string;
+  sharedUserName:string;
+  sharedUserPhoto:string;
+  sharedUserText:string;
+  sharedUserId:string;
 };
 
 type Props = {
@@ -70,6 +62,9 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   // const [sharedPost, setSharedPost] = useState<Post["sharedPost"]>(
   //   post.sharedPost
   // );
+
+ const [share, setShare] = useState<boolean>(false);
+
   const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
 
   const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
@@ -460,7 +455,9 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     }
   };
 
-  // const handleShare = async () => {
+  const handleShare = async () => {
+
+    setShare(true);
   //   try {
   //     const res = await fetch(
   //       `https://resonance-social-server.vercel.app/socialPost/${post._id}/share`,
@@ -494,7 +491,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   //     console.error(err);
   //     toast.error("Something went wrong");
   //   }
-  // };
+  };
 
   // Image rendering fix
   let imageSrc: string | undefined;
@@ -626,13 +623,42 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
       {/* Original post image */}
       {/* <p className="mt-2">{post.text}</p> */}
-      {imageSrc && (
+      {(post.shared === "yes") ? 
+      <div className="bg-gray-100 p-5 rounded-2xl mt-4">
+        
+        <div className="flex items-center gap-2 ">
+          <Link to={`/profile/${post.sharedUserId}`}>
+          <img
+            className="h-[55px] w-[55px] rounded-full cursor-pointer"
+            src={post?.sharedUserPhoto}
+            alt="User"
+          />
+        </Link>
+          <Link
+            to={`/profile/${post.sharedUserId}`}
+            className="text-lg text-blue-400 font-bold hover:underline"
+          >
+            {post?.sharedUserName}
+          </Link>
+        </div>
+
+        {imageSrc && (
+        <img
+          src={imageSrc}
+          alt={post.filename}
+          className="max-w-full max-h-[400px] object-cover  rounded mt-3"
+        />
+      )}
+      </div> : 
+      <div>
+         {imageSrc && (
         <img
           src={imageSrc}
           alt={post.filename}
           className="max-w-full max-h-[400px] object-cover mt-2 rounded"
         />
       )}
+      </div>}
 
       {/* Shared post (Facebook style) */}
       {/* Shared post (Facebook style) */}
@@ -676,46 +702,15 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         </button>
         {/* Share */}
         <button
-          // onClick={handleShare}
-          className="flex items-center gap-1 text-gray-600"
+          onClick={handleShare}
+          className="flex items-center gap-1 text-gray-600 cursor-pointer"
         >
           <FaShare />
           <span className="text-lg">0</span>
         </button>
       </div>
 
-      {/* {sharedPost && (
-        <div className="bg-gray-100 p-3 rounded mt-3 border border-gray-300">
-          <p className="text-sm text-gray-500 mb-2">
-            Shared by {post.userName} on{" "}
-            {new Date(post.createdAt).toLocaleString()}
-          </p>
-
-          <div className="bg-white p-2 rounded border border-gray-200">
-            <div className="flex items-center gap-2 mb-1">
-              <img
-                src={sharedPost.userPhoto}
-                alt={sharedPost.userName}
-                className="h-8 w-8 rounded-full"
-              />
-              <div>
-                <p className="font-semibold text-sm">{sharedPost.userName}</p>
-                <p className="text-xs text-gray-500">
-                  {new Date(sharedPost.createdAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
-            {sharedPost.text && <p>{sharedPost.text}</p>}
-            {sharedPost.image && (
-              <img
-                src={`data:${sharedPost.mimetype};base64,${sharedPost.image}`}
-                alt={sharedPost.filename}
-                className="mt-1 rounded"
-              />
-            )}
-          </div>
-        </div>
-      )} */}
+      
 
       {/* Likes Modal */}
       {openLikes && (
@@ -891,6 +886,20 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           </div>
         </div>
       )}
+
+
+
+
+      {/* share modal */}
+     {
+      share && (
+        <div>
+          <ShareBox share={share} post={post} setShare={setShare}></ShareBox>
+        </div>
+      )
+     }
+
+
     </div>
   );
 };

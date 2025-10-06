@@ -24,6 +24,11 @@ type Post = {
   userName:string;
   userPhoto:string;
   createdAt:string;
+  shared:string;
+  sharedUserName:string;
+  sharedUserPhoto:string;
+  sharedUserText:string;
+  sharedUserId:string;
 };
 
 type Props = {
@@ -82,6 +87,8 @@ const Posts = ({ refreshKey = 0 }: Props) => {
 
 
   const matchPost = posts.filter(post => post?.privacy === "public");
+
+  console.log(posts);
 
   if (matchPost.length === 0) {
     return <p className="text-gray-500 mt-6">No posts yet.</p>;
