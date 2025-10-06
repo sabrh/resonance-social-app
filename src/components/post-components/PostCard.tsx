@@ -108,6 +108,14 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       console.error("Error fetching likes:", err);
     }
   };
+
+  const countTotalComments = (comments: Comment[]): number => {
+    return comments.reduce((acc, c) => {
+      const repliesCount = c.replies ? countTotalComments(c.replies) : 0;
+      return acc + 1 + repliesCount;
+    }, 0);
+  };
+
   // Add comment
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -402,7 +410,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     // ✅ Custom confirmation using toast.promise
     const confirm = await new Promise<boolean>((resolve) => {
-       toast(
+      toast(
         (t) => (
           <div className="flex flex-col gap-2">
             <p>Are you sure you want to delete this comment?</p>
@@ -698,7 +706,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           className="flex items-center gap-1"
         >
           <FaRegCommentDots className="text-gray-600" />
-          <span className="text-lg">{comments.length}</span>
+          <span className="text-lg">{countTotalComments(comments)}</span>
         </button>
         {/* Share */}
         <button
