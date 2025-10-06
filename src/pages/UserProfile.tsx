@@ -196,10 +196,10 @@ const handleFollowToggle = async () => {
     
     // Show feedback to user
     toast.success(res.data.isFollowing ? "Followed successfully!" : "Unfollowed successfully!");
-  } catch (err: any) {
-    console.error("Follow toggle failed:", err);
-    toast.error(err.response?.data?.error || "Operation failed");
-  } finally {
+  } catch (err: unknown) {
+  const error = err as { response?: { data?: { error?: string } } }; 
+  toast.error(error.response?.data?.error || "Failed to fetch posts");
+} finally {
     setLoading(false);
   }
 };
