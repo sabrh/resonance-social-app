@@ -638,7 +638,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       {/* Shared post (Facebook style) */}
 
       {/* Like + Comment + Share */}
-      <div className="flex gap-6 items-center mt-4 text-xl">
+      <div className="flex gap-6 items-center mt-4 text-lg text-gray-500">
         {/* Like */}
         {/* <button onClick={handleLike} className="flex items-center gap-1">
           {liked ? (
@@ -660,7 +660,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           </button>{" "}
           <span
             onClick={handleViewLikes}
-            className="text-xl mt-2 cursor-pointer hover:underline hover:text-blue-500 hover:font-semibold"
+            className="text-lg mt-2 cursor-pointer hover:underline hover:text-blue-500 hover:font-semibold"
           >
             Likes
           </span>
@@ -672,7 +672,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           className="flex items-center gap-1"
         >
           <FaRegCommentDots className="text-gray-600" />
-          <span className="text-sm">{comments.length}</span>
+          <span className="text-lg">{comments.length}</span>
         </button>
         {/* Share */}
         <button
@@ -680,7 +680,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           className="flex items-center gap-1 text-gray-600"
         >
           <FaShare />
-          <span className="text-sm">0</span>
+          <span className="text-lg">0</span>
         </button>
       </div>
 

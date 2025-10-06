@@ -7,6 +7,7 @@ import {
 } from "../context/AuthContext/AuthContext";
 import PostProfile from "../components/post-components/PostProfile";
 import { useParams } from "react-router";
+import toast from "react-hot-toast";
 
 type UserDoc = {
   uid: string;
@@ -152,20 +153,56 @@ const UserProfile: FC = () => {
     }
   };
 
-  const handleFollowToggle = async () => {
-    if (!uid || !userDoc?.uid) return;
-    try {
-      const res = await axios.put(
-        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
-        { currentUid: uid }
-      );
+  // useEffect to handle follow status properly
+useEffect(() => {
+  if (!targetUid || !uid) return;
 
-      setIsFollowing(res.data.isFollowing);
-      setFollowersCount(res.data.followersCount);
+  const checkFollowStatus = async () => {
+    try {
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
+      const userData = res.data;
+      
+      setUserDoc(userData);
+      setFollowersCount(userData.followers?.length || 0);
+
+      // Check if current user is following target user
+      if (uid && targetUid !== uid) {
+        const isUserFollowing = userData.followers?.includes(uid) || false;
+        setIsFollowing(isUserFollowing);
+      } else {
+        setIsFollowing(false);
+      }
     } catch (err) {
-      console.error("Follow toggle failed:", err);
+      console.error("Error checking follow status:", err);
     }
   };
+
+  checkFollowStatus();
+}, [targetUid, uid]);
+
+// Improved follow toggle handler
+const handleFollowToggle = async () => {
+  if (!uid || !userDoc?.uid || uid === userDoc.uid) return;
+  
+  try {
+    setLoading(true);
+    const res = await axios.put(
+      `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+      { currentUid: uid }
+    );
+
+    setIsFollowing(res.data.isFollowing);
+    setFollowersCount(res.data.followersCount);
+    
+    // Show feedback to user
+    toast.success(res.data.isFollowing ? "Followed successfully!" : "Unfollowed successfully!");
+  } catch (err: any) {
+    console.error("Follow toggle failed:", err);
+    toast.error(err.response?.data?.error || "Operation failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Determine banner to show
   const bannerSrc = userDoc?.banner

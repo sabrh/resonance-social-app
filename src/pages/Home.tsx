@@ -4,25 +4,97 @@ import {
   type ChangeEvent,
   type FC,
   type FormEvent,
+  useEffect,
 } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
-import Posts from "../components/post-components/Posts";
+import PostCard from "../components/post-components/PostCard"; // Import PostCard directly
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import LeftSidebar from "../components/LeftSidebar";
 import RightSidebar from "../components/RightSidebar";
+import Loading from "../components/Loading";
+
+type Comment = {
+  _id: string;
+  authorName: string;
+  text: string;
+  createdAt: string;
+};
+
+type Post = {
+  _id: string;
+  userId: string;
+  text: string;
+  image?: string;
+  privacy: string;
+  mimetype?: string;
+  filename?: string;
+  likes?: string[];
+  comments?: Comment[];
+  userName: string;
+  userPhoto: string;
+  createdAt: string;
+  userEmail: string;
+};
 
 const Home: FC = () => {
-  // const userConst = useContext(AuthContext);
-  // console.log(userConst);
   const { user } = useContext(AuthContext)!;
   const [privacy, setPrivacy] = useState<string>("public");
   const [image, setImage] = useState<string | null>(null);
   const [text, setText] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [postsRefreshKey, setPostsRefreshKey] = useState<number>(0);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Get current user id
+  const currentUserId = user?.uid || "";
+
+  // Fetch newsfeed posts
+  useEffect(() => {
+    let mounted = true;
+    const controller = new AbortController();
+
+    const fetchFeed = async () => {
+      if (!currentUserId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const res = await fetch(
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`,
+          {
+            signal: controller.signal,
+          }
+        );
+        
+        if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
+        
+        const data = await res.json();
+        if (mounted) setPosts(data);
+      } catch (err) {
+        if (err instanceof Error && err.name !== "AbortError") {
+          console.error("Error fetching newsfeed:", err);
+          if (mounted) setError("Failed to load posts");
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    fetchFeed();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
+  }, [currentUserId]);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -52,7 +124,7 @@ const Home: FC = () => {
     if (user?.photoURL) formData.append("userPhoto", user.photoURL);
     if (text) formData.append("text", text);
     if (user?.email) formData.append("userEmail", user.email);
-    if (user?.uid) formData.append("userId", user.uid); // added for userId
+    if (user?.uid) formData.append("userId", user.uid);
     if (imageFile) formData.append("photo", imageFile);
 
     try {
@@ -66,7 +138,14 @@ const Home: FC = () => {
         setText("");
         setImage(null);
         setImageFile(null);
-        setPostsRefreshKey((k) => k + 1);
+        setPrivacy("public");
+        
+        // Refresh the newsfeed after posting
+        const feedRes = await fetch(
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`
+        );
+        const feedData = await feedRes.json();
+        setPosts(feedData);
       } else {
         toast.error("Could not add post. Try again.");
       }
@@ -74,6 +153,10 @@ const Home: FC = () => {
       console.error(err);
       toast.error("Failed to post. Check console.");
     }
+  };
+
+  const handleDeletePost = (deletedId: string) => {
+    setPosts(prevPosts => prevPosts.filter(post => post._id !== deletedId));
   };
 
   return (
@@ -152,6 +235,7 @@ const Home: FC = () => {
                 <button
                   type="submit"
                   className="btn btn-info rounded-full text-white mt-4"
+                  disabled={!text.trim() && !image}
                 >
                   Post Now
                 </button>
@@ -161,7 +245,29 @@ const Home: FC = () => {
         </div>
 
         <section className="mt-5">
-          <Posts refreshKey={postsRefreshKey} />
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="text-center text-red-500 mt-6">{error}</div>
+          ) : posts.length === 0 ? (
+            <div className="text-center text-gray-500 mt-6 p-4">
+              <p>No posts in your feed yet.</p>
+              <p className="text-sm mt-2">
+                Follow some users or create a post to get started!
+              </p>
+            </div>
+          ) : (
+            <div>
+              {posts.map((post) => (
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  currentUserId={currentUserId}
+                  onDelete={handleDeletePost}
+                />
+              ))}
+            </div>
+          )}
         </section>
       </main>
 
