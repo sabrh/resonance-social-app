@@ -12,7 +12,7 @@ type Comment = {
 
 type Post = {
   _id: string;
-  userId: string; //added for userId
+  userId: string;
   text: string;
   image?: string;
   privacy: string;
@@ -27,8 +27,8 @@ type Post = {
 };
 
 type Props = {
-  refreshKey?: number; //  when this changes Posts re-fetches
-  targetUid?: string; // added for userId
+  refreshKey?: number;
+  targetUid?: string;
 };
 
 const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
@@ -36,39 +36,47 @@ const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const authContext = useContext(AuthContext);
-  const { user } = useContext(AuthContext)!;
+  const { user } = authContext!;
 
-  console.log(posts);
-
-  const profileUid = targetUid || user?.uid; // added for userId
-  // const matchPost = posts.filter(post => post?.userEmail === user?.email );
-  const matchPost = posts.filter((post) => post?.userId === profileUid); // added for userId
-
-  console.log(matchPost);
   // Get current user id from context
-  const currentUserId = authContext?.user?.uid ?? "";
+  const currentUserId = user?.uid || "";
+
+  // Determine which user's posts to show
+  const profileUid = targetUid || user?.uid;
 
   useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
 
     const fetchPosts = async () => {
+      if (!profileUid) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        setLoading(true); // start loading before fetch
+        setLoading(true);
         setError(null);
-        const res = await fetch("http://localhost:3000/socialPost", {
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+        
+        // Use the new endpoint with privacy filtering
+        const res = await fetch(
+          `https://resonance-social-server.vercel.app/users/${profileUid}/posts?viewerUid=${currentUserId}`,
+          {
+            signal: controller.signal,
+          }
+        );
+        
+        if (!res.ok) throw new Error(`Failed to load posts: ${res.status}`);
+        
         const data = await res.json();
         if (mounted) setPosts(data);
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {
-          console.error(err);
+          console.error("Error fetching profile posts:", err);
           if (mounted) setError("Failed to load posts");
         }
       } finally {
-        if (mounted) setLoading(false); // stop loading after fetch finishes
+        if (mounted) setLoading(false);
       }
     };
 
@@ -78,10 +86,14 @@ const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
       mounted = false;
       controller.abort();
     };
-  }, [refreshKey]); // Re run when refreshKey toggles
+  }, [refreshKey, profileUid, currentUserId]); // Re-run when any of these change
+
+  // Debug logs (remove in production)
+  console.log("Profile UID:", profileUid);
+  console.log("Current User ID:", currentUserId);
+  console.log("Posts:", posts);
 
   if (loading) {
-    // show loader while posts fetch
     return <Loading />;
   }
 
@@ -90,17 +102,28 @@ const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
   }
 
   if (posts.length === 0) {
-    return <p className="text-gray-500 mt-6">No posts yet.</p>;
+    return (
+      <div className="text-center text-gray-500 mt-6 p-4">
+        <p>No posts yet.</p>
+        {profileUid === currentUserId && (
+          <p className="text-sm mt-2">Create your first post to get started!</p>
+        )}
+      </div>
+    );
   }
+
+  const handleDeletePost = (deletedId: string) => {
+    setPosts(prevPosts => prevPosts.filter(post => post._id !== deletedId));
+  };
 
   return (
     <div>
-      {matchPost.map((post) => (
+      {posts.map((post) => (
         <PostCard
           key={post._id}
           post={post}
           currentUserId={currentUserId}
-          onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}
+          onDelete={handleDeletePost}
         />
       ))}
     </div>
