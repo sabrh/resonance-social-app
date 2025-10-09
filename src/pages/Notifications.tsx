@@ -1,8 +1,8 @@
-// src/pages/Notifications.tsx
+// src/pages/Notifications.tsx - সম্পূর্ণ আপডেটেড
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import { io } from "socket.io-client";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 
 type Notification = {
   _id: string;
@@ -11,8 +11,9 @@ type Notification = {
   actorName: string;
   actorPhoto?: string;
   postId: string;
-  postText?: string;       // 🔹 পোস্টের কিছু টেক্সট/প্রিভিউ
-  commentText?: string;    // 🔹 কমেন্টের টেক্সট
+  postText?: string;
+  commentText?: string;
+  reactionType?: string;
   createdAt: string;
   read?: boolean;
 };
@@ -20,18 +21,17 @@ type Notification = {
 const Notifications = () => {
   const { user } = useContext(AuthContext)!;
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
 
-    // fetch all notifications
     const fetchNotifications = async () => {
       try {
         const res = await fetch(`http://localhost:3000/notifications/${user.uid}`);
         const data = await res.json();
         setNotifications(data);
 
-        // mark all as read once page opened
         await fetch(`http://localhost:3000/notifications/${user.uid}/read`, {
           method: "PUT",
         });
@@ -41,12 +41,10 @@ const Notifications = () => {
     };
     fetchNotifications();
 
-    // socket setup
     const socket = io("http://localhost:3000");
     socket.emit("join_user", user.uid);
 
     socket.on("new_notification", (notif: Notification) => {
-      // prepend new notification
       setNotifications((prev) => [notif, ...prev]);
     });
 
@@ -55,9 +53,26 @@ const Notifications = () => {
     });
 
     return () => {
-      void socket.disconnect();
+      socket.disconnect();
     };
   }, [user]);
+
+  // ✅ নোটিফিকেশন ক্লিক করলে পোস্টে নিয়ে যাবে
+  const handleNotificationClick = (postId: string) => {
+    navigate(`/post/${postId}`);
+  };
+
+  // ✅ রিয়্যাক্ট টাইপ অনুযায়ী আইকন
+  const getReactionIcon = (type?: string) => {
+    switch (type) {
+      case 'love': return '❤️';
+      case 'haha': return '😂';
+      case 'wow': return '😮';
+      case 'sad': return '😢';
+      case 'angry': return '😠';
+      default: return '👍';
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-4">
@@ -71,29 +86,22 @@ const Notifications = () => {
         {notifications.map((n) => (
           <div
             key={n._id}
-            className={`shadow rounded-lg p-3 flex gap-3 items-start ${n.read ? "bg-white" : "bg-blue-50"
+            className={`shadow rounded-lg p-3 flex gap-3 items-start cursor-pointer hover:bg-gray-50 transition-colors ${n.read ? "bg-white" : "bg-blue-50"
               }`}
+            onClick={() => handleNotificationClick(n.postId)}
           >
             <img
-              src={
-                n.actorPhoto ||
-                "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-              }
+              src={n.actorPhoto || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
               alt={n.actorName}
-              className="h-10 w-10 rounded-full"
+              className="h-10 w-10 rounded-full flex-shrink-0"
             />
-            <div>
+            <div className="flex-1">
               <p className="text-sm">
                 <span className="font-semibold">{n.actorName}</span>{" "}
                 {n.type === "like" && (
                   <>
-                    liked your post{" "}
-                    <Link
-                      to={`/post/${n.postId}`}
-                      className="text-blue-600 underline"
-                    >
-                      {n.postText ? `"${n.postText.slice(0, 20)}..."` : ""}
-                    </Link>
+                    <span className="mx-1">{getReactionIcon(n.reactionType)}</span>
+                    reacted to your post
                   </>
                 )}
                 {n.type === "comment" && (
@@ -102,28 +110,19 @@ const Notifications = () => {
                     <span className="italic text-gray-700">
                       "{n.commentText}"
                     </span>{" "}
-                    on your post{" "}
-                    <Link
-                      to={`/post/${n.postId}`}
-                      className="text-blue-600 underline"
-                    >
-                      {n.postText ? `"${n.postText.slice(0, 20)}..."` : ""}
-                    </Link>
+                    on your post
                   </>
                 )}
                 {n.type === "share" && (
-                  <>
-                    shared your post{" "}
-                    <Link
-                      to={`/post/${n.postId}`}
-                      className="text-blue-600 underline"
-                    >
-                      {n.postText ? `"${n.postText.slice(0, 20)}..."` : ""}
-                    </Link>
-                  </>
+                  <>shared your post</>
                 )}
               </p>
-              <p className="text-xs text-gray-500">
+              {n.postText && (
+                <p className="text-xs text-gray-600 mt-1 bg-gray-100 p-2 rounded">
+                  "{n.postText.slice(0, 50)}..."
+                </p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
                 {new Date(n.createdAt).toLocaleString()}
               </p>
             </div>

@@ -1,8 +1,18 @@
+export type Reaction = {
+    type: 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
+    userName: string;
+    userPhoto?: string;
+    createdAt: string;
+};
+
 export type Comment = {
     _id: string;
+    authorId: string;
     authorName: string;
+    authorPhoto?: string;
     text: string;
     createdAt: string;
+    replies?: Comment[];
 };
 
 export type Share = {
@@ -18,13 +28,14 @@ export type Post = {
     image?: string;
     mimetype?: string;
     filename?: string;
-    likes?: string[];
+    reactions?: Record<string, Reaction>;
     comments?: Comment[];
     shares?: Share[];
     userName: string;
     userPhoto: string;
-    createdAt: string;
+    userEmail: string;
     userId: string;
+    createdAt: string;
     sharedPostData?: {
         userName: string;
         userPhoto?: string;
@@ -35,10 +46,3 @@ export type Post = {
         createdAt: string;
     };
 };
-
-
-
-
-
-
-

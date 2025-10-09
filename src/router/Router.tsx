@@ -10,6 +10,7 @@ import ErrorPage from "../pages/ErrorPage";
 import Notifications from "../pages/Notifications";
 import About from "../pages/About";
 import PasswordForget from "../pages/auth/PasswordForget";
+import PostDetail from "../components/post-components/PostDetail";
 
 
 export const router = createBrowserRouter([
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
       { path: "profile", element: <UserProfile /> },
       { path: "messages", element: <Chats /> },
       { path: "notifications", element: <Notifications /> },
+      { path: "/post/:postId", element: <PostDetail /> },
       { path: "home", element: <Home /> },
 
     ],
