@@ -25,7 +25,7 @@ export default function Search() {
       try {
         setLoading(true);
         const res = await fetch(
-          `https://resonance-social-server.vercel.app/search/users?q=${encodeURIComponent(query)}`
+          `http://localhost:3000/search/users?q=${encodeURIComponent(query)}`
         );
         const data: User[] = await res.json();
         setResults(data);
