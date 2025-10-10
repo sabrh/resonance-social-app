@@ -25,7 +25,7 @@ export default function Search() {
       try {
         setLoading(true);
         const res = await fetch(
-          `https://resonance-social-server.vercel.app/search/users?q=${encodeURIComponent(query)}`
+          `http://localhost:3000/search/users?q=${encodeURIComponent(query)}`
         );
         const data: User[] = await res.json();
         setResults(data);
@@ -51,7 +51,6 @@ export default function Search() {
         }}
         className="input input-bordered w-full rounded-full px-4 py-2 text-sm md:text-base"
       />
-
 
       {showDropdown && query && (
         <div className="absolute mt-1 w-full bg-white shadow-lg rounded-md max-h-60 overflow-y-auto z-50">

@@ -37,11 +37,11 @@ type Post = {
   userPhoto: string;
   createdAt: string;
   userEmail: string;
-  shared:string;
-  sharedUserName:string;
-  sharedUserPhoto:string;
-  sharedUserText:string;
-  sharedUserId:string;
+  shared: string;
+  sharedUserName: string;
+  sharedUserPhoto: string;
+  sharedUserText: string;
+  sharedUserId: string;
 };
 
 const Home: FC = () => {
@@ -71,16 +71,13 @@ const Home: FC = () => {
       try {
         setLoading(true);
         setError(null);
-        
-        const res = await fetch(
-          `https://resonance-social-server.vercel.app/feed/${currentUserId}`,
-          {
-            signal: controller.signal,
-          }
-        );
-        
+
+        const res = await fetch(`http://localhost:3000/feed/${currentUserId}`, {
+          signal: controller.signal,
+        });
+
         if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
-        
+
         const data = await res.json();
         if (mounted) setPosts(data);
       } catch (err) {
@@ -121,7 +118,7 @@ const Home: FC = () => {
     setText(e.target.value);
   };
 
-  const matchPost = posts.filter(post => post?.privacy === "public");
+  const matchPost = posts.filter((post) => post?.privacy === "public");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -135,7 +132,7 @@ const Home: FC = () => {
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+      const res = await fetch("http://localhost:3000/socialPost", {
         method: "POST",
         body: formData,
       });
@@ -146,10 +143,10 @@ const Home: FC = () => {
         setImage(null);
         setImageFile(null);
         setPrivacy("public");
-        
+
         // Refresh the newsfeed after posting
         const feedRes = await fetch(
-          `https://resonance-social-server.vercel.app/feed/${currentUserId}`
+          `http://localhost:3000/feed/${currentUserId}`
         );
         const feedData = await feedRes.json();
         setPosts(feedData);
@@ -163,7 +160,7 @@ const Home: FC = () => {
   };
 
   const handleDeletePost = (deletedId: string) => {
-    setPosts(prevPosts => prevPosts.filter(post => post._id !== deletedId));
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== deletedId));
   };
 
   return (
