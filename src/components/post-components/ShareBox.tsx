@@ -81,7 +81,7 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
     }
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+      const res = await fetch("http://localhost:3000/socialPost", {
         method: "POST",
         body: formData,
       });
@@ -89,9 +89,9 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
       if (data.insertedId) {
         toast.success("Your post is updated successfully!");
         setShare(false);
-        
+
         // Refresh the newsfeed after posting
-        
+
       } else {
         toast.error("Could not add post. Try again.");
       }
@@ -107,11 +107,11 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xl flex justify-center overflow-y-auto">
-  <div className="min-h-screen flex justify-center items-start w-full p-4">
-    <form
-    onSubmit={handleSubmit}
-    className="bg-white w-full max-w-md rounded-lg p-4 mx-1 relative my-8"
-  >
+      <div className="min-h-screen flex justify-center items-start w-full p-4">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white w-full max-w-md rounded-lg p-4 mx-1 relative my-8"
+        >
           <div
             onClick={() => setShare(false)}
             className="absolute top-3 right-3 cursor-pointer"
@@ -206,8 +206,8 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
             </button>
           </div>
         </form>
-        </div>
-      
+      </div>
+
     </div>
   );
 };
