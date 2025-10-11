@@ -9,7 +9,9 @@ import { IoNewspaperOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import { TiMessages } from "react-icons/ti";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://resonance-social-server.vercel.app";
 
 type UserDoc = {
   uid: string;

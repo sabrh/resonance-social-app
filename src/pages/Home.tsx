@@ -72,9 +72,12 @@ const Home: FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`http://localhost:3000/feed/${currentUserId}`, {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`,
+          {
+            signal: controller.signal,
+          }
+        );
 
         if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
 
@@ -132,7 +135,7 @@ const Home: FC = () => {
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch("http://localhost:3000/socialPost", {
+      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
         method: "POST",
         body: formData,
       });
@@ -146,7 +149,7 @@ const Home: FC = () => {
 
         // Refresh the newsfeed after posting
         const feedRes = await fetch(
-          `http://localhost:3000/feed/${currentUserId}`
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`
         );
         const feedData = await feedRes.json();
         setPosts(feedData);
