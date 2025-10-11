@@ -101,9 +101,10 @@ const LeftSidebar: React.FC = () => {
               <NavLink
                 to="/home"
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${isActive
-                    ? " font-semibold bg-gray-200 dark:bg-gray-700"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                    isActive
+                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`
                 }
               >
@@ -115,9 +116,10 @@ const LeftSidebar: React.FC = () => {
               <NavLink
                 to="/profile"
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${isActive
-                    ? " font-semibold bg-gray-200 dark:bg-gray-700"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                    isActive
+                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`
                 }
               >
@@ -128,9 +130,10 @@ const LeftSidebar: React.FC = () => {
               <NavLink
                 to="/messages"
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${isActive
-                    ? " font-semibold bg-gray-200 dark:bg-gray-700"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                    isActive
+                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`
                 }
               >

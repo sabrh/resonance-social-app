@@ -91,7 +91,7 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
         setShare(false);
 
         // Refresh the newsfeed after posting
-
+        
       } else {
         toast.error("Could not add post. Try again.");
       }
@@ -99,10 +99,6 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
       console.error(err);
       toast.error("Failed to post. Check console.");
     }
-
-
-
-
   };
 
   return (
@@ -206,8 +202,8 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
             </button>
           </div>
         </form>
-      </div>
-
+        </div>
+      
     </div>
   );
 };

@@ -38,7 +38,7 @@ const UserProfile: FC = () => {
   const [loading, setLoading] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
-
+  
 
   // modal state
   const [showModal, setShowModal] = useState(false);
@@ -194,24 +194,23 @@ const UserProfile: FC = () => {
         { currentUid: uid }
       );
 
-      setIsFollowing(res.data.isFollowing);
-      setFollowersCount(res.data.followersCount);
-
-      // Show feedback to user
-      toast.success(res.data.isFollowing ? "Followed successfully!" : "Unfollowed successfully!");
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { error?: string } } };
-      toast.error(error.response?.data?.error || "Failed to fetch posts");
-    } finally {
-      setLoading(false);
-    }
-  };
+    setIsFollowing(res.data.isFollowing);
+    setFollowersCount(res.data.followersCount);
+    
+    // Show feedback to user
+    toast.success(res.data.isFollowing ? "Followed successfully!" : "Unfollowed successfully!");
+  } catch (err: unknown) {
+  const error = err as { response?: { data?: { error?: string } } }; 
+  toast.error(error.response?.data?.error || "Failed to fetch posts");
+} finally {
+    setLoading(false);
+  }
+};
 
   // Determine banner to show
   const bannerSrc = userDoc?.banner
     ? `data:${userDoc.bannerMimetype};base64,${userDoc.banner}`
     : preview || null;
-
 
   return (
     <div className="mx-auto bg-white shadow rounded-lg overflow-hidden">

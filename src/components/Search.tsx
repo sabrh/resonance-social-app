@@ -52,7 +52,6 @@ export default function Search() {
         className="input input-bordered w-full rounded-full px-4 py-2 text-sm md:text-base"
       />
 
-
       {showDropdown && query && (
         <div className="absolute mt-1 w-full bg-white shadow-lg rounded-md max-h-60 overflow-y-auto z-50">
           {loading && <p className="p-2 text-gray-500">Searching...</p>}

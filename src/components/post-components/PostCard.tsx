@@ -34,6 +34,7 @@ type Post = {
   filename?: string;
   likes?: string[];
   comments?: Comment[];
+
   userName: string;
   userPhoto: string;
   createdAt: string;
@@ -55,7 +56,12 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const [liked, setLiked] = useState(
     post.likes?.includes(currentUserId) ?? false
   );
+  // const [sharedPost, setSharedPost] = useState<Post["sharedPost"]>(
+  //   post.sharedPost
+  // );
+
   const [share, setShare] = useState<boolean>(false);
+
   const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
   const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
   const [comments, setComments] = useState<Comment[]>(post.comments ?? []);
@@ -78,7 +84,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           body: JSON.stringify({
             userId: currentUserId,
             senderName: user?.displayName,
-            senderPhoto: user?.photoURL
+            senderPhoto: user?.photoURL,
           }),
         }
       );
@@ -130,7 +136,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             authorPhoto: user?.photoURL,
             authorEmail: user?.email,
             userName: user?.displayName,
-            senderId: currentUserId // Add for notification
+            senderId: currentUserId, // Add for notification
           }),
         }
       );
@@ -225,7 +231,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             authorEmail: user?.email,
             authorPhoto: user?.photoURL,
             text,
-            senderId: currentUserId // Add for notification
+            senderId: currentUserId, // Add for notification
           }),
         }
       );
@@ -238,15 +244,15 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         prevComments.map((c) =>
           c._id === commentId
             ? {
-              ...c,
-              replies: parentReplyId
-                ? addNestedReplyState(
-                  c.replies || [],
-                  parentReplyId,
-                  data.reply
-                )
-                : [...(c.replies || []), data.reply],
-            }
+                ...c,
+                replies: parentReplyId
+                  ? addNestedReplyState(
+                      c.replies || [],
+                      parentReplyId,
+                      data.reply
+                    )
+                  : [...(c.replies || []), data.reply],
+              }
             : c
         )
       );
@@ -273,9 +279,9 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       r._id === parentId
         ? { ...r, replies: [...(r.replies || []), newReply] }
         : {
-          ...r,
-          replies: addNestedReplyState(r.replies || [], parentId, newReply),
-        }
+            ...r,
+            replies: addNestedReplyState(r.replies || [], parentId, newReply),
+          }
     );
   };
 
@@ -314,13 +320,13 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         prevComments.map((c) =>
           c._id === commentId
             ? {
-              ...c,
-              replies: updateNestedReplyText(
-                c.replies || [],
-                replyId,
-                newText
-              ),
-            }
+                ...c,
+                replies: updateNestedReplyText(
+                  c.replies || [],
+                  replyId,
+                  newText
+                ),
+              }
             : c
         )
       );
@@ -472,6 +478,39 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
   const handleShare = async () => {
     setShare(true);
+    //   try {
+    //     const res = await fetch(
+    //       `http://localhost:3000/socialPost/${post._id}/share`,
+    //       {
+    //         method: "POST",
+    //         headers: { "Content-Type": "application/json" },
+    //         body: JSON.stringify({
+    //           userId: currentUserId,
+    //           userName: user?.displayName,
+    //           userPhoto: user?.photoURL,
+    //           text: post.text || "",
+    //         }),
+    //       }
+    //     );
+
+    //     const data = await res.json();
+    //     if (res.ok) {
+    //       toast.success("Post shared in your profile !");
+    //       setSharesCount((prev) => prev + 1);
+
+    //       // Shared post update
+    //       // যদি parent কম্পোনেন্টে posts state থাকে:
+    //       // setPosts((prev) => [data.post, ...prev]);
+
+    //       // অন্যভাবে: PostCard-এর মধ্যে শুধু local shared post দেখাতে চাইলে:
+    //       setSharedPost(data.post.sharedPost); // <-- useState declare করতে হবে
+    //     } else {
+    //       toast.error(data.error || "Failed to share");
+    //     }
+    //   } catch (err) {
+    //     console.error(err);
+    //     toast.error("Something went wrong");
+    //   }
   };
 
   // Image rendering fix
@@ -527,15 +566,17 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     <div className="bg-white shadow rounded-lg p-4 max-w-2xl mx-auto mt-6">
       {/* Info dropdown */}
       <div
-        className={`float-right relative ${post?.userEmail === user?.email ? "" : "hidden"
-          }`}
+        className={`float-right relative ${
+          post?.userEmail === user?.email ? "" : "hidden"
+        }`}
       >
         <p onClick={() => setInfo(!info)} className="text-xl cursor-pointer">
           <BsThreeDotsVertical />
         </p>
         <div
-          className={`absolute top-10 right-4 h-[100px] w-[150px] bg-white shadow-2xl rounded-2xl ${info ? "" : "hidden"
-            }`}
+          className={`absolute top-10 right-4 h-[100px] w-[150px] bg-white shadow-2xl rounded-2xl ${
+            info ? "" : "hidden"
+          }`}
         >
           <p className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4">
             <i className="fa-solid fa-pen-to-square"></i>
@@ -588,8 +629,9 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       {/* Post body */}
       <p className="mt-4">{post.text}</p>
 
-      {/* Shared post or original post image */}
-      {(post.shared === "yes") ?
+      {/* Original post image */}
+      {/* <p className="mt-2">{post.text}</p> */}
+      {post.shared === "yes" ? (
         <div className="bg-gray-100 p-5 rounded-2xl mt-4">
           <div className="flex items-center gap-2 ">
             <Link to={`/profile/${post.sharedUserId}`}>
@@ -611,10 +653,11 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             <img
               src={imageSrc}
               alt={post.filename}
-              className="max-w-full max-h-[400px] object-cover rounded mt-3"
+              className="max-w-full max-h-[400px] object-cover  rounded mt-3"
             />
           )}
-        </div> :
+        </div>
+      ) : (
         <div>
           {imageSrc && (
             <img
@@ -623,7 +666,8 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
               className="max-w-full max-h-[400px] object-cover mt-2 rounded"
             />
           )}
-        </div>}
+        </div>
+      )}
 
       {/* Like + Comment + Share */}
       <div className="flex gap-6 items-center mt-4 text-lg text-gray-500">
@@ -656,8 +700,8 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
         {/* Share */}
         <button
-          onClick={handleShare}
-          className="flex items-center gap-1 text-gray-600 cursor-pointer"
+          // onClick={handleShare}
+          className="flex items-center gap-1 text-gray-600"
         >
           <FaShare />
           <span className="text-lg">0</span>
@@ -748,15 +792,15 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
                       <div className="flex gap-2 text-xs mt-1">
                         {(c.authorEmail === user?.email ||
                           post.userEmail === user?.email) && (
-                            <button
-                              onClick={() =>
-                                handleDeleteComment(c._id, c.authorEmail)
-                              }
-                              className="text-red-500 hover:underline"
-                            >
-                              Delete
-                            </button>
-                          )}
+                          <button
+                            onClick={() =>
+                              handleDeleteComment(c._id, c.authorEmail)
+                            }
+                            className="text-red-500 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        )}
                         {c.authorEmail === user?.email && (
                           <button
                             onClick={() => handleEditComment(c._id)}
@@ -812,7 +856,10 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
                             <button
                               onClick={async () => {
                                 if ((replyTexts[c._id] || "").trim()) {
-                                  await handleAddReply(c._id, replyTexts[c._id]);
+                                  await handleAddReply(
+                                    c._id,
+                                    replyTexts[c._id]
+                                  );
                                 }
                               }}
                               className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
@@ -839,10 +886,10 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         </div>
       )}
 
-      {/* Share modal */}
+      {/* share modal */}
       {share && (
         <div>
-          <ShareBox share={share} post={post} setShare={setShare} />
+          <ShareBox share={share} post={post} setShare={setShare}></ShareBox>
         </div>
       )}
     </div>

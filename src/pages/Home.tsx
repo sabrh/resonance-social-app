@@ -121,7 +121,7 @@ const Home: FC = () => {
     setText(e.target.value);
   };
 
-  const matchPost = posts.filter(post => post?.privacy === "public");
+  const matchPost = posts.filter((post) => post?.privacy === "public");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -163,7 +163,7 @@ const Home: FC = () => {
   };
 
   const handleDeletePost = (deletedId: string) => {
-    setPosts(prevPosts => prevPosts.filter(post => post._id !== deletedId));
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== deletedId));
   };
 
   return (

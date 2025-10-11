@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
 import { FaArrowRightToBracket } from "react-icons/fa6";
 import Search from "./Search";
+import { ThemeToggle } from "./ThemeToggle";
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
@@ -38,13 +39,13 @@ export default function Navbar() {
         setUnreadCount(data.count);
       }
     } catch (err) {
-      console.error('Failed to fetch unread count:', err);
+      console.error("Failed to fetch unread count:", err);
     }
   };
 
   // NEW: Function to refresh notification count
   const refreshNotificationCount = () => {
-    setRefreshCounter(prev => prev + 1);
+    setRefreshCounter((prev) => prev + 1);
   };
 
   const handleLogout = () => {
@@ -60,37 +61,66 @@ export default function Navbar() {
       });
   };
 
-  const links =
+  const links = (
     <>
       {user && (
         <>
-          <li><NavLink to="/home" className={({ isActive }) => isActive ?
-            "text-blue-400 underline-offset-4 font-bold" : ""}>Newsfeed</NavLink></li>
+          <li>
+            <NavLink
+              to="/home"
+              className={({ isActive }) =>
+                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+              }
+            >
+              Newsfeed
+            </NavLink>
+          </li>
 
-          <li><NavLink to="/profile" className={({ isActive }) => isActive ?
-            "text-blue-400 underline-offset-4 font-bold" : ""}>My Profile</NavLink></li>
+          <li>
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+              }
+            >
+              My Profile
+            </NavLink>
+          </li>
 
-          <li><NavLink to="/messages" className={({ isActive }) => isActive ?
-            "text-blue-400 underline-offset-4 font-bold" : ""}>Messages</NavLink></li>
+          <li>
+            <NavLink
+              to="/messages"
+              className={({ isActive }) =>
+                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+              }
+            >
+              Messages
+            </NavLink>
+          </li>
 
           {/* NEW: Notifications link */}
           <li>
             <NavLink
               to="/notifications"
               className={({ isActive }) =>
-                `flex items-center gap-2 ${isActive ? "text-blue-400 underline-offset-4 font-bold" : ""}`
+                `flex items-center gap-2 ${
+                  isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+                }`
               }
               onClick={refreshNotificationCount} // NEW: Refresh count when clicking notifications link
             >
               Notifications
               {unreadCount > 0 && (
-                <span className="badge badge-primary badge-sm">{unreadCount}</span>
+                <span className="badge badge-primary badge-sm">
+                  {unreadCount}
+                </span>
               )}
             </NavLink>
           </li>
         </>
       )}
     </>
+  );
 
   return (
     <div className="navbar bg-base-100/70 backdrop-blur-md shadow px-8 md:px-36 fixed top-0 left-0 w-full z-50">
@@ -115,16 +145,20 @@ export default function Navbar() {
       <div className="navbar-end ml-auto gap-4">
         {user ? (
           <>
+            <ThemeToggle />
             {/* UPDATED: Notification bell with badge */}
             <Link
               to="/notifications"
               className="relative"
               onClick={refreshNotificationCount} // NEW: Refresh count when clicking bell
             >
-              <BsBell size={25} className="text-gray-600 hover:text-blue-500 transition-colors" />
+              <BsBell
+                size={25}
+                className="text-gray-600 hover:text-blue-500 transition-colors"
+              />
               {unreadCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                  {unreadCount > 9 ? '9+' : unreadCount}
+                  {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </Link>
@@ -162,14 +196,21 @@ export default function Navbar() {
                   </Link>
                 </li>
                 <li className="bg-red-600 rounded text-white p-1 font-bold flex items-center gap-1">
-                  <button onClick={handleLogout}>Logout <FaArrowRightToBracket /> </button>
+                  <button onClick={handleLogout}>
+                    Logout <FaArrowRightToBracket />{" "}
+                  </button>
                 </li>
               </ul>
             </div>
           </>
         ) : (
           <>
-            <Link className="btn btn-neutral text-white rounded-full mr-4" to="/login">
+            {" "}
+            <ThemeToggle />
+            <Link
+              className="btn btn-neutral text-white rounded-full mr-4"
+              to="/login"
+            >
               Login / Signup
             </Link>
           </>
