@@ -37,11 +37,11 @@ type Post = {
   userPhoto: string;
   createdAt: string;
   userEmail: string;
-  shared:string;
-  sharedUserName:string;
-  sharedUserPhoto:string;
-  sharedUserText:string;
-  sharedUserId:string;
+  shared: string;
+  sharedUserName: string;
+  sharedUserPhoto: string;
+  sharedUserText: string;
+  sharedUserId: string;
 };
 
 const Home: FC = () => {
@@ -71,16 +71,16 @@ const Home: FC = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const res = await fetch(
           `http://localhost:3000/feed/${currentUserId}`,
           {
             signal: controller.signal,
           }
         );
-        
+
         if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
-        
+
         const data = await res.json();
         if (mounted) setPosts(data);
       } catch (err) {
@@ -146,7 +146,7 @@ const Home: FC = () => {
         setImage(null);
         setImageFile(null);
         setPrivacy("public");
-        
+
         // Refresh the newsfeed after posting
         const feedRes = await fetch(
           `http://localhost:3000/feed/${currentUserId}`

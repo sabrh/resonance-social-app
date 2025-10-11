@@ -24,11 +24,11 @@ type Post = {
   userPhoto: string;
   createdAt: string;
   userEmail: string;
-  shared:string;
-  sharedUserName:string;
-  sharedUserPhoto:string;
-  sharedUserText:string;
-  sharedUserId:string;
+  shared: string;
+  sharedUserName: string;
+  sharedUserPhoto: string;
+  sharedUserText: string;
+  sharedUserId: string;
 };
 
 type Props = {
@@ -62,7 +62,7 @@ const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Use the new endpoint with privacy filtering
         const res = await fetch(
           `http://localhost:3000/users/${profileUid}/posts?viewerUid=${currentUserId}`,
@@ -70,9 +70,9 @@ const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
             signal: controller.signal,
           }
         );
-        
+
         if (!res.ok) throw new Error(`Failed to load posts: ${res.status}`);
-        
+
         const data = await res.json();
         if (mounted) setPosts(data);
       } catch (err) {
