@@ -174,6 +174,38 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     }
   };
 
+  // const handleAddReply = async (commentId: string, text: string) => {
+  //   if (!text.trim()) return;
+
+  //   try {
+  //     const res = await fetch(
+  //       `http://localhost:3000/socialPost/${post._id}/comment/${commentId}/replies`,
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({
+  //           text,
+  //           userEmail: user?.email,
+  //           userName: user?.displayName,
+  //           authorPhoto: user?.photoURL,
+  //         }),
+  //       }
+  //     );
+  //     const data = await res.json();
+  //     if (!res.ok) throw new Error(data.error || "Failed to add reply");
+
+  //     setComments((prev) =>
+  //       prev.map((c) =>
+  //         c._id === commentId
+  //           ? { ...c, replies: [data.reply, ...(c.replies || [])] }
+  //           : c
+  //       )
+  //     );
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Failed to add reply");
+  //   }
+  // };
   // Add reply - UPDATED WITH NOTIFICATION
   const handleAddReply = async (
     commentId: string,

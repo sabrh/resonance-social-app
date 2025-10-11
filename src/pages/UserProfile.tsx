@@ -157,10 +157,13 @@ const UserProfile: FC = () => {
   useEffect(() => {
     if (!targetUid || !uid) return;
 
-    const checkFollowStatus = async () => {
-      try {
-        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
-        const userData = res.data;
+  const checkFollowStatus = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
+      const userData = res.data;
+      
+      setUserDoc(userData);
+      setFollowersCount(userData.followers?.length || 0);
 
         setUserDoc(userData);
         setFollowersCount(userData.followers?.length || 0);
