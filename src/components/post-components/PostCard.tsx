@@ -71,7 +71,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleLike = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/like`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -93,7 +93,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const handleViewLikes = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/likes`
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/likes`
       );
       const data = await res.json();
       setLikeUsers(data);
@@ -117,7 +117,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/comments`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
@@ -152,7 +152,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/comment/${commentId}`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -179,7 +179,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
   //   try {
   //     const res = await fetch(
-  //       `http://localhost:3000/socialPost/${post._id}/comment/${commentId}/replies`,
+  //       `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}/replies`,
   //       {
   //         method: "POST",
   //         headers: { "Content-Type": "application/json" },
@@ -214,7 +214,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   ) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/replies`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -294,7 +294,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     try {
       // Backend request
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/replies/${replyId}`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies/${replyId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -371,7 +371,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     try {
       // Send DELETE request to backend
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/replies/${replyId}`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies/${replyId}`,
         { method: "DELETE" }
       );
 
@@ -452,7 +452,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     // 🔹 Delete logic
     try {
       const res = await fetch(
-        `http://localhost:3000/socialPost/${post._id}/comment/${commentId}`,
+        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -500,7 +500,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `http://localhost:3000/socialPost/${post._id}`,
+                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
                   { method: "DELETE" }
                 );
 

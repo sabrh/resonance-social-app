@@ -45,7 +45,7 @@ const PostDetail = () => {
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const res = await fetch(`http://localhost:3000/socialPost/${postId}`);
+                const res = await fetch(`https://resonance-social-server.vercel.app/socialPost/${postId}`);
                 if (!res.ok) throw new Error("Failed to fetch post");
 
                 const postData = await res.json();
