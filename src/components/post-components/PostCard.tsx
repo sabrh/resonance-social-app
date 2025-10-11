@@ -478,39 +478,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
   const handleShare = async () => {
     setShare(true);
-    //   try {
-    //     const res = await fetch(
-    //       `http://localhost:3000/socialPost/${post._id}/share`,
-    //       {
-    //         method: "POST",
-    //         headers: { "Content-Type": "application/json" },
-    //         body: JSON.stringify({
-    //           userId: currentUserId,
-    //           userName: user?.displayName,
-    //           userPhoto: user?.photoURL,
-    //           text: post.text || "",
-    //         }),
-    //       }
-    //     );
-
-    //     const data = await res.json();
-    //     if (res.ok) {
-    //       toast.success("Post shared in your profile !");
-    //       setSharesCount((prev) => prev + 1);
-
-    //       // Shared post update
-    //       // যদি parent কম্পোনেন্টে posts state থাকে:
-    //       // setPosts((prev) => [data.post, ...prev]);
-
-    //       // অন্যভাবে: PostCard-এর মধ্যে শুধু local shared post দেখাতে চাইলে:
-    //       setSharedPost(data.post.sharedPost); // <-- useState declare করতে হবে
-    //     } else {
-    //       toast.error(data.error || "Failed to share");
-    //     }
-    //   } catch (err) {
-    //     console.error(err);
-    //     toast.error("Something went wrong");
-    //   }
+    
   };
 
   // Image rendering fix
@@ -700,7 +668,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
         {/* Share */}
         <button
-          // onClick={handleShare}
+          onClick={handleShare}
           className="flex items-center gap-1 text-gray-600"
         >
           <FaShare />
