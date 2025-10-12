@@ -73,8 +73,12 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
   const { user } = useContext(AuthContext)!;
 
-  // Like/Unlike handler - UPDATED WITH NOTIFICATION
+  const [isLiking, setIsLiking] = useState(false);
+
   const handleLike = async () => {
+    if (isLiking) return; // Prevent double-click
+    setIsLiking(true);
+
     try {
       const res = await fetch(
         `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
@@ -93,10 +97,13 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       setLikesCount(data.likesCount);
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLiking(false);
     }
   };
 
   const handleViewLikes = async () => {
+    if (likeUsers.length > 0 && openLikes) return;
     try {
       const res = await fetch(
         `https://resonance-social-server.vercel.app/socialPost/${post._id}/likes`
@@ -180,39 +187,6 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     }
   };
 
-  // const handleAddReply = async (commentId: string, text: string) => {
-  //   if (!text.trim()) return;
-
-  //   try {
-  //     const res = await fetch(
-  //       `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}/replies`,
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({
-  //           text,
-  //           userEmail: user?.email,
-  //           userName: user?.displayName,
-  //           authorPhoto: user?.photoURL,
-  //         }),
-  //       }
-  //     );
-  //     const data = await res.json();
-  //     if (!res.ok) throw new Error(data.error || "Failed to add reply");
-
-  //     setComments((prev) =>
-  //       prev.map((c) =>
-  //         c._id === commentId
-  //           ? { ...c, replies: [data.reply, ...(c.replies || [])] }
-  //           : c
-  //       )
-  //     );
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Failed to add reply");
-  //   }
-  // };
-  // Add reply - UPDATED WITH NOTIFICATION
   const handleAddReply = async (
     commentId: string,
     text: string,
@@ -478,7 +452,6 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
   const handleShare = async () => {
     setShare(true);
-    
   };
 
   // Image rendering fix
@@ -677,34 +650,38 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
       </div>
 
       {/* Likes Modal */}
-      {openLikes && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-5 rounded-lg w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-3">Liked by</h2>
-            <div className="max-h-64 overflow-y-auto">
-              {likeUsers.length === 0 && <p>No likes yet.</p>}
-              {likeUsers.map((u) => (
-                <div key={u.uid} className="flex items-center gap-3 mb-3">
-                  {u.photoURL && (
-                    <img
-                      src={u.photoURL}
-                      alt={u.displayName}
-                      className="h-10 w-10 rounded-full"
-                    />
-                  )}
-                  <p className="font-medium">{u.displayName}</p>
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={() => setOpenLikes(false)}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Close
-            </button>
+     {openLikes && (
+  <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-5 rounded-lg w-full max-w-md">
+      <h2 className="text-lg font-semibold mb-3">Liked by</h2>
+
+      <div className="max-h-64 overflow-y-auto">
+        {likeUsers.length === 0 && <p>No likes yet.</p>}
+
+        {[...new Map(likeUsers.map((u) => [u.uid, u])).values()].map((u) => (
+          <div key={u.uid} className="flex items-center gap-3 mb-3">
+            {u.photoURL && (
+              <img
+                src={u.photoURL}
+                alt={u.displayName}
+                className="h-10 w-10 rounded-full"
+              />
+            )}
+            <p className="font-medium">{u.displayName}</p>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+
+      <button
+        onClick={() => setOpenLikes(false)}
+        className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
 
       {/* Comment modal */}
       {openComments && (
