@@ -138,10 +138,10 @@ const RightSidebar: React.FC = () => {
   return (
     <div>
       {/* side bar */}
-      <aside className="hidden md:block md:col-span-3">
+      <aside className="md:block md:col-span-3 flex gap-4 items-center overflow-x-auto md:overflow-x-visible mb-3 md:space-y-6">
         <form>
           <label className="cursor-pointer">
-            <div className="relative w-[180px] h-[200px] bg-gradient-to-br from-blue-500/20 to-purple-500/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl group ">
+            <div className="relative md:w-[180px] md:h-[200px] w-[130px] h-[150px] bg-gradient-to-br from-blue-500/20 to-purple-500/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl group ">
               {/* Floating gradient circle */}
               <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
 
@@ -168,11 +168,10 @@ const RightSidebar: React.FC = () => {
           </label>
         </form>
         {stories.map((story) => (
-          <div>
+          <div key={story?._id}>
             <div
               onClick={() => setSelectedStory(story)}
-              key={story?._id}
-              className="mt-6 w-[180px] h-[200px] rounded-2xl relative cursor-pointer"
+              className=" md:w-[180px] md:h-[200px] w-[130px] h-[150px] rounded-2xl relative cursor-pointer"
             >
               <div className="h-[50px] w-[50px] absolute top-4 left-4 bg-gradient-to-r from-green-400 via-emerald-400 to-sky-500 animate-gradient-x p-1 rounded-full">
                 <img className=" rounded-full" src={story?.userPhoto} />
@@ -212,7 +211,7 @@ const RightSidebar: React.FC = () => {
                   <div
                     onClick={() =>{ 
                       setSelectedStory(null);
-                      setInfo(!info);
+                      setInfo(false);
                     }
 
                     }
@@ -223,7 +222,7 @@ const RightSidebar: React.FC = () => {
                   <div
                     className="absolute top-4 right-12 cursor-pointer"
                   >
-                    <div onClick={() => setInfo(!info)}>
+                    <div onClick={() => setInfo(!info)} className={(selectedStory?.userId === user?.uid) ? "" : "hidden"}>
                       <BsThreeDotsVertical className="w-5 h-5 text-white" />
                     </div>
                     <div
