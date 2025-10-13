@@ -1,3 +1,4 @@
+// src/router.tsx
 import { createBrowserRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
@@ -10,7 +11,8 @@ import ErrorPage from "../pages/ErrorPage";
 import Notifications from "../pages/Notifications";
 import About from "../pages/About";
 import PasswordForget from "../pages/auth/PasswordForget";
-
+import PostDetail from "../components/post-components/PostDetail";
+// import PostDetail from "../pages/PostDetail"; // NEW
 
 export const router = createBrowserRouter([
   {
@@ -24,8 +26,7 @@ export const router = createBrowserRouter([
       { path: "messages", element: <Chats /> },
       { path: "notifications", element: <Notifications /> },
       { path: "home", element: <Home /> },
-      {}
-
+      { path: "post/:postId", element: <PostDetail /> } // NEW - Post detail route
     ],
   },
   {

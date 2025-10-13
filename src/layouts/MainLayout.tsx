@@ -6,13 +6,13 @@ import Footer from '../components/Footer';
 const MainLayout: FC = () => {
   return (
     <div>
-        <header><Navbar /></header>
-        <main>
-          <div className='min-h-[calc(100vh-68px)] mx-8 md:mx-36 my-2'>
+      <header><Navbar /></header>
+      <main>
+        <div className='min-h-[calc(100vh-68px)] mx-8 md:mx-36 my-2'>
           <Outlet></Outlet>
-          </div>
-        </main>
-        <Footer />
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

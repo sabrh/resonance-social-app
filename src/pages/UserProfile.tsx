@@ -154,8 +154,8 @@ const UserProfile: FC = () => {
   };
 
   // useEffect to handle follow status properly
-useEffect(() => {
-  if (!targetUid || !uid) return;
+  useEffect(() => {
+    if (!targetUid || !uid) return;
 
   const checkFollowStatus = async () => {
     try {
@@ -165,41 +165,44 @@ useEffect(() => {
       setUserDoc(userData);
       setFollowersCount(userData.followers?.length || 0);
 
-      // Check if current user is following target user
-      if (uid && targetUid !== uid) {
-        const isUserFollowing = userData.followers?.includes(uid) || false;
-        setIsFollowing(isUserFollowing);
-      } else {
-        setIsFollowing(false);
+        setUserDoc(userData);
+        setFollowersCount(userData.followers?.length || 0);
+
+        // Check if current user is following target user
+        if (uid && targetUid !== uid) {
+          const isUserFollowing = userData.followers?.includes(uid) || false;
+          setIsFollowing(isUserFollowing);
+        } else {
+          setIsFollowing(false);
+        }
+      } catch (err) {
+        console.error("Error checking follow status:", err);
       }
-    } catch (err) {
-      console.error("Error checking follow status:", err);
-    }
-  };
+    };
 
-  checkFollowStatus();
-}, [targetUid, uid]);
+    checkFollowStatus();
+  }, [targetUid, uid]);
 
-// Improved follow toggle handler
-const handleFollowToggle = async () => {
-  if (!uid || !userDoc?.uid || uid === userDoc.uid) return;
-  
-  try {
-    setLoading(true);
-    const res = await axios.put(
-      `http://localhost:3000/users/${userDoc.uid}/follow`,
-      { currentUid: uid }
-    );
+  // Improved follow toggle handler
+  const handleFollowToggle = async () => {
+    if (!uid || !userDoc?.uid || uid === userDoc.uid) return;
+
+    try {
+      setLoading(true);
+      const res = await axios.put(
+        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+        { currentUid: uid }
+      );
 
     setIsFollowing(res.data.isFollowing);
     setFollowersCount(res.data.followersCount);
     
     // Show feedback to user
     toast.success(res.data.isFollowing ? "Followed successfully!" : "Unfollowed successfully!");
-  } catch (err: any) {
-    console.error("Follow toggle failed:", err);
-    toast.error(err.response?.data?.error || "Operation failed");
-  } finally {
+  } catch (err: unknown) {
+  const error = err as { response?: { data?: { error?: string } } }; 
+  toast.error(error.response?.data?.error || "Failed to fetch posts");
+} finally {
     setLoading(false);
   }
 };
@@ -208,7 +211,6 @@ const handleFollowToggle = async () => {
   const bannerSrc = userDoc?.banner
     ? `data:${userDoc.bannerMimetype};base64,${userDoc.banner}`
     : preview || null;
-
 
   return (
     <div className="mx-auto bg-white shadow rounded-lg overflow-hidden">
@@ -284,9 +286,8 @@ const handleFollowToggle = async () => {
           {targetUid !== uid && (
             <button
               onClick={handleFollowToggle}
-              className={`px-3 py-1 rounded-md font-semibold ${
-                isFollowing ? "bg-red-500 text-white" : "bg-blue-500 text-white"
-              }`}
+              className={`px-3 py-1 rounded-md font-semibold ${isFollowing ? "bg-red-500 text-white" : "bg-blue-500 text-white"
+                }`}
             >
               {isFollowing ? "Unfollow" : "Follow"}
             </button>
@@ -377,11 +378,10 @@ const handleFollowToggle = async () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 text-center font-medium capitalize ${
-                activeTab === tab
+              className={`flex-1 py-2 text-center font-medium capitalize ${activeTab === tab
                   ? "border-b-2 border-blue-500 text-blue-500"
                   : "text-gray-600 hover:text-blue-400"
-              }`}
+                }`}
             >
               {tab}
             </button>

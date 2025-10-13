@@ -37,6 +37,11 @@ type Post = {
   userPhoto: string;
   createdAt: string;
   userEmail: string;
+  shared: string;
+  sharedUserName: string;
+  sharedUserPhoto: string;
+  sharedUserText: string;
+  sharedUserId: string;
 };
 
 const Home: FC = () => {
@@ -52,6 +57,8 @@ const Home: FC = () => {
   // Get current user id
   const currentUserId = user?.uid || "";
 
+
+
   // Fetch newsfeed posts
   useEffect(() => {
     let mounted = true;
@@ -66,16 +73,16 @@ const Home: FC = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const res = await fetch(
           `http://localhost:3000/feed/${currentUserId}`,
           {
             signal: controller.signal,
           }
         );
-        
+
         if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
-        
+
         const data = await res.json();
         if (mounted) setPosts(data);
       } catch (err) {
@@ -116,6 +123,8 @@ const Home: FC = () => {
     setText(e.target.value);
   };
 
+  const matchPost = posts.filter((post) => post?.privacy === "public");
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
@@ -139,7 +148,7 @@ const Home: FC = () => {
         setImage(null);
         setImageFile(null);
         setPrivacy("public");
-        
+
         // Refresh the newsfeed after posting
         const feedRes = await fetch(
           `http://localhost:3000/feed/${currentUserId}`
@@ -156,13 +165,18 @@ const Home: FC = () => {
   };
 
   const handleDeletePost = (deletedId: string) => {
-    setPosts(prevPosts => prevPosts.filter(post => post._id !== deletedId));
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== deletedId));
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mt-20 ">
       {/* Left Sidebar (sticky, hidden on mobile) */}
       <LeftSidebar />
+
+      {/* only for mobile device */}
+      <div className="md:hidden">
+        <RightSidebar></RightSidebar>
+      </div>
 
       {/* Main Content */}
       <main className="col-span-1 md:col-span-6">
@@ -249,7 +263,7 @@ const Home: FC = () => {
             <Loading />
           ) : error ? (
             <div className="text-center text-red-500 mt-6">{error}</div>
-          ) : posts.length === 0 ? (
+          ) : matchPost.length === 0 ? (
             <div className="text-center text-gray-500 mt-6 p-4">
               <p>No posts in your feed yet.</p>
               <p className="text-sm mt-2">
@@ -258,7 +272,7 @@ const Home: FC = () => {
             </div>
           ) : (
             <div>
-              {posts.map((post) => (
+              {matchPost.map((post) => (
                 <PostCard
                   key={post._id}
                   post={post}
@@ -272,7 +286,7 @@ const Home: FC = () => {
       </main>
 
       {/* Right Sidebar (sticky, hidden on mobile) */}
-      <RightSidebar />
+      <div className="hidden md:block"><RightSidebar /></div>
     </div>
   );
 };
