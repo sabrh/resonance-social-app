@@ -34,7 +34,7 @@ const RightSidebar: React.FC = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const response = await fetch(`https://resonance-social-server.vercel.app/story`);
+        const response = await fetch(`http://localhost:3000/story`);
         if (!response.ok) throw new Error("Network error");
         const data: Story[] = await response.json();
         setStories(data);
@@ -74,14 +74,14 @@ const RightSidebar: React.FC = () => {
     if (user?.uid) formData.append("userId", user.uid);
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/story", {
+      const res = await fetch("http://localhost:3000/story", {
         method: "POST",
         body: formData,
       });
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Your story created successfully!");
-        setReload(prev => !prev);
+        setReload((prev) => !prev);
         setImage(null);
         setImageFile(null);
       } else {
@@ -92,7 +92,6 @@ const RightSidebar: React.FC = () => {
       toast.error("Failed to post. Check console.");
     }
   };
-
 
   // delete story...........................................................
 
@@ -110,16 +109,15 @@ const RightSidebar: React.FC = () => {
           <button
             onClick={async () => {
               try {
-                const res = await fetch(
-                  `https://resonance-social-server.vercel.app/story/${id}`,
-                  { method: "DELETE" }
-                );
+                const res = await fetch(`http://localhost:3000/story/${id}`, {
+                  method: "DELETE",
+                });
 
                 if (res.ok) {
                   setSelectedStory(null);
                   toast.dismiss(t.id);
                   toast.success("Post deleted successfully!");
-                  setReload(prev => !prev);
+                  setReload((prev) => !prev);
                 }
               } catch (err) {
                 console.error(err);
@@ -209,20 +207,21 @@ const RightSidebar: React.FC = () => {
                     </div>
                   </div>
                   <div
-                    onClick={() =>{ 
+                    onClick={() => {
                       setSelectedStory(null);
                       setInfo(false);
-                    }
-
-                    }
+                    }}
                     className="absolute top-3 right-3 cursor-pointer"
                   >
                     <X className="w-6 h-6 text-white" />
                   </div>
-                  <div
-                    className="absolute top-4 right-12 cursor-pointer"
-                  >
-                    <div onClick={() => setInfo(!info)} className={(selectedStory?.userId === user?.uid) ? "" : "hidden"}>
+                  <div className="absolute top-4 right-12 cursor-pointer">
+                    <div
+                      onClick={() => setInfo(!info)}
+                      className={
+                        selectedStory?.userId === user?.uid ? "" : "hidden"
+                      }
+                    >
                       <BsThreeDotsVertical className="w-5 h-5 text-white" />
                     </div>
                     <div
@@ -231,7 +230,7 @@ const RightSidebar: React.FC = () => {
                       }`}
                     >
                       <p
-                        onClick={()=>confirmDelete(selectedStory._id)}
+                        onClick={() => confirmDelete(selectedStory._id)}
                         className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4"
                       >
                         <i className="fa-solid fa-trash"></i>

@@ -52,7 +52,7 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+        const res = await fetch("http://localhost:3000/socialPost", {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
@@ -93,12 +93,15 @@ const Posts = ({ refreshKey = 0 }: Props) => {
     return <p className="text-gray-500 mt-6">No posts yet.</p>;
   }
 
-  
-
   return (
     <div>
       {matchPost.map((post) => (
-        <PostCard key={post._id} post={post} currentUserId={currentUserId} onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}/>
+        <PostCard
+          key={post._id}
+          post={post}
+          currentUserId={currentUserId}
+          onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}
+        />
       ))}
     </div>
   );

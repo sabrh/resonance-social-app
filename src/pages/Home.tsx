@@ -57,8 +57,6 @@ const Home: FC = () => {
   // Get current user id
   const currentUserId = user?.uid || "";
 
-
-
   // Fetch newsfeed posts
   useEffect(() => {
     let mounted = true;
@@ -74,12 +72,9 @@ const Home: FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(
-          `https://resonance-social-server.vercel.app/feed/${currentUserId}`,
-          {
-            signal: controller.signal,
-          }
-        );
+        const res = await fetch(`http://localhost:3000/feed/${currentUserId}`, {
+          signal: controller.signal,
+        });
 
         if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
 
@@ -137,7 +132,7 @@ const Home: FC = () => {
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+      const res = await fetch("http://localhost:3000/socialPost", {
         method: "POST",
         body: formData,
       });
@@ -151,7 +146,7 @@ const Home: FC = () => {
 
         // Refresh the newsfeed after posting
         const feedRes = await fetch(
-          `https://resonance-social-server.vercel.app/feed/${currentUserId}`
+          `http://localhost:3000/feed/${currentUserId}`
         );
         const feedData = await feedRes.json();
         setPosts(feedData);
@@ -286,7 +281,9 @@ const Home: FC = () => {
       </main>
 
       {/* Right Sidebar (sticky, hidden on mobile) */}
-      <div className="hidden md:block"><RightSidebar /></div>
+      <div className="hidden md:block">
+        <RightSidebar />
+      </div>
     </div>
   );
 };

@@ -81,7 +81,7 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
     }
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+      const res = await fetch("http://localhost:3000/socialPost", {
         method: "POST",
         body: formData,
       });
@@ -91,7 +91,6 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
         setShare(false);
 
         // Refresh the newsfeed after posting
-        
       } else {
         toast.error("Could not add post. Try again.");
       }
@@ -202,8 +201,7 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
             </button>
           </div>
         </form>
-        </div>
-      
+      </div>
     </div>
   );
 };

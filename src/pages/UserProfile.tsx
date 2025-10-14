@@ -38,7 +38,6 @@ const UserProfile: FC = () => {
   const [loading, setLoading] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
-  
 
   // modal state
   const [showModal, setShowModal] = useState(false);
@@ -60,7 +59,7 @@ const UserProfile: FC = () => {
       try {
         // Only ensure user exists in DB if it's your own profile
         if (targetUid === uid && firebaseUser) {
-          await axios.post("https://resonance-social-server.vercel.app/users", {
+          await axios.post("http://localhost:3000/users", {
             uid: firebaseUser.uid,
             displayName: firebaseUser.displayName,
             email: firebaseUser.email,
@@ -69,7 +68,7 @@ const UserProfile: FC = () => {
         }
 
         // fetch the profile we want to show
-        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
+        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
         setUserDoc(res.data);
 
         // preload form values only for your own profile
@@ -120,11 +119,11 @@ const UserProfile: FC = () => {
     form.append("banner", file);
 
     try {
-      await axios.post(`https://resonance-social-server.vercel.app/users/${uid}/banner`, form, {
+      await axios.post(`http://localhost:3000/users/${uid}/banner`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       // refresh user data
-      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
+      const res = await axios.get(`http://localhost:3000/users/${uid}`);
       setUserDoc(res.data);
       console.log(res.data);
       setFile(null);
@@ -141,9 +140,9 @@ const UserProfile: FC = () => {
   const handleBioSave = async () => {
     if (!uid) return;
     try {
-      await axios.put(`https://resonance-social-server.vercel.app/users/${uid}/details`, formData);
+      await axios.put(`http://localhost:3000/users/${uid}/details`, formData);
 
-      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
+      const res = await axios.get(`http://localhost:3000/users/${uid}`);
       console.log(res);
       setUserDoc(res.data);
       setShowModal(false);
@@ -157,13 +156,13 @@ const UserProfile: FC = () => {
   useEffect(() => {
     if (!targetUid || !uid) return;
 
-  const checkFollowStatus = async () => {
-    try {
-      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
-      const userData = res.data;
-      
-      setUserDoc(userData);
-      setFollowersCount(userData.followers?.length || 0);
+    const checkFollowStatus = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
+        const userData = res.data;
+
+        setUserDoc(userData);
+        setFollowersCount(userData.followers?.length || 0);
 
         setUserDoc(userData);
         setFollowersCount(userData.followers?.length || 0);
@@ -190,22 +189,26 @@ const UserProfile: FC = () => {
     try {
       setLoading(true);
       const res = await axios.put(
-        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+        `http://localhost:3000/users/${userDoc.uid}/follow`,
         { currentUid: uid }
       );
 
-    setIsFollowing(res.data.isFollowing);
-    setFollowersCount(res.data.followersCount);
-    
-    // Show feedback to user
-    toast.success(res.data.isFollowing ? "Followed successfully!" : "Unfollowed successfully!");
-  } catch (err: unknown) {
-  const error = err as { response?: { data?: { error?: string } } }; 
-  toast.error(error.response?.data?.error || "Failed to fetch posts");
-} finally {
-    setLoading(false);
-  }
-};
+      setIsFollowing(res.data.isFollowing);
+      setFollowersCount(res.data.followersCount);
+
+      // Show feedback to user
+      toast.success(
+        res.data.isFollowing
+          ? "Followed successfully!"
+          : "Unfollowed successfully!"
+      );
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      toast.error(error.response?.data?.error || "Failed to fetch posts");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Determine banner to show
   const bannerSrc = userDoc?.banner
@@ -286,8 +289,9 @@ const UserProfile: FC = () => {
           {targetUid !== uid && (
             <button
               onClick={handleFollowToggle}
-              className={`px-3 py-1 rounded-md font-semibold ${isFollowing ? "bg-red-500 text-white" : "bg-blue-500 text-white"
-                }`}
+              className={`px-3 py-1 rounded-md font-semibold ${
+                isFollowing ? "bg-red-500 text-white" : "bg-blue-500 text-white"
+              }`}
             >
               {isFollowing ? "Unfollow" : "Follow"}
             </button>
@@ -378,10 +382,11 @@ const UserProfile: FC = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 text-center font-medium capitalize ${activeTab === tab
+              className={`flex-1 py-2 text-center font-medium capitalize ${
+                activeTab === tab
                   ? "border-b-2 border-blue-500 text-blue-500"
                   : "text-gray-600 hover:text-blue-400"
-                }`}
+              }`}
             >
               {tab}
             </button>

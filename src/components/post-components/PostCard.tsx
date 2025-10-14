@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaHeart, FaRegHeart, FaRegCommentDots, FaShare } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
@@ -21,6 +21,7 @@ type LikeUser = {
   uid: string;
   displayName: string;
   photoURL?: string;
+  type?: string;
 };
 
 type Post = {
@@ -31,6 +32,7 @@ type Post = {
   privacy: string;
   image?: string;
   mimetype?: string;
+  reactions?: { userId: string; type: string }[];
   filename?: string;
   likes?: string[];
   comments?: Comment[];
@@ -53,66 +55,100 @@ type Props = {
 
 const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   const [info, setInfo] = useState(false);
-  const [liked, setLiked] = useState(
-    post.likes?.includes(currentUserId) ?? false
-  );
+
   // const [sharedPost, setSharedPost] = useState<Post["sharedPost"]>(
   //   post.sharedPost
   // );
 
   const [share, setShare] = useState<boolean>(false);
-
   const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
-  const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
   const [comments, setComments] = useState<Comment[]>(post.comments ?? []);
   const [newComment, setNewComment] = useState("");
   const [openComments, setOpenComments] = useState(false);
+  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
+  const { user } = useContext(AuthContext)!;
   const [openLikes, setOpenLikes] = useState(false);
   const [likeUsers, setLikeUsers] = useState<LikeUser[]>([]);
-  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
+  const [likesCount, setLikesCount] = useState(post.likes?.length ?? 0);
+  // Picker open/close logic
+  const handlePickerButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowPicker((prev) => !prev);
+  };
+  useEffect(() => {
+    setLikesCount(post.reactions ? post.reactions.length : 0);
+    setUserReaction(
+      post.reactions?.find((r) => r.userId === currentUserId)?.type || null
+    );
+  }, [post.reactions, post._id, currentUserId]);
+  const reactionTypes = [
+    { type: "like", emoji: "👍" },
+    { type: "love", emoji: "❤️" },
+    { type: "haha", emoji: "😂" },
+    { type: "sad", emoji: "😢" },
+  ];
 
-  const { user } = useContext(AuthContext)!;
+  const [userReaction, setUserReaction] = useState(
+    post.reactions?.find((r) => r.userId === currentUserId)?.type || null
+  );
+  const [showPicker, setShowPicker] = useState(false);
 
-  const [isLiking, setIsLiking] = useState(false);
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const picker = document.getElementById(`picker-${post._id}`);
+      if (picker && !picker.contains(e.target as Node)) {
+        setShowPicker(false);
+      }
+    };
+    if (showPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPicker, post._id]);
 
-  const handleLike = async () => {
-    if (isLiking) return; // Prevent double-click
-    setIsLiking(true);
+  // Close picker when clicking outside
+
+  const handleReaction = async (type: string) => {
+    const newType = userReaction === type ? null : type;
 
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/like`,
+        `http://localhost:3000/socialPost/${post._id}/react`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId: currentUserId,
+            reactionType: newType,
             senderName: user?.displayName,
             senderPhoto: user?.photoURL,
           }),
         }
       );
+
       const data = await res.json();
-      setLiked(data.liked);
-      setLikesCount(data.likesCount);
+
+      setUserReaction(data.userReaction || null);
+      setLikeUsers(data.reactions || []);
+      setLikesCount(data.reactions?.length || 0);
     } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLiking(false);
+      console.error("Reaction error:", err);
     }
   };
 
-  const handleViewLikes = async () => {
+  const handleViewReactions = async () => {
     if (likeUsers.length > 0 && openLikes) return;
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/likes`
+        `http://localhost:3000/socialPost/${post._id}/reactions`
       );
       const data = await res.json();
       setLikeUsers(data);
       setOpenLikes(true);
     } catch (err) {
-      console.error("Error fetching likes:", err);
+      console.error("Error fetching reactions:", err);
     }
   };
 
@@ -130,7 +166,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
+        `http://localhost:3000/socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
@@ -165,7 +201,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}`,
+        `http://localhost:3000/socialPost/${post._id}/comment/${commentId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -194,7 +230,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   ) => {
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies`,
+        `http://localhost:3000/socialPost/${post._id}/replies`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -274,7 +310,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     try {
       // Backend request
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies/${replyId}`,
+        `http://localhost:3000/socialPost/${post._id}/replies/${replyId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -351,7 +387,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     try {
       // Send DELETE request to backend
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies/${replyId}`,
+        `http://localhost:3000/socialPost/${post._id}/replies/${replyId}`,
         { method: "DELETE" }
       );
 
@@ -432,7 +468,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     // 🔹 Delete logic
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}`,
+        `http://localhost:3000/socialPost/${post._id}/comment/${commentId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -480,7 +516,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
+                  `http://localhost:3000/socialPost/${post._id}`,
                   { method: "DELETE" }
                 );
 
@@ -532,7 +568,6 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           </p>
         </div>
       </div>
-
       {/* Post header */}
       <div className="mt-3 flex items-center gap-3">
         <Link to={`/profile/${post.userId}`}>
@@ -566,122 +601,167 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           </div>
         </div>
       </div>
-
       {/* Post body */}
-      <p className="mt-4">{post.text}</p>
-
+      <p className="mb-3">{post.text}</p>
       {/* Original post image */}
-      {/* <p className="mt-2">{post.text}</p> */}
       {post.shared === "yes" ? (
         <div className="bg-gray-100 p-5 rounded-2xl mt-4">
-          <div className="flex items-center gap-2 ">
+          {/* Shared user info */}
+          <div className="flex items-center gap-3 mb-3">
             <Link to={`/profile/${post.sharedUserId}`}>
               <img
-                className="h-[55px] w-[55px] rounded-full cursor-pointer"
+                className="h-[50px] w-[50px] rounded-full cursor-pointer object-cover"
                 src={post?.sharedUserPhoto}
-                alt="User"
+                alt={post?.sharedUserName || "User"}
               />
             </Link>
             <Link
               to={`/profile/${post.sharedUserId}`}
-              className="text-lg text-blue-400 font-bold hover:underline"
+              className="text-base text-blue-500 font-semibold hover:underline"
             >
-              {post?.sharedUserName}
+              {post?.sharedUserName || "Unknown User"}
             </Link>
           </div>
 
+          {/* Shared image */}
           {imageSrc && (
-            <img
-              src={imageSrc}
-              alt={post.filename}
-              className="max-w-full max-h-[400px] object-cover  rounded mt-3"
-            />
+            <div className="flex justify-center dark:bg-black mb-3">
+              <img
+                src={imageSrc}
+                alt={post.filename}
+                className="rounded-lg shadow max-w-full w-full md:w-[85%] h-auto max-h-[450px] object-cover"
+              />
+            </div>
           )}
         </div>
       ) : (
-        <div>
-          {imageSrc && (
+        // Normal post image
+        imageSrc && (
+          <div className="flex justify-center  dark:bg-black mb-3">
             <img
               src={imageSrc}
               alt={post.filename}
-              className="max-w-full max-h-[400px] object-cover mt-2 rounded"
+              className="rounded-lg shadow max-w-full w-full md:w-[85%] h-auto max-h-[450px] object-cover"
             />
-          )}
-        </div>
+          </div>
+        )
       )}
-
       {/* Like + Comment + Share */}
-      <div className="flex gap-6 items-center mt-4 text-lg text-gray-500">
-        {/* Like */}
-        <div className="flex gap-4">
-          <button onClick={handleLike} className="flex items-center gap-1 mt-2">
-            {liked ? (
-              <FaHeart className="text-red-500" />
-            ) : (
-              <FaRegHeart className="text-gray-500" />
-            )}{" "}
-            {likesCount}
-          </button>
-          <span
-            onClick={handleViewLikes}
-            className="text-lg mt-2 cursor-pointer hover:underline hover:text-blue-500 hover:font-semibold"
+
+      {/* Like/Comment/Share counts row */}
+      <div className="flex justify-between items-center py-2 px-2 border-b border-gray-100 text-sm">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-gray-700">{likesCount}</span>
+          <button
+            onClick={handleViewReactions}
+            className="text-blue-500 hover:underline"
           >
-            Likes
-          </span>
+            See likes
+          </button>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-gray-500">{countTotalComments(comments)}</span>{" "}
+          <FaRegCommentDots className="text-lg" />
+          <span className="text-gray-500">0</span>
+          <FaShare className="text-lg" />
+        </div>
+      </div>
+      {/* Like/Comment/Share actions row */}
+      <div className="flex justify-between items-center mt-2 px-2">
+        {/* Like */}
+
+        <div className="relative" id={`picker-${post._id}`}>
+          {/* ✅ Reaction main button */}
+          <button
+            onClick={handlePickerButtonClick}
+            className="flex items-center gap-2 py-2 px-6 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+          >
+            <span className="text-2xl">
+              {userReaction
+                ? reactionTypes.find((r) => r.type === userReaction)?.emoji
+                : "👍"}
+            </span>
+            <span className="font-semibold text-gray-700 dark:text-gray-200 capitalize">
+              {userReaction ? userReaction : "React"}
+            </span>
+          </button>
+
+          {/* ✅ Reaction Picker Modal */}
+          {showPicker && (
+            <div
+              className="absolute bottom-full mb-2 flex gap-3 bg-white dark:bg-gray-900 p-3 rounded-xl shadow-lg z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {reactionTypes.map((r) => (
+                <button
+                  key={r.type}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleReaction(r.type);
+                  }}
+                  className={`text-3xl hover:scale-125 transition-transform ${
+                    userReaction === r.type ? "opacity-100" : "opacity-70"
+                  }`}
+                >
+                  {r.emoji}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Comment */}
         <button
           onClick={() => setOpenComments(true)}
-          className="flex items-center gap-1"
+          className="flex items-center gap-2 py-2 px-6 rounded hover:bg-gray-100 transition"
         >
-          <FaRegCommentDots className="text-gray-600" />
-          <span className="text-lg">{countTotalComments(comments)}</span>
+          <FaRegCommentDots className="text-gray-500 text-xl" />
+          <span className="font-semibold text-gray-700">Comment</span>
         </button>
-
         {/* Share */}
         <button
           onClick={handleShare}
-          className="flex items-center gap-1 text-gray-600"
+          className="flex items-center gap-2 py-2 px-6 rounded hover:bg-gray-100 transition"
         >
-          <FaShare />
-          <span className="text-lg">0</span>
+          <FaShare className="text-gray-500 text-xl" />
+          <span className="font-semibold text-gray-700">Share</span>
         </button>
       </div>
 
       {/* Likes Modal */}
-     {openLikes && (
-  <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white p-5 rounded-lg w-full max-w-md">
-      <h2 className="text-lg font-semibold mb-3">Liked by</h2>
 
-      <div className="max-h-64 overflow-y-auto">
-        {likeUsers.length === 0 && <p>No likes yet.</p>}
-
-        {[...new Map(likeUsers.map((u) => [u.uid, u])).values()].map((u) => (
-          <div key={u.uid} className="flex items-center gap-3 mb-3">
-            {u.photoURL && (
-              <img
-                src={u.photoURL}
-                alt={u.displayName}
-                className="h-10 w-10 rounded-full"
-              />
-            )}
-            <p className="font-medium">{u.displayName}</p>
+      {openLikes && (
+        <div className="fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-gray-200 dark:bg-black p-5 rounded-lg w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-3">Reactions</h2>
+            <div className="max-h-64 overflow-y-auto">
+              {likeUsers.map(
+                (u) =>
+                  u && (
+                    <div key={u.uid} className="flex items-center gap-3 mb-3">
+                      <img
+                        src={u.photoURL}
+                        alt={u.displayName}
+                        className="h-10 w-10 rounded-full"
+                      />
+                      <p className="font-medium dark:text-blue-700">{u.displayName}</p>
+                      <span className="text-xl">
+                        {reactionTypes.find((r) => r.type === u.type)?.emoji ||
+                          "👍"}
+                      </span>
+                    </div>
+                  )
+              )}
+            </div>
+            <button
+              onClick={() => setOpenLikes(false)}
+              className="mt-4 dark:text-green-500 px-4 py-2 bg-red-500 text-white rounded"
+            >
+              Close
+            </button>
           </div>
-        ))}
-      </div>
-
-      <button
-        onClick={() => setOpenLikes(false)}
-        className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
-
+        </div>
+      )}
 
       {/* Comment modal */}
       {openComments && (
@@ -830,7 +910,6 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           </div>
         </div>
       )}
-
       {/* share modal */}
       {share && (
         <div>
