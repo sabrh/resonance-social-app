@@ -59,6 +59,72 @@ export default function Navbar() {
       .catch((error) => console.error("Logout error:", error));
   };
 
+  const links = (
+    <>
+      {user && (
+        <>
+          <li>
+            <NavLink
+              to="/home"
+              className={({ isActive }) =>
+                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+              }
+            >
+              Newsfeed
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+              }
+            >
+              My Profile
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/messages"
+              className={({ isActive }) =>
+                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+              }
+            >
+              Messages
+            </NavLink>
+          </li>
+
+          {/* NEW: Notifications link */}
+          <li>
+            <NavLink
+              to="/notifications"
+              className={({ isActive }) =>
+                `flex items-center gap-2 ${
+                  isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+                }`
+              }
+              onClick={refreshNotificationCount} // NEW: Refresh count when clicking notifications link
+            >
+              Notifications
+              {unreadCount > 0 && (
+                <span className="badge badge-primary badge-sm">
+                  {unreadCount}
+                </span>
+              )}
+            </NavLink>
+          </li>
+
+
+          {/* group  */}
+
+          {/* <Link to="/groups" className="hover:text-blue-500">Groups</Link> */}
+        </>
+      )}
+    </>
+  );
+
   return (
     <div className="fixed top-0 left-0 w-full bg-base-100/95 backdrop-blur-sm shadow-md z-50 pointer-events-auto">
       {/* ---- MOBILE TOP ROW ---- */}

@@ -8,6 +8,7 @@ import {
 import { IoNewspaperOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import { TiMessages } from "react-icons/ti";
+import { AiFillAndroid } from "react-icons/ai";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -136,6 +137,20 @@ const LeftSidebar: React.FC = () => {
                 }
               >
                 <TiMessages className="text-red-500" size={20} /> Messages
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/AiChat"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                    isActive
+                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  }`
+                }
+              >
+                <AiFillAndroid  className="text-blue-500" size={20} /> Smart Assistant
               </NavLink>
             </li>
           </ul>
