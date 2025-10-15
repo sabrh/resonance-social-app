@@ -57,6 +57,8 @@ const Home: FC = () => {
   // Get current user id
   const currentUserId = user?.uid || "";
 
+
+
   // Fetch newsfeed posts
   useEffect(() => {
     let mounted = true;
@@ -171,6 +173,11 @@ const Home: FC = () => {
       {/* Left Sidebar (sticky, hidden on mobile) */}
       <LeftSidebar />
 
+      {/* only for mobile device */}
+      <div className="md:hidden">
+        <RightSidebar></RightSidebar>
+      </div>
+
       {/* Main Content */}
       <main className="col-span-1 md:col-span-6">
         <div className="w-full">
@@ -279,7 +286,7 @@ const Home: FC = () => {
       </main>
 
       {/* Right Sidebar (sticky, hidden on mobile) */}
-      <RightSidebar />
+      <div className="hidden md:block"><RightSidebar /></div>
     </div>
   );
 };

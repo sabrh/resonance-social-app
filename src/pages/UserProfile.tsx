@@ -178,23 +178,9 @@ const UserProfile: FC = () => {
     }
   };
 
-  // handle bio update
-  // const handleBioSave = async () => {
-  //   if (!uid) return;
-  //   try {
-  //     await axios.put(`http://localhost:3000/users/${uid}/details`, formData);
 
-  //     const res = await axios.get(`http://localhost:3000/users/${uid}`);
-  //     console.log(res);
-  //     setUserDoc(res.data);
-  //     setShowModal(false);
-  //   } catch (err) {
-  //     console.error("Bio update failed:", err);
-  //     alert("Failed to update bio");
-  //   }
-  // };
 
-  // SAVE full about details (NEW fields included)
+  // full about details 
   const handleBioSave = async () => {
     if (!uid) return;
     // prepare payload: convert comma lists to arrays
@@ -321,26 +307,30 @@ const UserProfile: FC = () => {
           </div>
         )}
 
-        <div className="absolute right-4 bottom-4 flex items-center gap-2">
-          <label className="btn btn-sm btn-primary cursor-pointer">
-            Change banner
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </label>
-          {file && (
-            <button
-              onClick={handleUpload}
-              className="btn btn-sm btn-success"
-              disabled={loading}
-            >
-              {loading ? "Uploading..." : "Upload"}
-            </button>
-          )}
-        </div>
+        {/*  Only show upload/change buttons if this is the user's own profile */}
+        {firebaseUser?.uid === userDoc?.uid && (
+          <div className="absolute right-4 bottom-4 flex items-center gap-2">
+            <label className="btn btn-sm btn-primary cursor-pointer">
+              Change banner
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
+
+            {file && (
+              <button
+                onClick={handleUpload}
+                className="btn btn-sm btn-success"
+                disabled={loading}
+              >
+                {loading ? "Uploading..." : "Upload"}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Profile Info */}
@@ -398,7 +388,7 @@ const UserProfile: FC = () => {
         </div>
       </div>
 
-      {/* ---------------- NEW: Profile nav + full-width tab content ---------------- */}
+      {/* ---------------- Profile nav + full-width tab content ---------------- */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* ---------- Left: Sidebar (sticky on desktop, hidden on small) ---------- */}
@@ -686,7 +676,7 @@ const UserProfile: FC = () => {
       </div>
       {/* ---------------- END: Profile nav + content ---------------- */}
 
-      {/* Modal for editing about (big form) */}
+      {/* Modal for editing about */}
       {showModal && (
         <div className="fixed inset-0 bg-[#000000a9] bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
