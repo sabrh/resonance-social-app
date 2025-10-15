@@ -33,7 +33,7 @@ export default function Navbar() {
 
   const fetchUnreadCount = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/notifications/${user?.uid}/unread-count`);
+      const res = await fetch(`https://resonance-social-server.vercel.app/notifications/${user?.uid}/unread-count`);
       if (res.ok) {
         const data = await res.json();
         setUnreadCount(data.count);
