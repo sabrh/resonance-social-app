@@ -174,7 +174,7 @@ const RightSidebar: React.FC = () => {
               className=" md:w-[180px] md:h-[200px] w-[130px] h-[150px] rounded-2xl relative cursor-pointer"
             >
               <div className="h-[50px] w-[50px] absolute top-4 left-4 bg-gradient-to-r from-green-400 via-emerald-400 to-sky-500 animate-gradient-x p-1 rounded-full">
-                <img className=" rounded-full" src={story?.userPhoto} />
+                <img className=" rounded-full h-full w-full" src={story?.userPhoto} />
               </div>
               <img
                 className="h-full w-full rounded-2xl"
@@ -196,11 +196,11 @@ const RightSidebar: React.FC = () => {
                   />
                   <div className="h-[50px] w-[50px] absolute top-4 left-4 bg-gradient-to-r from-green-400 via-emerald-400 to-sky-500 animate-gradient-x p-1 rounded-full flex gap-4 items-center">
                     <img
-                      className=" rounded-full"
+                      className="rounded-full "
                       src={selectedStory?.userPhoto}
                     />
                     <div className="w-fit">
-                      <p className="text-white font-bold text-2xl">
+                      <p className="text-white font-bold text-xl text-nowrap">
                         {selectedStory?.userName}
                       </p>
                       <p className="text-white font-bold text-[12px] text-nowrap">
