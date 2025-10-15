@@ -1,35 +1,35 @@
 import { useContext, useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
-import { BsBell } from "react-icons/bs";
+import { BsBell, BsHouseDoor, BsChatDots } from "react-icons/bs";
+import { FaUser } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import toast from "react-hot-toast";
 import { FaArrowRightToBracket } from "react-icons/fa6";
-import Search from "./Search";
 import { ThemeToggle } from "./ThemeToggle";
+import { FiSearch } from "react-icons/fi";
+import Search from "./Search"; // ✅ তোমার আগের Search component
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [refreshCounter, setRefreshCounter] = useState(0); // NEW: Force refresh state
+  const [refreshCounter, setRefreshCounter] = useState(0);
+  const [showMobileSearch, setShowMobileSearch] = useState(false); // ✅ নতুন state
 
-  if (!authContext) {
-    return <p>Loading...</p>;
-  }
+  if (!authContext) return <p>Loading...</p>;
 
   const { user, signOutUser } = authContext;
 
-  // NEW: Fetch unread notification count
+  // Fetch Unread Notification Count
   useEffect(() => {
     if (user?.uid) {
       fetchUnreadCount();
-      // Poll for new notifications every 30 seconds
       const interval = setInterval(fetchUnreadCount, 30000);
       return () => clearInterval(interval);
     } else {
-      setUnreadCount(0); // Reset when user logs out
+      setUnreadCount(0);
     }
-  }, [user, refreshCounter]); // NEW: Add refreshCounter dependency
+  }, [user, refreshCounter]);
 
   const fetchUnreadCount = async () => {
     try {
@@ -45,7 +45,6 @@ export default function Navbar() {
     }
   };
 
-  // NEW: Function to refresh notification count
   const refreshNotificationCount = () => {
     setRefreshCounter((prev) => prev + 1);
   };
@@ -53,118 +52,156 @@ export default function Navbar() {
   const handleLogout = () => {
     signOutUser()
       .then(() => {
-        console.log("Logged out");
         toast.success("Logged out successfully!");
         navigate("/");
-        setUnreadCount(0); // Reset count on logout
+        setUnreadCount(0);
       })
-      .catch((error: unknown) => {
-        console.error("Logout error:", error);
-      });
+      .catch((error) => console.error("Logout error:", error));
   };
 
-  const links = (
-    <>
-      {user && (
-        <>
-          <li>
-            <NavLink
-              to="/home"
-              className={({ isActive }) =>
-                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
-              }
-            >
-              Newsfeed
-            </NavLink>
-          </li>
-
-          <li>
-            <NavLink
-              to="/profile"
-              className={({ isActive }) =>
-                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
-              }
-            >
-              My Profile
-            </NavLink>
-          </li>
-
-          <li>
-            <NavLink
-              to="/messages"
-              className={({ isActive }) =>
-                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
-              }
-            >
-              Messages
-            </NavLink>
-          </li>
-
-          {/* NEW: Notifications link */}
-          <li>
-            <NavLink
-              to="/notifications"
-              className={({ isActive }) =>
-                `flex items-center gap-2 ${
-                  isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
-                }`
-              }
-              onClick={refreshNotificationCount} // NEW: Refresh count when clicking notifications link
-            >
-              Notifications
-              {unreadCount > 0 && (
-                <span className="badge badge-primary badge-sm">
-                  {unreadCount}
-                </span>
-              )}
-            </NavLink>
-          </li>
-        </>
-      )}
-    </>
-  );
-
   return (
-    <div className="navbar bg-base-100/70 backdrop-blur-md shadow px-8 md:px-36 fixed top-0 left-0 w-full z-50">
-      {/* Left side */}
-      <div className="hidden md:navbar-start">
-        <Link to="/" className="font-bold text-3xl flex items-center gap-2">
+    <div className="fixed top-0 left-0 w-full bg-base-100/95 backdrop-blur-sm shadow-md z-50 pointer-events-auto">
+      {/* ---- MOBILE TOP ROW ---- */}
+      <div className="flex justify-between items-center px-5 py-2 md:hidden">
+        <Link to="/" className="font-bold text-2xl">
           resonance
         </Link>
-        <div className="ml-5 hidden md:hidden lg:block">
-          <Search></Search>
+        <div className="flex items-center gap-4">
+          {/* 🔍 Mobile Search Button */}
+          <button
+            onClick={() => setShowMobileSearch(true)}
+            className="p-2 rounded-full hover:bg-base-200"
+          >
+            <FiSearch size={22} className="text-gray-700" />
+          </button>
+
+          <ThemeToggle />
         </div>
       </div>
 
-      {/* Center links */}
-      <div className="navbar-center flex">
-        <ul className="menu menu-horizontal px-1 md:gap-4 md:text-md">
-          {links}
-        </ul>
-      </div>
+      {/* ---- MOBILE SEARCH MODAL ---- */}
+      {showMobileSearch && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[60]">
+          <div className="bg-base-100 p-4 rounded-lg shadow-lg w-11/12 max-w-md">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="font-semibold text-lg">Search</h2>
+              <button
+                className="text-red-500 font-bold text-xl"
+                onClick={() => setShowMobileSearch(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <Search />
+          </div>
+        </div>
+      )}
 
-      {/* Right side */}
-      <div className="navbar-end ml-auto gap-4">
-        {user ? (
-          <>
-            <ThemeToggle />
-            {/* UPDATED: Notification bell with badge */}
-            <Link
-              to="/notifications"
-              className="relative"
-              onClick={refreshNotificationCount} // NEW: Refresh count when clicking bell
-            >
-              <BsBell
-                size={25}
-                className="text-gray-600 hover:text-blue-500 transition-colors"
-              />
-              {unreadCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </Link>
+      {/* ---- MOBILE ICON ROW ---- */}
+      {user && (
+        <div className="flex justify-around items-center py-2 border-t md:hidden">
+          <NavLink
+            to="/home"
+            className={({ isActive }) =>
+              `text-xl ${isActive ? "text-blue-500" : "text-gray-600"}`
+            }
+          >
+            <BsHouseDoor />
+          </NavLink>
 
+          <NavLink
+            to="/messages"
+            className={({ isActive }) =>
+              `text-xl ${isActive ? "text-blue-500" : "text-gray-600"}`
+            }
+          >
+            <BsChatDots />
+          </NavLink>
+
+          <NavLink
+            to="/notifications"
+            className="relative"
+            onClick={refreshNotificationCount}
+          >
+            <BsBell
+              size={22}
+              className="text-gray-600 hover:text-blue-500 transition-colors"
+            />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </NavLink>
+
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `text-xl ${isActive ? "text-blue-500" : "text-gray-600"}`
+            }
+          >
+            <FaUser />
+          </NavLink>
+        </div>
+      )}
+
+      {/* ---- DESKTOP/TABLET NAVBAR ---- */}
+      <div className="hidden md:flex justify-between items-center px-10 py-3">
+        {/* Left: Name + Search */}
+        <div className="flex items-center gap-4">
+          <Link to="/" className="font-bold text-3xl">
+            resonance
+          </Link>
+          <div className="hidden md:block w-72">
+            {/* ✅ Desktop Search Input */}
+            <Search />
+          </div>
+        </div>
+
+        {/* Middle: Navigation Links */}
+        <div className="flex gap-6 items-center">
+          {user && (
+            <>
+              <NavLink
+                to="/home"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-600 hover:text-blue-500"
+                }
+              >
+                Newsfeed
+              </NavLink>
+              <NavLink
+                to="/messages"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-600 hover:text-blue-500"
+                }
+              >
+                Messages
+              </NavLink>
+              <NavLink
+                to="/notifications"
+                className="relative"
+                onClick={refreshNotificationCount}
+              >
+                <BsBell size={22} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </NavLink>
+            </>
+          )}
+        </div>
+
+        {/* Right: Theme + Profile/Login */}
+        <div className="flex items-center gap-5">
+          <ThemeToggle />
+          {user ? (
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}
@@ -180,7 +217,7 @@ export default function Navbar() {
               </div>
               <ul
                 tabIndex={0}
-                className="mt-3 z-[1] p-2 shadow menu menu-md dropdown-content bg-base-100 rounded-box w-52"
+                className="mt-3 p-2 shadow menu menu-md dropdown-content bg-base-100 rounded-box w-52"
               >
                 <li className="font-bold">
                   <Link to="/profile">{user.displayName ?? "Profile"}</Link>
@@ -188,8 +225,8 @@ export default function Navbar() {
                 <li>
                   <Link
                     to="/notifications"
+                    onClick={refreshNotificationCount}
                     className="flex justify-between"
-                    onClick={refreshNotificationCount} // NEW: Refresh count
                   >
                     Notifications
                     {unreadCount > 0 && (
@@ -197,26 +234,22 @@ export default function Navbar() {
                     )}
                   </Link>
                 </li>
-                <li className="bg-red-600 rounded text-white p-1 font-bold flex items-center gap-1">
+                <li className="bg-red-600 rounded text-white font-bold flex items-center gap-1">
                   <button onClick={handleLogout}>
-                    Logout <FaArrowRightToBracket />{" "}
+                    Logout <FaArrowRightToBracket />
                   </button>
                 </li>
               </ul>
             </div>
-          </>
-        ) : (
-          <>
-            {" "}
-            <ThemeToggle />
+          ) : (
             <Link
-              className="btn btn-neutral text-white rounded-full mr-4"
+              className="btn btn-neutral text-white rounded-full"
               to="/login"
             >
               Login / Signup
             </Link>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
