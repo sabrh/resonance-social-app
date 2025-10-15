@@ -15,6 +15,7 @@ import PostDetail from "../components/post-components/PostDetail";
 // import Groups from "../pages/groups/Groups";
 // import GroupDetails from "../pages/groups/GroupDetails";
 
+import GeminiChat from "../components/AiComponents/GeminiChat";
 // import PostDetail from "../pages/PostDetail"; // NEW
 
 export const router = createBrowserRouter([
@@ -24,22 +25,24 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <About /> },
-      { path: "profile", element: <UserProfile /> },
-      { path: "profile/:uid", element: <UserProfile /> },
-      { path: "messages", element: <Chats /> },
-      { path: "notifications", element: <Notifications /> },
-      { path: "home", element: <Home /> },
-      { path: "post/:postId", element: <PostDetail /> }, // NEW - Post detail route
+      { path: "/profile", element: <UserProfile /> },
+      { path: "/profile/:uid", element: <UserProfile /> },
+      { path: "/messages", element: <Chats /> },
+      { path: "/notifications", element: <Notifications /> },
+      { path: "/home", element: <Home /> },
+      { path: "/post/:postId", element: <PostDetail /> }, // NEW - Post detail route
+      {path:"/AiChat",element:<GeminiChat></GeminiChat>},
 
       // groups 
 //       {
-//   path: "groups",
+//   path: "/groups",
 //   element: <Groups />,
 // },
 // {
-//   path: "groups/:groupId",
+//   path: "/groups/:groupId",
 //   element: <GroupDetails />,
 // },
+      
     ],
   },
   {
