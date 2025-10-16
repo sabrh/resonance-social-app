@@ -30,12 +30,13 @@ const ChatContainer: FC<ChatContainerProps> = ({
   }, [messages]);
 
   const handleSend = () => {
-    if (newMessage.trim() || imageFile) {
-      onSendMessage(newMessage, imageFile || undefined);
-      setNewMessage('');
-      setImageFile(null);
-    }
-  };
+  if (!newMessage.trim() && !imageFile) return;
+
+  const fileToSend = imageFile; // save a local copy
+  onSendMessage(newMessage, fileToSend);
+  setNewMessage('');
+  setImageFile(null);
+};
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -56,7 +57,7 @@ const ChatContainer: FC<ChatContainerProps> = ({
   return (
     <div className='h-full flex flex-col bg-white/5 backdrop-blur-lg'>
       {/* Header */}
-      <div className='flex items-center gap-3 py-4 px-6 border-b border-gray-700 bg-white/5'>
+      <div className=' flex items-center gap-3 py-4 px-6 border-b border-gray-700 bg-white/5'>
         <ArrowLeft 
           onClick={() => setSelectedUser(null)} 
           className='md:hidden w-6 h-6 cursor-pointer' 
@@ -68,8 +69,8 @@ const ChatContainer: FC<ChatContainerProps> = ({
         />
         <div className='flex-1'>
           <p className='text-lg text-white font-semibold'>{selectedUser.displayName}</p>
-          <p className='text-sm text-green-400 flex items-center gap-1'>
-            <span className='w-2 h-2 rounded-full bg-green-400'></span>
+          <p className='text-sm text-green-600 flex items-center gap-1'>
+            <span className='w-2 h-2 rounded-full bg-green-600'></span>
             Online
           </p>
         </div>
@@ -159,7 +160,7 @@ const ChatContainer: FC<ChatContainerProps> = ({
           </button>
         </div>
         {imageFile && (
-          <div className="mt-2 text-sm text-gray-400 flex items-center gap-2">
+          <div className="mt-2 text-sm text-white flex items-center gap-2">
             <ImageIcon className="w-4 h-4" />
             <span>{imageFile.name}</span>
             <button 
