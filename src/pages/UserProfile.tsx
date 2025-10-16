@@ -89,7 +89,7 @@ const UserProfile: FC = () => {
       try {
         // Only ensure user exists in DB if it's your own profile
         if (targetUid === uid && firebaseUser) {
-          await axios.post("https://resonance-social-server.vercel.app/users", {
+          await axios.post("http://localhost:3000/users", {
             uid: firebaseUser.uid,
             displayName: firebaseUser.displayName,
             email: firebaseUser.email,
@@ -98,7 +98,7 @@ const UserProfile: FC = () => {
         }
 
         // fetch the profile we want to show
-        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
+        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
         setUserDoc(res.data);
 
         // preload form values only for your own profile
@@ -161,11 +161,11 @@ const UserProfile: FC = () => {
     form.append("banner", file);
 
     try {
-      await axios.post(`https://resonance-social-server.vercel.app/users/${uid}/banner`, form, {
+      await axios.post(`http://localhost:3000/users/${uid}/banner`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       // refresh user data
-      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
+      const res = await axios.get(`http://localhost:3000/users/${uid}`);
       setUserDoc(res.data);
       console.log(res.data);
       setFile(null);

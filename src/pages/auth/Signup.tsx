@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { updateProfile } from "firebase/auth";
 
 import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const Signup: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -66,7 +66,7 @@ const Signup: FC = () => {
       return;
     }
 
-    console.log(fullName, email, imageUrl);
+    //console.log(fullName, email, imageUrl);
 
     //     // create user
     //     createUser(email, password)

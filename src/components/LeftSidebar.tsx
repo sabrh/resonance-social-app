@@ -12,7 +12,7 @@ import { AiFillAndroid } from "react-icons/ai";
 
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "https://resonance-social-server.vercel.app";
+  "http://localhost:3000";
 
 type UserDoc = {
   uid: string;

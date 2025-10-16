@@ -6,9 +6,11 @@ import toast from "react-hot-toast";
 import { FaArrowRightToBracket } from "react-icons/fa6";
 import Search from "./Search";
 import { ThemeToggle } from "./ThemeToggle";
+import { useChat } from "../context/ChatContext/ChatContext";
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
+  const { globalUnreadCount } = useChat();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [refreshCounter, setRefreshCounter] = useState(0); // NEW: Force refresh state
@@ -89,13 +91,20 @@ export default function Navbar() {
 
           <li>
             <NavLink
-              to="/messages"
-              className={({ isActive }) =>
+            to="/messages"
+            className={({ isActive }) =>
+              `relative flex items-center gap-2 ${
                 isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
-              }
-            >
-              Messages
-            </NavLink>
+              }`
+            }>
+            Messages
+            {globalUnreadCount > 0 && (
+              <span className="bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {globalUnreadCount > 9 ? "9+" : globalUnreadCount}
+              </span>
+            )}
+          </NavLink>
+
           </li>
 
           {/* NEW: Notifications link */}
