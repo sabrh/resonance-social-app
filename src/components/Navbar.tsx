@@ -126,6 +126,11 @@ export default function Navbar() {
               )}
             </NavLink>
           </li>
+
+
+          {/* group  */}
+
+          {/* <Link to="/groups" className="hover:text-blue-500">Groups</Link> */}
         </>
       )}
     </>
