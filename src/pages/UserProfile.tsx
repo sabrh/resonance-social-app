@@ -209,8 +209,8 @@ const UserProfile: FC = () => {
     };
 
     try {
-      await axios.put(`https://resonance-social-server.vercel.app/users/${uid}/details`, payload);
-      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
+      await axios.put(`http://localhost:3000/users/${uid}/details`, payload);
+      const res = await axios.get(`http://localhost:3000/users/${uid}`);
       setUserDoc(res.data);
       setShowModal(false);
       toast.success("Profile updated");
@@ -226,7 +226,7 @@ const UserProfile: FC = () => {
 
     const checkFollowStatus = async () => {
       try {
-        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
+        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
         const userData = res.data;
 
         setUserDoc(userData);
@@ -254,7 +254,7 @@ const UserProfile: FC = () => {
     try {
       setLoading(true);
       const res = await axios.put(
-        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
+        `http://localhost:3000/users/${userDoc.uid}/follow`,
         { currentUid: uid }
       );
 

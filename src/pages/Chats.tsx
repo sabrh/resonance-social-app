@@ -157,7 +157,7 @@ const Chats: FC = () => {
   }
 
   return (
-    <div className="mt-20 bg-gradient-to-br from-blue-400 to-green-600 w-full h-[calc(100vh-5rem)] p-4">
+    <div className="mt-20  w-full h-[calc(100vh-5rem)] p-4">
       <div
         className={`backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl overflow-hidden h-full grid relative 
         ${selectedUser ? 'grid-cols-1 md:grid-cols-[350px_1fr_300px]' : 'grid-cols-1 md:grid-cols-[350px_1fr]'}`}

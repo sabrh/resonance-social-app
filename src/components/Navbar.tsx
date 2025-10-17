@@ -6,14 +6,14 @@ import toast from "react-hot-toast";
 import { FaArrowRightToBracket } from "react-icons/fa6";
 import Search from "./Search";
 import { ThemeToggle } from "./ThemeToggle";
-import { useChat } from "../context/ChatContext/ChatContext";
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
-  const { globalUnreadCount } = useChat();
+  
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [refreshCounter, setRefreshCounter] = useState(0); // NEW: Force refresh state
+
 
   if (!authContext) {
     return <p>Loading...</p>;
@@ -35,7 +35,7 @@ export default function Navbar() {
 
   const fetchUnreadCount = async () => {
     try {
-      const res = await fetch(`https://resonance-social-server.vercel.app/notifications/${user?.uid}/unread-count`);
+      const res = await fetch(`http://localhost:3000/notifications/${user?.uid}/unread-count`);
       if (res.ok) {
         const data = await res.json();
         setUnreadCount(data.count);
@@ -44,6 +44,7 @@ export default function Navbar() {
       console.error("Failed to fetch unread count:", err);
     }
   };
+
 
   // NEW: Function to refresh notification count
   const refreshNotificationCount = () => {
@@ -98,11 +99,11 @@ export default function Navbar() {
               }`
             }>
             Messages
-            {globalUnreadCount > 0 && (
+            {/* {globalUnreadCount > 0 && (
               <span className="bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
                 {globalUnreadCount > 9 ? "9+" : globalUnreadCount}
               </span>
-            )}
+            )} */}
           </NavLink>
 
           </li>

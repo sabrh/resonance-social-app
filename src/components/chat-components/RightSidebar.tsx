@@ -23,7 +23,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ selectedUser, messages }) =
     .reverse(); // show latest first
 
   return (
-    <div className="bg-[#36c262] text-white w-full h-full overflow-y-auto max-md:hidden">
+    <div className="  w-full h-full overflow-y-auto max-md:hidden">
       <div className="p-6 flex flex-col items-center gap-4">
         <img
           src={selectedUser.photoURL || '/default-avatar.png'}
@@ -35,14 +35,14 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ selectedUser, messages }) =
             {selectedUser.displayName}
             <span className="w-3 h-3 rounded-full bg-green-400"></span>
           </h1>
-          <p className="text-gray-200 mt-1">{selectedUser.email}</p>
+          <p className="text-gray-600 mt-1">{selectedUser.email}</p>
         </div>
       </div>
 
       <hr className="border-white/20 my-4" />
 
       <div className="px-6 pb-6">
-        <p className="font-semibold text-sm uppercase tracking-wider text-gray-200 mb-3">
+        <p className="font-semibold text-sm uppercase tracking-wider text-gray-700 mb-3">
           Shared Media
         </p>
 

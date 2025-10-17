@@ -2,7 +2,7 @@ import { SearchIcon } from 'lucide-react';
 import { useState, type FC } from 'react';
 import { MdMenu } from 'react-icons/md';
 import type { User, Message } from '../../types/chat';
-import { useChat } from '../../context/ChatContext/ChatContext';
+
 
 interface SidebarProps {
   selectedUser: User | null;
@@ -22,7 +22,7 @@ const Sidebar: FC<SidebarProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { globalUnreadCount } = useChat();
+  
 
   //  Filter users by search term
   const filteredUsers = users.filter(user =>
@@ -30,18 +30,18 @@ const Sidebar: FC<SidebarProps> = ({
   );
 
   return (
-    <div className={`bg-[#8185B2]/10 h-full p-5 rounded-r-xl overflow-y-auto text-white
+    <div className={`bg-[#8185B2]/10 h-full p-5 rounded-r-xl overflow-y-auto 
     ${selectedUser ? "max-md:hidden" : ""}`}>
       {/* Header */}
       <div className=' pb-5'>
         <div className='flex justify-between items-center'>
           <h3 className='font-bold text-lg'>Messages</h3>
           
-          {globalUnreadCount > 0 && (
+          {/* {globalUnreadCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
               {globalUnreadCount}
             </span>
-          )}
+          )} */}
           <div className='relative py-2 group'>
             <MdMenu className='max-h-5 cursor-pointer' />
           </div>
@@ -49,12 +49,12 @@ const Sidebar: FC<SidebarProps> = ({
 
         {/*  Search Input */}
         <div className='bg-[#282142] rounded-full flex items-center gap-2 py-3 px-4 mt-5'>
-          <SearchIcon className='w-4 h-4' />
+          <SearchIcon className='w-4 text-white h-4' />
           <input
             type='text'
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className='bg-transparent border-none outline-none text-white text-sm placeholder-[#c8c8c8] flex-1'
+            className='text-white border-none outline-none  text-sm  flex-1'
             placeholder='Search User'
           />
         </div>
@@ -91,7 +91,7 @@ const Sidebar: FC<SidebarProps> = ({
 
             {/*  Unread badge */}
             {unreadCounts[user.uid] > 0 && (
-              <div className="ml-auto bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+              <div className="ml-auto bg-red-500  text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
                 {unreadCounts[user.uid]}
               </div>
             )}

@@ -16,7 +16,7 @@ const ChatContainer: FC<ChatContainerProps> = ({
   selectedUser, 
   setSelectedUser, 
   messages, 
-  onSendMessage 
+  // onSendMessage 
 }) => {
   const [newMessage, setNewMessage] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -32,10 +32,10 @@ const ChatContainer: FC<ChatContainerProps> = ({
   const handleSend = () => {
   if (!newMessage.trim() && !imageFile) return;
 
-  const fileToSend = imageFile; // save a local copy
-  onSendMessage(newMessage, fileToSend);
-  setNewMessage('');
-  setImageFile(null);
+  // const fileToSend = imageFile; // save a local copy
+  // onSendMessage(newMessage, fileToSend);
+  // setNewMessage('');
+  // setImageFile(null);
 };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -68,13 +68,13 @@ const ChatContainer: FC<ChatContainerProps> = ({
           className="w-10 h-10 rounded-full object-cover" 
         />
         <div className='flex-1'>
-          <p className='text-lg text-white font-semibold'>{selectedUser.displayName}</p>
+          <p className='text-lg  font-semibold'>{selectedUser.displayName}</p>
           <p className='text-sm text-green-600 flex items-center gap-1'>
             <span className='w-2 h-2 rounded-full bg-green-600'></span>
             Online
           </p>
         </div>
-        <Info className='w-6 h-6 cursor-pointer text-gray-400 hover:text-white' />
+        <Info className='w-6 h-6 cursor-pointer ' />
       </div>
 
       {/* Messages */}
@@ -103,13 +103,13 @@ const ChatContainer: FC<ChatContainerProps> = ({
               ) : (
                 <div className={`p-3 rounded-2xl ${
                   message.senderId === currentUser.uid 
-                    ? 'bg-blue-500 text-white rounded-br-none' 
-                    : 'bg-gray-600 text-white rounded-bl-none'
+                    ? 'bg-blue-300  rounded-br-none' 
+                    : 'bg-gray-100  rounded-bl-none'
                 }`}>
                   <p className="break-words">{message.text}</p>
                 </div>
               )}
-              <p className={`text-xs text-gray-400 mt-1 ${
+              <p className={`text-xs text-gray-600 mt-1 ${
                 message.senderId === currentUser.uid ? 'text-right' : 'text-left'
               }`}>
                 {formatMessageTime(message.createdAt)}
@@ -131,14 +131,14 @@ const ChatContainer: FC<ChatContainerProps> = ({
       {/* Message Input */}
       <div className='p-4 border-t border-gray-700 bg-white/5'>
         <div className='flex items-center gap-3'>
-          <div className='flex-1 flex items-center bg-gray-700/50 rounded-full px-4'>
+          <div className='flex-1 flex items-center rounded-full px-4'>
             <input 
               type='text' 
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder='Type a message...' 
-              className='flex-1 bg-transparent border-none outline-none text-white placeholder-gray-400 py-3 text-sm'
+              className='flex-1 bg-transparent border-none outline-none  placeholder-gray-600 py-3 text-sm'
             />
             <input 
               type='file' 
@@ -148,7 +148,7 @@ const ChatContainer: FC<ChatContainerProps> = ({
               onChange={(e) => setImageFile(e.target.files?.[0] || null)}
             />
             <label htmlFor='image' className='cursor-pointer p-2 hover:bg-gray-600 rounded-full'>
-              <ImageIcon className='w-5 h-5 text-gray-400' />
+              <ImageIcon className='w-5 h-5 text-gray-600' />
             </label>
           </div>
           <button 
