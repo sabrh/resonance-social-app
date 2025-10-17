@@ -57,9 +57,9 @@ const LeftSidebar: React.FC = () => {
 
   return (
     <aside className="hidden md:block md:col-span-3">
-      <div className="sticky top-20 bg-gray-100 dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div className="sticky top-10 bg-base-100 rounded-lg shadow-lg overflow-hidden">
         {/* Banner */}
-        <div className="relative h-28 bg-gray-200">
+        <div className="relative h-28 bg-base-200">
           {bannerSrc ? (
             <img
               src={bannerSrc}
@@ -67,7 +67,7 @@ const LeftSidebar: React.FC = () => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+            <div className="w-full h-full flex items-center justify-center text-base-content/50 text-sm">
               No Banner
             </div>
           )}
@@ -81,14 +81,14 @@ const LeftSidebar: React.FC = () => {
                 "/avatar-placeholder.png"
               }
               alt="profile"
-              className="w-20 h-20 rounded-full border-4 border-white object-cover shadow"
+              className="w-20 h-20 rounded-full border-4 border-base-100 object-cover shadow-lg"
             />
           </div>
         </div>
 
         {/* User Info */}
         <div className="mt-12 text-center px-4">
-          <h2 className="font-bold text-lg text-gray-800 dark:text-white">
+          <h2 className="font-bold text-lg text-base-content">
             {userDoc?.displayName || firebaseUser?.displayName || "User"}
           </h2>
         </div>
@@ -100,14 +100,14 @@ const LeftSidebar: React.FC = () => {
               <NavLink
                 to="/home"
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                  `flex items-center gap-2 px-3 py-2 rounded-lg transition ${
                     isActive
-                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "font-semibold bg-primary text-primary-content"
+                      : "text-base-content hover:bg-base-200 dark:hover:bg-base-300"
                   }`
                 }
               >
-                <IoNewspaperOutline className="text-green-500" size={20} />{" "}
+                <IoNewspaperOutline className="text-secondary" size={20} />
                 Newsfeed
               </NavLink>
             </li>
@@ -115,42 +115,45 @@ const LeftSidebar: React.FC = () => {
               <NavLink
                 to="/profile"
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                  `flex items-center gap-2 px-3 py-2 rounded-lg transition ${
                     isActive
-                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "font-semibold bg-primary text-primary-content"
+                      : "text-base-content hover:bg-base-200 dark:hover:bg-base-300"
                   }`
                 }
               >
-                <FaRegUser className="text-blue-500" size={20} /> My Profile
+                <FaRegUser className="text-primary" size={20} />
+                My Profile
               </NavLink>
             </li>
             <li>
               <NavLink
                 to="/messages"
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                  `flex items-center gap-2 px-3 py-2 rounded-lg transition ${
                     isActive
-                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "font-semibold bg-primary text-primary-content"
+                      : "text-base-content hover:bg-base-200 dark:hover:bg-base-300"
                   }`
                 }
               >
-                <TiMessages className="text-red-500" size={20} /> Messages
+                <TiMessages className="text-accent" size={20} />
+                Messages
               </NavLink>
             </li>
             <li>
               <NavLink
                 to="/AiChat"
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+                  `flex items-center gap-2 px-3 py-2 rounded-lg transition ${
                     isActive
-                      ? " font-semibold bg-gray-200 dark:bg-gray-700"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "font-semibold bg-primary text-primary-content"
+                      : "text-base-content hover:bg-base-200 dark:hover:bg-base-300"
                   }`
                 }
               >
-                <AiFillAndroid  className="text-blue-500" size={20} /> Smart Assistant
+                <AiFillAndroid className="text-secondary" size={20} />
+                Smart Assistant
               </NavLink>
             </li>
           </ul>
@@ -160,7 +163,7 @@ const LeftSidebar: React.FC = () => {
         <div className="p-6">
           <button
             onClick={() => navigate("/messages")}
-            className="w-full btn btn-success text-white font-semibold py-2 rounded-full transition"
+            className="w-full btn btn-success text-white font-semibold py-2 rounded-full transition-transform hover:scale-105"
           >
             Chat Online
           </button>

@@ -16,7 +16,7 @@ const OurTeam: FC = () => {
     {
       name: "Muhammad Rifat",
       title: "Fullstack Developer",
-      img: "https://via.placeholder.com/150x150.png?text=Rifat",
+      img: "https://i.postimg.cc/G3qxzRq1/Rifat.jpg",
     },
     {
       name: "Redoy Ghosh Antu",
@@ -26,51 +26,51 @@ const OurTeam: FC = () => {
     {
       name: "Md Jamiluddin",
       title: "Fullstack Developer",
-      img: "https://via.placeholder.com/150x150.png?text=Jamil",
+      img: "https://i.postimg.cc/V6ZsLwz6/b88f2b8b-4123-4149-9ee7-508eed7be62e.jpg",
     },
   ];
 
   // Carousel settings
   const settings = {
-  dots: true,
-  infinite: true,
-  autoplay: true,
-  autoplaySpeed: 2000,
-  slidesToShow: 3, // default desktop
-  slidesToScroll: 1,
-  arrows: true, // show arrows on desktop
-  responsive: [
-    {
-      breakpoint: 1024, // tablets
-      settings: { slidesToShow: 2, arrows: false },
-    },
-    {
-      breakpoint: 768, // mobile
-      settings: { slidesToShow: 1, arrows: false, dots: true },
-    },
-  ],
-};
+    dots: true,
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    slidesToShow: 3, // default desktop
+    slidesToScroll: 1,
+    arrows: true, // show arrows on desktop
+    responsive: [
+      {
+        breakpoint: 1024, // tablets
+        settings: { slidesToShow: 2, arrows: false },
+      },
+      {
+        breakpoint: 768, // mobile
+        settings: { slidesToShow: 1, arrows: false, dots: true },
+      },
+    ],
+  };
 
   return (
     <section className="py-10 px-4 md:px-8">
       <div className="mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-base-content">
           Meet the Team
         </h2>
 
         <Slider {...settings}>
           {team.map((member, idx) => (
             <div key={idx} className="px-2">
-              <div className="flex flex-col items-center text-center bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg transition">
+              <div className="flex flex-col items-center text-center bg-base-100 p-6 rounded-xl shadow-md border border-transparent dark:border-base-300 hover:bg-base-200 hover:shadow-lg transition">
                 <img
                   src={member.img}
                   alt={member.name}
-                  className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover mb-4 border-2 border-gray-200 dark:border-gray-700"
+                  className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover mb-4 border-2 border-base-300"
                 />
-                <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-200">
+                <h3 className="text-lg md:text-xl font-semibold text-base-content">
                   {member.name}
                 </h3>
-                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+                <p className="text-sm md:text-base text-base-content/70">
                   {member.title}
                 </p>
               </div>

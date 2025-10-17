@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import { FaHeart, FaRegHeart, FaRegCommentDots, FaShare } from "react-icons/fa";
+import { FaRegCommentDots, FaShare } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
+
 import toast from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -13,6 +15,7 @@ export type Comment = {
   authorEmail?: string;
   text: string;
   createdAt: string;
+  parentUser?: string;
   authorPhoto?: string;
   replies?: Comment[];
 };
@@ -540,7 +543,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-4 max-w-2xl mx-auto mt-6">
+    <div className="bg-base-100 shadow rounded-xl p-2 md:p-4 max-w-full md:max-w-2xl mx-auto mt-4 md:mt-6">
       {/* Info dropdown */}
       <div
         className={`float-right relative ${
@@ -551,28 +554,29 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           <BsThreeDotsVertical />
         </p>
         <div
-          className={`absolute top-10 right-4 h-[100px] w-[150px] bg-white shadow-2xl rounded-2xl ${
+          className={`absolute top-10 right-4 h-[100px] w-[150px] bg-base-200 shadow-lg rounded-2xl ${
             info ? "" : "hidden"
           }`}
         >
-          <p className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4">
+          <p className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-base-300 px-4 py-1 rounded-lg">
             <i className="fa-solid fa-pen-to-square"></i>
             <span>Edit post</span>
           </p>
           <p
             onClick={confirmDelete}
-            className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4"
+            className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-base-300 px-4 py-1 rounded-lg"
           >
             <i className="fa-solid fa-trash"></i>
             <span>Delete post</span>
           </p>
         </div>
       </div>
+
       {/* Post header */}
       <div className="mt-3 flex items-center gap-3">
         <Link to={`/profile/${post.userId}`}>
           <img
-            className="h-[55px] w-[55px] rounded-full cursor-pointer"
+            className="h-[45px] w-[45px] rounded-full cursor-pointer object-cover"
             src={post?.userPhoto}
             alt="User"
           />
@@ -580,13 +584,13 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         <div>
           <Link
             to={`/profile/${post.userId}`}
-            className="text-lg text-blue-400 font-bold hover:underline"
+            className="text-lg md:text-[14px] text-primary font-semibold hover:underline"
           >
             {post?.userName}
           </Link>
 
-          <p className="text-gray-500 text-sm">{post.createdAt}</p>
-          <div className="text-gray-500 text-sm bg-gray-200 p-1 px-2 mt-1 rounded-xl w-fit">
+          <div className="flex gap-x-4 mt-1 text-sm text-base-content/60 rounded-xl w-fit">
+            <p>{post.createdAt}</p>
             {post.privacy === "public" ? (
               <div className="flex gap-1 items-center">
                 <i className="fa-solid fa-earth-americas"></i>
@@ -601,12 +605,13 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
           </div>
         </div>
       </div>
+
       {/* Post body */}
-      <p className="mb-3">{post.text}</p>
-      {/* Original post image */}
+      <p className="md:ml-3 py-3 md:text-sm text-base-content">{post.text}</p>
+
+      {/* Post image or shared post */}
       {post.shared === "yes" ? (
-        <div className="bg-gray-100 p-5 rounded-2xl mt-4">
-          {/* Shared user info */}
+        <div className="bg-base-200 p-5 rounded-2xl mt-4">
           <div className="flex items-center gap-3 mb-3">
             <Link to={`/profile/${post.sharedUserId}`}>
               <img
@@ -617,79 +622,80 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             </Link>
             <Link
               to={`/profile/${post.sharedUserId}`}
-              className="text-base text-blue-500 font-semibold hover:underline"
+              className="text-base text-primary font-semibold hover:underline"
             >
               {post?.sharedUserName || "Unknown User"}
             </Link>
           </div>
 
-          {/* Shared image */}
           {imageSrc && (
-            <div className="flex justify-center dark:bg-black mb-3">
+            <div className="flex justify-center bg-base-100 mb-3 rounded-lg overflow-hidden shadow-md">
               <img
                 src={imageSrc}
                 alt={post.filename}
-                className="rounded-lg shadow max-w-full w-full md:w-[85%] h-auto max-h-[450px] object-cover"
+                className="w-full h-auto max-h-[300px] md:max-h-[450px] object-cover"
               />
             </div>
           )}
         </div>
       ) : (
-        // Normal post image
         imageSrc && (
-          <div className="flex justify-center  dark:bg-black mb-3">
+          <div className="flex justify-center bg-base-100 mb-3 rounded-lg overflow-hidden shadow-md">
             <img
               src={imageSrc}
               alt={post.filename}
-              className="rounded-lg shadow max-w-full w-full md:w-[85%] h-auto max-h-[450px] object-cover"
+              className="w-full h-auto max-h-[300px] md:max-h-[450px] object-cover"
             />
           </div>
         )
       )}
-      {/* Like + Comment + Share */}
 
-      {/* Like/Comment/Share counts row */}
-      <div className="flex justify-between items-center py-2 px-2 border-b border-gray-100 text-sm">
+      {/* Like + Comment + Share counts */}
+      <div className="flex flex-wrap justify-between items-center py-2 px-2 border-b border-base-300 text-sm gap-2">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-gray-700">{likesCount}</span>
+          <span className="font-semibold text-base-content">{likesCount}</span>
           <button
             onClick={handleViewReactions}
-            className="text-blue-500 hover:underline"
+            className="text-primary hover:underline"
           >
             See likes
           </button>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-gray-500">{countTotalComments(comments)}</span>{" "}
-          <FaRegCommentDots className="text-lg" />
-          <span className="text-gray-500">0</span>
-          <FaShare className="text-lg" />
+        <div className="flex items-center gap-4 text-base-content/60">
+          <span className="flex items-center gap-1">
+            <FaRegCommentDots className="text-lg" />
+            {comments?.length || 0}
+          </span>
+          <span className="flex items-center gap-1">
+            <FaShare className="text-lg" />0
+          </span>
         </div>
       </div>
-      {/* Like/Comment/Share actions row */}
-      <div className="flex justify-between items-center mt-2 px-2">
-        {/* Like */}
 
-        <div className="relative" id={`picker-${post._id}`}>
-          {/* ✅ Reaction main button */}
+      {/* Actions: Like/Comment/Share */}
+      <div className="flex justify-between items-center mt-0 px-0 gap-1">
+        {/* Like */}
+        <div
+          className="flex-1 flex justify-center relative"
+          id={`picker-${post._id}`}
+        >
           <button
             onClick={handlePickerButtonClick}
-            className="flex items-center gap-2 py-2 px-6 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="flex items-center gap-2 py-2 px-2 md:px-6 rounded-lg hover:bg-base-300 w-full justify-center transition"
           >
             <span className="text-2xl">
               {userReaction
                 ? reactionTypes.find((r) => r.type === userReaction)?.emoji
                 : "👍"}
             </span>
-            <span className="font-semibold text-gray-700 dark:text-gray-200 capitalize">
-              {userReaction ? userReaction : "React"}
+            <span className="font-semibold capitalize">
+              {userReaction || "Love"}
             </span>
           </button>
 
-          {/* ✅ Reaction Picker Modal */}
           {showPicker && (
             <div
-              className="absolute bottom-full mb-2 flex gap-3 bg-white dark:bg-gray-900 p-3 rounded-xl shadow-lg z-10"
+              className="absolute bottom-full mb-2 flex gap-3 bg-base-200 p-3 rounded-xl shadow-lg z-10"
               onClick={(e) => e.stopPropagation()}
             >
               {reactionTypes.map((r) => (
@@ -711,51 +717,52 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         </div>
 
         {/* Comment */}
-        <button
-          onClick={() => setOpenComments(true)}
-          className="flex items-center gap-2 py-2 px-6 rounded hover:bg-gray-100 transition"
-        >
-          <FaRegCommentDots className="text-gray-500 text-xl" />
-          <span className="font-semibold text-gray-700">Comment</span>
-        </button>
+        <div className="flex-1 flex justify-center">
+          <button
+            onClick={() => setOpenComments(true)}
+            className="flex items-center gap-2 py-2 px-2 md:px-6 rounded-lg hover:bg-base-300 w-full justify-center transition"
+          >
+            <FaRegCommentDots className="text-lg text-base-content/60" />
+            <span className="font-semibold">Comment</span>
+          </button>
+        </div>
+
         {/* Share */}
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-2 py-2 px-6 rounded hover:bg-gray-100 transition"
-        >
-          <FaShare className="text-gray-500 text-xl" />
-          <span className="font-semibold text-gray-700">Share</span>
-        </button>
+        <div className="flex-1 flex justify-center">
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 py-2 px-2 md:px-6 rounded-lg hover:bg-base-300 w-full justify-center transition"
+          >
+            <FaShare className="text-lg text-base-content/60" />
+            <span className="font-semibold">Share</span>
+          </button>
+        </div>
       </div>
 
-      {/* Likes Modal */}
-
+      {/* Likes modal */}
       {openLikes && (
         <div className="fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="bg-gray-200 dark:bg-black p-5 rounded-lg w-full max-w-md">
+          <div className="bg-base-200 p-5 rounded-lg w-full max-w-md">
             <h2 className="text-lg font-semibold mb-3">Reactions</h2>
             <div className="max-h-64 overflow-y-auto">
-              {likeUsers.map(
-                (u) =>
-                  u && (
-                    <div key={u.uid} className="flex items-center gap-3 mb-3">
-                      <img
-                        src={u.photoURL}
-                        alt={u.displayName}
-                        className="h-10 w-10 rounded-full"
-                      />
-                      <p className="font-medium dark:text-blue-700">{u.displayName}</p>
-                      <span className="text-xl">
-                        {reactionTypes.find((r) => r.type === u.type)?.emoji ||
-                          "👍"}
-                      </span>
-                    </div>
-                  )
-              )}
+              {likeUsers.map((u) => (
+                <div key={u.uid} className="flex items-center gap-3 mb-3">
+                  <img
+                    src={u.photoURL}
+                    alt={u.displayName}
+                    className="h-10 w-10 rounded-full"
+                  />
+                  <p className="font-medium text-primary">{u.displayName}</p>
+                  <span className="text-xl">
+                    {reactionTypes.find((r) => r.type === u.type)?.emoji ||
+                      "👍"}
+                  </span>
+                </div>
+              ))}
             </div>
             <button
               onClick={() => setOpenLikes(false)}
-              className="mt-4 dark:text-green-500 px-4 py-2 bg-red-500 text-white rounded"
+              className="mt-4 btn btn-error w-full"
             >
               Close
             </button>
@@ -763,159 +770,169 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
         </div>
       )}
 
-      {/* Comment modal */}
+      {/* Comments modal */}
       {openComments && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white w-full max-w-md rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-3">Comments</h2>
+        <div className="fixed inset-0 bg-base-300/40 backdrop-blur-sm flex justify-center items-center z-50 p-2 overflow-hidden">
+          <div className="bg-base-100 w-full max-w-lg rounded-2xl shadow-lg p-4 md:p-6 relative">
+            <h2 className="text-lg font-semibold mb-4 border-b border-base-300 pb-2">
+              Comments
+            </h2>
 
-            <form onSubmit={handleAddComment} className="flex gap-2 mb-4">
+            <form
+              onSubmit={handleAddComment}
+              className="flex items-center gap-2 mb-4"
+            >
+              <img
+                src={user?.photoURL || "/default-avatar.png"}
+                alt="user"
+                className="w-9 h-9 rounded-full object-cover flex-shrink-0"
+              />
               <input
                 type="text"
                 placeholder="Write a comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="border p-2 rounded flex-1"
+                className="input input-bordered flex-1 text-sm"
               />
               <button
                 type="submit"
-                className="px-3 py-1 bg-green-600 text-white rounded"
+                className="btn btn-primary btn-circle btn-sm"
                 disabled={!newComment.trim()}
               >
-                Post
+                <IoSend size={18} />
               </button>
             </form>
 
-            <div className="max-h-64 overflow-y-auto">
-              <div className="max-h-96 overflow-y-auto space-y-4">
-                {comments?.map((c) => (
-                  <div key={c._id} className="flex gap-3 border-b pb-2">
-                    {/* Author profile pic */}
-                    <img
-                      src={c.authorPhoto || "/default-avatar.png"}
-                      alt={c.authorName}
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
+            {/* Comments list */}
+            <div className="max-h-[65vh] overflow-y-auto space-y-4 pr-1">
+              {comments?.map((c) => (
+                <div
+                  key={c._id}
+                  className="flex items-start gap-3 bg-base-100 p-3 rounded-2xl shadow-sm break-words"
+                >
+                  <img
+                    src={c.authorPhoto || "/default-avatar.png"}
+                    alt={c.authorName}
+                    className="h-10 w-10 rounded-full object-cover flex-shrink-0"
+                  />
 
-                    <div className="flex-1">
-                      {/* Comment header */}
-                      <div className="flex items-center justify-between">
-                        <p className="font-semibold">
-                          {c.authorName ?? "Unknown"}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {c.createdAt
-                            ? new Date(c.createdAt).toLocaleString()
-                            : ""}
-                        </p>
-                      </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="bg-base-200 rounded-2xl px-3 py-2 break-words overflow-hidden">
+                      <p className="font-semibold text-sm text-base-content">
+                        {c.authorName}
+                      </p>
+                      <p className="text-sm text-base-content/90 mt-0.5 break-words">
+                        {c.text}
+                      </p>
+                    </div>
 
-                      {/* Comment text */}
-                      <p className="mt-1">{c.text}</p>
+                    <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-base-content/60">
+                      <span className="whitespace-nowrap">
+                        {new Date(c.createdAt).toLocaleString()}
+                      </span>
 
-                      {/* Comment actions */}
-                      <div className="flex gap-2 text-xs mt-1">
-                        {(c.authorEmail === user?.email ||
-                          post.userEmail === user?.email) && (
-                          <button
-                            onClick={() =>
-                              handleDeleteComment(c._id, c.authorEmail)
-                            }
-                            className="text-red-500 hover:underline"
-                          >
-                            Delete
-                          </button>
-                        )}
-                        {c.authorEmail === user?.email && (
-                          <button
-                            onClick={() => handleEditComment(c._id)}
-                            className="text-blue-500 hover:underline"
-                          >
-                            Edit
-                          </button>
-                        )}
+                      {(c.authorEmail === user?.email ||
+                        post.userEmail === user?.email) && (
                         <button
                           onClick={() =>
-                            setActiveReplyId(
-                              activeReplyId === c._id ? null : c._id
-                            )
+                            handleDeleteComment(c._id, c.authorEmail)
                           }
-                          className="text-gray-500 hover:underline text-sm"
+                          className="hover:underline text-error whitespace-nowrap"
                         >
-                          Reply
+                          Delete
                         </button>
-                      </div>
+                      )}
+                      {c.authorEmail === user?.email && (
+                        <button
+                          onClick={() => handleEditComment(c._id)}
+                          className="hover:underline text-primary whitespace-nowrap"
+                        >
+                          Edit
+                        </button>
+                      )}
+                      <button
+                        onClick={() =>
+                          setActiveReplyId(
+                            activeReplyId === c._id ? null : c._id
+                          )
+                        }
+                        className="hover:underline whitespace-nowrap"
+                      >
+                        Reply
+                      </button>
+                    </div>
 
-                      {/* Replies */}
-                      <div className="mt-2">
-                        {c.replies?.map((r) => (
-                          <ReplyItem
-                            key={r._id}
-                            reply={r}
-                            parentReplyId={r._id}
-                            user={user}
-                            commentId={c._id}
-                            handleAddReply={handleAddReply}
-                            handleEditReply={handleEditReply}
-                            handleDeleteReply={handleDeleteReply}
-                            replyTexts={replyTexts}
-                            setReplyTexts={setReplyTexts}
+                    {/* Replies */}
+                    <div className="mt-2 ml-10 space-y-2">
+                      {c.replies?.map((r) => (
+                        <ReplyItem
+                          key={r._id}
+                          reply={r}
+                          parentReplyId={r._id}
+                          user={user}
+                          commentId={c._id}
+                          handleAddReply={handleAddReply}
+                          handleEditReply={handleEditReply}
+                          handleDeleteReply={handleDeleteReply}
+                          replyTexts={replyTexts}
+                          setReplyTexts={setReplyTexts}
+                        />
+                      ))}
+                      {activeReplyId === c._id && (
+                        <div className="flex gap-2 mt-2 items-center w-full">
+                          <img
+                            src={user?.photoURL || "/default-avatar.png"}
+                            className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+                            alt="user"
                           />
-                        ))}
-
-                        {/* Root comment reply input */}
-                        {activeReplyId === c._id && (
-                          <div className="flex gap-2 mt-2">
-                            <input
-                              type="text"
-                              placeholder="Write a reply..."
-                              value={replyTexts[c._id] || ""}
-                              onChange={(e) =>
+                          <input
+                            type="text"
+                            placeholder="Write a reply..."
+                            value={replyTexts[c._id] || ""}
+                            onChange={(e) =>
+                              setReplyTexts((prev) => ({
+                                ...prev,
+                                [c._id]: e.target.value,
+                              }))
+                            }
+                            className="input input-bordered input-sm flex-1 text-sm rounded-full"
+                          />
+                          <button
+                            onClick={async () => {
+                              if ((replyTexts[c._id] || "").trim()) {
+                                await handleAddReply(c._id, replyTexts[c._id]);
                                 setReplyTexts((prev) => ({
                                   ...prev,
-                                  [c._id]: e.target.value,
-                                }))
+                                  [c._id]: "",
+                                }));
                               }
-                              className="border rounded px-2 py-1 flex-1 text-sm"
-                            />
-                            <button
-                              onClick={async () => {
-                                if ((replyTexts[c._id] || "").trim()) {
-                                  await handleAddReply(
-                                    c._id,
-                                    replyTexts[c._id]
-                                  );
-                                }
-                              }}
-                              className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
-                              disabled={!replyTexts[c._id]?.trim()}
-                            >
-                              Reply
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                            }}
+                            disabled={!replyTexts[c._id]?.trim()}
+                            className="btn btn-primary btn-circle btn-sm"
+                          >
+                            <IoSend size={18} />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+              {/* ...Render comments and replies here like in your original code... */}
             </div>
 
             <button
               onClick={() => setOpenComments(false)}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+              className="absolute top-3 right-3 text-base-content hover:text-error"
             >
-              Close
+              ✕
             </button>
           </div>
         </div>
       )}
-      {/* share modal */}
-      {share && (
-        <div>
-          <ShareBox share={share} post={post} setShare={setShare}></ShareBox>
-        </div>
-      )}
+
+      {/* Share modal */}
+      {share && <ShareBox share={share} post={post} setShare={setShare} />}
     </div>
   );
 };

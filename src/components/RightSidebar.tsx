@@ -179,7 +179,7 @@ const RightSidebar: React.FC = () => {
                 src={`data:${story?.mimetype};base64,${story?.image}`}
               />
               <div className="absolute bottom-2 left-2 flex justify-center w-full">
-                <p className=" text-white font-bold text-xl">
+                <p className=" text-white  text-[13px]">
                   {story?.userName}
                 </p>
               </div>

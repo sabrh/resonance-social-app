@@ -1,26 +1,26 @@
 import { useContext, useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
-import { BsBell, BsHouseDoor, BsChatDots } from "react-icons/bs";
-import { FaUser } from "react-icons/fa";
-import { AuthContext } from "../context/AuthContext/AuthContext";
-import toast from "react-hot-toast";
+import { BsBell, BsSearch } from "react-icons/bs";
 import { FaArrowRightToBracket } from "react-icons/fa6";
+import { HiHome, HiUser, HiChatAlt2 } from "react-icons/hi";
+import toast from "react-hot-toast";
+import { AuthContext } from "../context/AuthContext/AuthContext";
+import Search from "./Search";
 import { ThemeToggle } from "./ThemeToggle";
-import { FiSearch } from "react-icons/fi";
-import Search from "./Search"; // ✅ তোমার আগের Search component
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [refreshCounter, setRefreshCounter] = useState(0);
-  const [showMobileSearch, setShowMobileSearch] = useState(false); // ✅ নতুন state
+  const [showSearch, setShowSearch] = useState(false);
 
-  if (!authContext) return <p>Loading...</p>;
+  if (!authContext) {
+    return <p>Loading...</p>;
+  }
 
   const { user, signOutUser } = authContext;
 
-  // Fetch Unread Notification Count
   useEffect(() => {
     if (user?.uid) {
       fetchUnreadCount();
@@ -56,267 +56,266 @@ export default function Navbar() {
         navigate("/");
         setUnreadCount(0);
       })
-      .catch((error) => console.error("Logout error:", error));
+      .catch((error: unknown) => {
+        console.error("Logout error:", error);
+      });
   };
 
-  const links = (
+  return (
     <>
+      {/* Main Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-base-100 border-b border-base-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo & Search Section */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              {/* Logo */}
+              <Link
+                to="/"
+                className="flex-shrink-0 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary text-primary-content font-bold text-xl sm:text-2xl hover:scale-105 transition-transform shadow-lg"
+              >
+                R
+              </Link>
+
+              {/* Desktop Search */}
+              <div className="hidden md:block w-64 lg:w-80">
+                <Search />
+              </div>
+
+              {/* Mobile Search Icon */}
+              <button
+                onClick={() => setShowSearch(!showSearch)}
+                className="md:hidden btn btn-ghost btn-circle btn-sm"
+              >
+                <BsSearch size={20} />
+              </button>
+            </div>
+
+            {/* Center Navigation - Desktop & Tablet */}
+            {user && (
+              <div className="hidden sm:flex items-center gap-1 md:gap-2 lg:gap-3 flex-shrink-0 absolute left-1/2 transform -translate-x-1/2">
+                <NavLink
+                  to="/home"
+                  className={({ isActive }) =>
+                    `flex flex-col items-center gap-1 px-3 md:px-5 lg:px-7 py-2 rounded-lg transition-all ${
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+                    }`
+                  }
+                >
+                  <HiHome size={24} />
+                  <span className="text-xs font-medium hidden lg:block">
+                    Home
+                  </span>
+                </NavLink>
+
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    `flex flex-col items-center gap-1 px-3 md:px-5 lg:px-7 py-2 rounded-lg transition-all ${
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+                    }`
+                  }
+                >
+                  <HiUser size={24} />
+                  <span className="text-xs font-medium hidden lg:block">
+                    Profile
+                  </span>
+                </NavLink>
+
+                <NavLink
+                  to="/messages"
+                  className={({ isActive }) =>
+                    `flex flex-col items-center gap-1 px-3 md:px-5 lg:px-7 py-2 rounded-lg transition-all ${
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+                    }`
+                  }
+                >
+                  <HiChatAlt2 size={24} />
+                  <span className="text-xs font-medium hidden lg:block">
+                    Messages
+                  </span>
+                </NavLink>
+              </div>
+            )}
+
+            {/* Right Section */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
+              {/* Notification Bell - Desktop/Tablet Only */}
+              {user && (
+                <Link
+                  to="/notifications"
+                  onClick={refreshNotificationCount}
+                  className="hidden sm:flex btn btn-ghost btn-circle relative hover:bg-base-200"
+                >
+                  <BsBell size={22} className="text-base-content" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-error text-error-content text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </Link>
+              )}
+
+              {user ? (
+                /* Profile Dropdown */
+                <div className="dropdown dropdown-end">
+                  <div
+                    tabIndex={0}
+                    role="button"
+                    className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform"
+                  >
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
+                      <img
+                        alt="User Avatar"
+                        src={user.photoURL ?? "https://via.placeholder.com/150"}
+                        className="rounded-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <ul
+                    tabIndex={0}
+                    className="mt-3 p-2 shadow-xl menu dropdown-content bg-base-100 rounded-box w-56 border border-base-300"
+                  >
+                    <li className="menu-title px-4 py-2">
+                      <span className="text-base font-semibold">
+                        {user.displayName ?? "User"}
+                      </span>
+                    </li>
+                    <div className="divider my-0"></div>
+
+                    <li>
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-3 py-3"
+                      >
+                        <HiUser size={20} />
+                        <span>My Profile</span>
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link
+                        to="/notifications"
+                        onClick={refreshNotificationCount}
+                        className="flex items-center gap-3 py-3"
+                      >
+                        <BsBell size={20} />
+                        <span>Notifications</span>
+                        {unreadCount > 0 && (
+                          <span className="badge badge-primary badge-sm ml-auto">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+
+                    <div className="divider my-0"></div>
+
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 py-3 text-error hover:bg-error/10"
+                      >
+                        <FaArrowRightToBracket size={20} />
+                        <span>Logout</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              ) : (
+                <Link
+                  className="btn btn-primary btn-sm sm:btn-md text-primary-content rounded-full font-semibold"
+                  to="/login"
+                >
+                  <span className="hidden sm:inline">Login / Signup</span>
+                  <span className="sm:hidden">Login</span>
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Search Bar */}
+          {showSearch && (
+            <div className="md:hidden pb-4 animate-fade-in">
+              <Search />
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Bottom Navigation - Mobile Only */}
       {user && (
-        <>
-          <li>
+        <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-base-100 border-t border-base-300 safe-area-inset-bottom">
+          <div className="flex items-center justify-around h-16 px-2">
             <NavLink
               to="/home"
               className={({ isActive }) =>
-                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+                `flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all flex-1 ${
+                  isActive ? "text-primary" : "text-base-content/70"
+                }`
               }
             >
-              Newsfeed
+              <HiHome size={24} />
+              <span className="text-xs font-medium">Home</span>
             </NavLink>
-          </li>
 
-          <li>
             <NavLink
               to="/profile"
               className={({ isActive }) =>
-                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+                `flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all flex-1 ${
+                  isActive ? "text-primary" : "text-base-content/70"
+                }`
               }
             >
-              My Profile
+              <HiUser size={24} />
+              <span className="text-xs font-medium">Profile</span>
             </NavLink>
-          </li>
 
-          <li>
             <NavLink
               to="/messages"
               className={({ isActive }) =>
-                isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
-              }
-            >
-              Messages
-            </NavLink>
-          </li>
-
-          {/* NEW: Notifications link */}
-          <li>
-            <NavLink
-              to="/notifications"
-              className={({ isActive }) =>
-                `flex items-center gap-2 ${
-                  isActive ? "text-blue-400 underline-offset-4 font-bold" : ""
+                `flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all flex-1 ${
+                  isActive ? "text-primary" : "text-base-content/70"
                 }`
               }
-              onClick={refreshNotificationCount} // NEW: Refresh count when clicking notifications link
             >
-              Notifications
+              <HiChatAlt2 size={24} />
+              <span className="text-xs font-medium">Messages</span>
+            </NavLink>
+
+            <NavLink
+              to="/notifications"
+              onClick={refreshNotificationCount}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all flex-1 relative ${
+                  isActive ? "text-primary" : "text-base-content/70"
+                }`
+              }
+            >
+              <BsBell size={24} />
+              <span className="text-xs font-medium">Alerts</span>
               {unreadCount > 0 && (
-                <span className="badge badge-primary badge-sm">
-                  {unreadCount}
+                <span className="absolute top-0 right-2 bg-error text-error-content text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </NavLink>
-          </li>
-
-
-          {/* group  */}
-
-          {/* <Link to="/groups" className="hover:text-blue-500">Groups</Link> */}
-        </>
+          </div>
+        </nav>
       )}
+
+      {/* Spacer for fixed navbar */}
+      <div className="h-16"></div>
+      {user && <div className="sm:hidden h-16"></div>}
     </>
-  );
-
-  return (
-    <div className="fixed top-0 left-0 w-full bg-base-100/95 backdrop-blur-sm shadow-md z-50 pointer-events-auto">
-      {/* ---- MOBILE TOP ROW ---- */}
-      <div className="flex justify-between items-center px-5 py-2 md:hidden">
-        <Link to="/" className="font-bold text-2xl">
-          resonance
-        </Link>
-        <div className="flex items-center gap-4">
-          {/* 🔍 Mobile Search Button */}
-          <button
-            onClick={() => setShowMobileSearch(true)}
-            className="p-2 rounded-full hover:bg-base-200"
-          >
-            <FiSearch size={22} className="text-gray-700" />
-          </button>
-
-          <ThemeToggle />
-        </div>
-      </div>
-
-      {/* ---- MOBILE SEARCH MODAL ---- */}
-      {showMobileSearch && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[60]">
-          <div className="bg-base-100 p-4 rounded-lg shadow-lg w-11/12 max-w-md">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="font-semibold text-lg">Search</h2>
-              <button
-                className="text-red-500 font-bold text-xl"
-                onClick={() => setShowMobileSearch(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <Search />
-          </div>
-        </div>
-      )}
-
-      {/* ---- MOBILE ICON ROW ---- */}
-      {user && (
-        <div className="flex justify-around items-center py-2 border-t md:hidden">
-          <NavLink
-            to="/home"
-            className={({ isActive }) =>
-              `text-xl ${isActive ? "text-blue-500" : "text-gray-600"}`
-            }
-          >
-            <BsHouseDoor />
-          </NavLink>
-
-          <NavLink
-            to="/messages"
-            className={({ isActive }) =>
-              `text-xl ${isActive ? "text-blue-500" : "text-gray-600"}`
-            }
-          >
-            <BsChatDots />
-          </NavLink>
-
-          <NavLink
-            to="/notifications"
-            className="relative"
-            onClick={refreshNotificationCount}
-          >
-            <BsBell
-              size={22}
-              className="text-gray-600 hover:text-blue-500 transition-colors"
-            />
-            {unreadCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </NavLink>
-
-          <NavLink
-            to="/profile"
-            className={({ isActive }) =>
-              `text-xl ${isActive ? "text-blue-500" : "text-gray-600"}`
-            }
-          >
-            <FaUser />
-          </NavLink>
-        </div>
-      )}
-
-      {/* ---- DESKTOP/TABLET NAVBAR ---- */}
-      <div className="hidden md:flex justify-between items-center px-10 py-3">
-        {/* Left: Name + Search */}
-        <div className="flex items-center gap-4">
-          <Link to="/" className="font-bold text-3xl">
-            resonance
-          </Link>
-          <div className="hidden md:block w-72">
-            {/* ✅ Desktop Search Input */}
-            <Search />
-          </div>
-        </div>
-
-        {/* Middle: Navigation Links */}
-        <div className="flex gap-6 items-center">
-          {user && (
-            <>
-              <NavLink
-                to="/home"
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-blue-500 font-semibold"
-                    : "text-gray-600 hover:text-blue-500"
-                }
-              >
-                Newsfeed
-              </NavLink>
-              <NavLink
-                to="/messages"
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-blue-500 font-semibold"
-                    : "text-gray-600 hover:text-blue-500"
-                }
-              >
-                Messages
-              </NavLink>
-              <NavLink
-                to="/notifications"
-                className="relative"
-                onClick={refreshNotificationCount}
-              >
-                <BsBell size={22} />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </NavLink>
-            </>
-          )}
-        </div>
-
-        {/* Right: Theme + Profile/Login */}
-        <div className="flex items-center gap-5">
-          <ThemeToggle />
-          {user ? (
-            <div className="dropdown dropdown-end">
-              <div
-                tabIndex={0}
-                role="button"
-                className="btn btn-ghost btn-circle avatar"
-              >
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="User Avatar"
-                    src={user.photoURL ?? "https://via.placeholder.com/150"}
-                  />
-                </div>
-              </div>
-              <ul
-                tabIndex={0}
-                className="mt-3 p-2 shadow menu menu-md dropdown-content bg-base-100 rounded-box w-52"
-              >
-                <li className="font-bold">
-                  <Link to="/profile">{user.displayName ?? "Profile"}</Link>
-                </li>
-                <li>
-                  <Link
-                    to="/notifications"
-                    onClick={refreshNotificationCount}
-                    className="flex justify-between"
-                  >
-                    Notifications
-                    {unreadCount > 0 && (
-                      <span className="badge badge-primary">{unreadCount}</span>
-                    )}
-                  </Link>
-                </li>
-                <li className="bg-red-600 rounded text-white font-bold flex items-center gap-1">
-                  <button onClick={handleLogout}>
-                    Logout <FaArrowRightToBracket />
-                  </button>
-                </li>
-              </ul>
-            </div>
-          ) : (
-            <Link
-              className="btn btn-neutral text-white rounded-full"
-              to="/login"
-            >
-              Login / Signup
-            </Link>
-          )}
-        </div>
-      </div>
-    </div>
   );
 }
