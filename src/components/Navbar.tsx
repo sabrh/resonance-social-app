@@ -10,10 +10,12 @@ import { ThemeToggle } from "./ThemeToggle";
 
 export default function Navbar() {
   const authContext = useContext(AuthContext);
+  
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [refreshCounter, setRefreshCounter] = useState(0);
   const [showSearch, setShowSearch] = useState(false);
+
 
   if (!authContext) {
     return <p>Loading...</p>;
@@ -45,6 +47,8 @@ export default function Navbar() {
     }
   };
 
+
+  // NEW: Function to refresh notification count
   const refreshNotificationCount = () => {
     setRefreshCounter((prev) => prev + 1);
   };

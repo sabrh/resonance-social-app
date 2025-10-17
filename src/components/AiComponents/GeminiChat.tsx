@@ -1,4 +1,5 @@
 import { useState } from "react";
+import TextareaAutosize from "react-textarea-autosize";
 
 type Message = {
   role: "user" | "bot";

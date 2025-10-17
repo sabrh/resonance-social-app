@@ -66,7 +66,7 @@ const Signup: FC = () => {
       return;
     }
 
-    console.log(fullName, email, imageUrl);
+    //console.log(fullName, email, imageUrl);
 
     //     // create user
     //     createUser(email, password)
