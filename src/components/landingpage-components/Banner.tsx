@@ -2,7 +2,7 @@ import type { FC } from "react";
 
 const Banner: FC = () => {
   return (
-    <div className="relative pt-70 py-10 flex items-center justify-center text-center">
+    <div className="relative pt-70 py-10 mt-24 md:mt-16 flex items-center justify-center text-center">
 
       <img
         src="https://images.pexels.com/photos/109919/pexels-photo-109919.jpeg?cs=srgb&dl=pexels-hikaique-109919.jpg&fm=jpg" 

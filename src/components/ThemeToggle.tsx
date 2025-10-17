@@ -1,7 +1,7 @@
-import { useTheme } from "../context/ThemeContext";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa6";
+import { useTheme } from "../context/ThemeProvider";
 
-export const ThemeToggle = () => {
+export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -9,4 +9,4 @@ export const ThemeToggle = () => {
       {theme === "light" ? <FaMoon /> : <FaSun />}
     </button>
   );
-};
+}

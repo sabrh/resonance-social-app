@@ -1,4 +1,35 @@
 @import "tailwindcss";
-@plugin "daisyui";
+
+/* DaisyUI active themes */
+@plugin "daisyui" {
+    themes: light --default, dark --prefersdark;
+}
+
+@plugin "daisyui/theme" {
+    name: "light";
+    default: true;
+
+    --color-primary: #2563eb;
+    --color-secondary: #1e293b;
+    --color-accent: #14b8a6;
+
+}
+
+
+@plugin "daisyui/theme" {
+    name: "dark";
+
+    --color-primary: #16b6cf;
+    --color-secondary: #334155;
+    --color-accent: #f43f5e;
+
+}
+
+/* Optional: slick carousel styles */
 @import "slick-carousel/slick/slick.css";
 @import "slick-carousel/slick/slick-theme.css";
+
+body,
+html {
+    overflow-x: hidden;
+}

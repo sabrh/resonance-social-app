@@ -57,8 +57,6 @@ const Home: FC = () => {
   // Get current user id
   const currentUserId = user?.uid || "";
 
-
-
   // Fetch newsfeed posts
   useEffect(() => {
     let mounted = true;
@@ -74,12 +72,9 @@ const Home: FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(
-          `http://localhost:3000/feed/${currentUserId}`,
-          {
-            signal: controller.signal,
-          }
-        );
+        const res = await fetch(`http://localhost:3000/feed/${currentUserId}`, {
+          signal: controller.signal,
+        });
 
         if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
 
@@ -169,13 +164,13 @@ const Home: FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mt-20 ">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mt-20">
       {/* Left Sidebar (sticky, hidden on mobile) */}
       <LeftSidebar />
 
-      {/* only for mobile device */}
+      {/* Only for mobile device */}
       <div className="md:hidden">
-        <RightSidebar></RightSidebar>
+        <RightSidebar />
       </div>
 
       {/* Main Content */}
@@ -184,13 +179,15 @@ const Home: FC = () => {
           <div className="rounded-sm">
             <form
               onSubmit={handleSubmit}
-              className="shadow-sm bg-gray-100 rounded-xl px-4 py-4"
+              className="shadow-sm bg-base-100 rounded-xl px-4 py-4"
             >
-              <p className="text-lg font-bold">Create New Post</p>
+              <p className="text-lg font-bold text-base-content">
+                Create New Post
+              </p>
 
               {(text || image) && (
-                <div className="w-[100px] float-right">
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                <div className="w-[120px] float-right">
+                  <label className="block mb-2 text-sm font-medium text-base-content/70">
                     Select Privacy
                   </label>
                   <select
@@ -198,7 +195,7 @@ const Home: FC = () => {
                     name="privacy"
                     value={privacy}
                     onChange={(e) => setPrivacy(e.target.value)}
-                    className="block w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="select select-bordered w-full bg-base-200 text-base-content focus:outline-none focus:ring focus:ring-primary transition-colors"
                   >
                     <option value="public">Public</option>
                     <option value="private">Private</option>
@@ -211,7 +208,7 @@ const Home: FC = () => {
                 onChange={handleChange}
                 minRows={3}
                 placeholder="Write your update here..."
-                className="bg-white rounded-2xl w-full mt-3 p-5"
+                className="textarea textarea-bordered w-full mt-3 bg-base-200 text-base-content rounded-2xl p-5"
               />
 
               {image && (
@@ -224,18 +221,18 @@ const Home: FC = () => {
                   <button
                     onClick={removeImage}
                     type="button"
-                    className="absolute top-2 left-2 bg-red-600 text-white bg-opacity-50 rounded-full p-1 hover:bg-opacity-70 cursor-pointer"
+                    className="absolute top-2 left-2 btn btn-error btn-sm btn-circle hover:scale-105"
                   >
-                    <X className="w-5 h-5 text-white" />
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               )}
 
-              <div className="mt-2 flex justify-between">
-                <div className="flex items-center gap-8">
+              <div className="mt-2 flex justify-between items-center">
+                <div className="flex items-center gap-4">
                   <label className="cursor-pointer">
                     <p className="md:text-xl text-sm font-bold flex gap-2 items-center cursor-pointer">
-                      <MdAddPhotoAlternate size={30} />
+                      <MdAddPhotoAlternate size={30} className="text-primary" />
                     </p>
                     <input
                       onChange={handleImageChange}
@@ -248,7 +245,7 @@ const Home: FC = () => {
 
                 <button
                   type="submit"
-                  className="btn btn-info rounded-full text-white mt-4"
+                  className="btn btn-primary rounded-full text-white mt-4"
                   disabled={!text.trim() && !image}
                 >
                   Post Now
@@ -262,16 +259,16 @@ const Home: FC = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="text-center text-red-500 mt-6">{error}</div>
+            <div className="text-center text-error mt-6">{error}</div>
           ) : matchPost.length === 0 ? (
-            <div className="text-center text-gray-500 mt-6 p-4">
+            <div className="text-center text-base-content/50 mt-6 p-4">
               <p>No posts in your feed yet.</p>
               <p className="text-sm mt-2">
                 Follow some users or create a post to get started!
               </p>
             </div>
           ) : (
-            <div>
+            <div className="space-y-4">
               {matchPost.map((post) => (
                 <PostCard
                   key={post._id}
@@ -286,7 +283,9 @@ const Home: FC = () => {
       </main>
 
       {/* Right Sidebar (sticky, hidden on mobile) */}
-      <div className="hidden md:block"><RightSidebar /></div>
+      <div className="hidden md:block">
+        <RightSidebar />
+      </div>
     </div>
   );
 };

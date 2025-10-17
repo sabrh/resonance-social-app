@@ -1,9 +1,9 @@
 // src/pages/Notifications.tsx
-import type { FC } from 'react';
-import { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext/AuthContext';
-import { Link } from 'react-router';
-import toast from 'react-hot-toast';
+import type { FC } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../context/AuthContext/AuthContext";
+import { Link } from "react-router";
+import toast from "react-hot-toast";
 
 type Notification = {
   _id: string;
@@ -13,7 +13,7 @@ type Notification = {
   senderPhoto: string;
   postId: string;
   postText: string;
-  type: 'like' | 'comment' | 'reply' | 'follow' | 'share';
+  type: "like" | "comment" | "reply" | "follow" | "share";
   message: string;
   commentText: string;
   isRead: boolean;
@@ -28,7 +28,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [replyText, setReplyText] = useState('');
+  const [replyText, setReplyText] = useState("");
   const [replyLoading, setReplyLoading] = useState(false);
   const { user } = useContext(AuthContext)!;
 
@@ -40,11 +40,13 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
 
   const fetchNotifications = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/notifications/${user?.uid}`);
+      const res = await fetch(
+        `http://localhost:3000/notifications/${user?.uid}`
+      );
       const data = await res.json();
       setNotifications(data);
     } catch (err) {
-      console.error('Failed to fetch notifications:', err);
+      console.error("Failed to fetch notifications:", err);
     } finally {
       setLoading(false);
     }
@@ -52,12 +54,15 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
 
   const markAsRead = async (notificationId: string) => {
     try {
-      await fetch(`http://localhost:3000/notifications/${notificationId}/read`, {
-        method: 'PUT'
-      });
+      await fetch(
+        `http://localhost:3000/notifications/${notificationId}/read`,
+        {
+          method: "PUT",
+        }
+      );
 
-      setNotifications(prev =>
-        prev.map(notif =>
+      setNotifications((prev) =>
+        prev.map((notif) =>
           notif._id === notificationId ? { ...notif, isRead: true } : notif
         )
       );
@@ -66,36 +71,36 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
         onNotificationRead();
       }
     } catch (err) {
-      console.error('Failed to mark as read:', err);
+      console.error("Failed to mark as read:", err);
     }
   };
 
   const markAllAsRead = async () => {
     try {
       await fetch(`http://localhost:3000/notifications/${user?.uid}/read-all`, {
-        method: 'PUT'
+        method: "PUT",
       });
 
-      setNotifications(prev =>
-        prev.map(notif => ({ ...notif, isRead: true }))
+      setNotifications((prev) =>
+        prev.map((notif) => ({ ...notif, isRead: true }))
       );
 
       if (onNotificationRead) {
         onNotificationRead();
       }
 
-      toast.success('All notifications marked as read');
+      toast.success("All notifications marked as read");
     } catch (err) {
-      console.error('Failed to mark all as read:', err);
+      console.error("Failed to mark all as read:", err);
     }
   };
 
   // Handle reply to notification - FIXED VERSION
   const handleReply = async (notification: Notification) => {
-    console.log('Replying to notification:', notification);
+    console.log("Replying to notification:", notification);
 
     if (!replyText.trim()) {
-      toast.error('Please enter a reply');
+      toast.error("Please enter a reply");
       return;
     }
 
@@ -115,14 +120,14 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
             authorPhoto: user?.photoURL,
             authorEmail: user?.email,
             userName: user?.displayName,
-            senderId: user?.uid
+            senderId: user?.uid,
           }),
         }
       );
 
       if (!commentRes.ok) {
         const errorData = await commentRes.json();
-        throw new Error(errorData.error || 'Failed to add comment');
+        throw new Error(errorData.error || "Failed to add comment");
       }
 
       // Create a new notification for the original sender
@@ -137,22 +142,21 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
             senderPhoto: user?.photoURL,
             postId: notification.postId,
             postText: notification.postText,
-            type: 'reply',
-            commentText: replyText
+            type: "reply",
+            commentText: replyText,
           }),
         });
       } catch (notifErr) {
-        console.warn('Failed to create notification, but reply was sent');
+        console.warn("Failed to create notification, but reply was sent");
       }
 
       // Reset reply state
       setReplyingTo(null);
-      setReplyText('');
-      toast.success('Reply sent successfully!');
-
+      setReplyText("");
+      toast.success("Reply sent successfully!");
     } catch (err: any) {
-      console.error('Failed to send reply:', err);
-      toast.error(err.message || 'Failed to send reply');
+      console.error("Failed to send reply:", err);
+      toast.error(err.message || "Failed to send reply");
     } finally {
       setReplyLoading(false);
     }
@@ -160,9 +164,9 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
 
   const startReply = (notificationId: string) => {
     setReplyingTo(notificationId);
-    setReplyText('');
+    setReplyText("");
     // Mark as read when starting to reply
-    const notification = notifications.find(n => n._id === notificationId);
+    const notification = notifications.find((n) => n._id === notificationId);
     if (notification && !notification.isRead) {
       markAsRead(notificationId);
     }
@@ -170,19 +174,19 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
 
   const cancelReply = () => {
     setReplyingTo(null);
-    setReplyText('');
+    setReplyText("");
   };
 
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+      return new Date(dateString).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch (err) {
-      return 'Invalid date';
+      return "Invalid date";
     }
   };
 
@@ -198,7 +202,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
     <div className="max-w-2xl mx-auto p-4 mt-16">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Notifications</h1>
-        {notifications.some(n => !n.isRead) && (
+        {notifications.some((n) => !n.isRead) && (
           <button
             onClick={markAllAsRead}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
@@ -211,22 +215,25 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
       {notifications.length === 0 ? (
         <div className="text-center text-gray-500 py-8">
           <p className="text-lg">No notifications yet</p>
-          <p className="text-sm mt-2">When someone interacts with your posts, you'll see it here.</p>
+          <p className="text-sm mt-2">
+            When someone interacts with your posts, you'll see it here.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
           {notifications.map((notification) => (
             <div
               key={notification._id}
-              className={`p-4 border rounded-lg transition-all duration-200 ${notification.isRead
-                  ? 'bg-white border-gray-200'
-                  : 'bg-blue-50 border-blue-200 shadow-sm'
-                } hover:shadow-md`}
+              className={`p-4 border rounded-lg transition-all duration-200 ${
+                notification.isRead
+                  ? "bg-white border-gray-200"
+                  : "bg-blue-50 border-blue-200 shadow-sm"
+              } hover:shadow-md`}
             >
               <div className="flex items-start gap-3">
                 <Link to={`/profile/${notification.senderId}`}>
                   <img
-                    src={notification.senderPhoto || '/default-avatar.png'}
+                    src={notification.senderPhoto || "/default-avatar.png"}
                     alt={notification.senderName}
                     className="w-12 h-12 rounded-full cursor-pointer object-cover border-2 border-gray-200"
                   />
@@ -241,7 +248,10 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
                         >
                           {notification.senderName}
                         </Link>
-                        <span className="text-gray-700"> {notification.message}</span>
+                        <span className="text-gray-700">
+                          {" "}
+                          {notification.message}
+                        </span>
                       </p>
 
                       {notification.commentText && (
@@ -269,7 +279,9 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
                   </div>
 
                   {/* Reply section - FIXED */}
-                  {(notification.type === 'comment' || notification.type === 'reply' || notification.type === 'like') && (
+                  {(notification.type === "comment" ||
+                    notification.type === "reply" ||
+                    notification.type === "like") && (
                     <div className="mt-3">
                       {replyingTo === notification._id ? (
                         <div className="space-y-3">
@@ -300,7 +312,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
                                   Sending...
                                 </span>
                               ) : (
-                                'Send Reply'
+                                "Send Reply"
                               )}
                             </button>
                           </div>
@@ -325,7 +337,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
                   )}
 
                   {/* For follow notifications */}
-                  {notification.type === 'follow' && (
+                  {notification.type === "follow" && (
                     <div className="flex gap-3 mt-2">
                       <Link
                         to={`/profile/${notification.senderId}`}

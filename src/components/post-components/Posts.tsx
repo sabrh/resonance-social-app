@@ -93,12 +93,15 @@ const Posts = ({ refreshKey = 0 }: Props) => {
     return <p className="text-gray-500 mt-6">No posts yet.</p>;
   }
 
-  
-
   return (
     <div>
       {matchPost.map((post) => (
-        <PostCard key={post._id} post={post} currentUserId={currentUserId} onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}/>
+        <PostCard
+          key={post._id}
+          post={post}
+          currentUserId={currentUserId}
+          onDelete={(id) => setPosts(posts.filter((p) => p._id !== id))}
+        />
       ))}
     </div>
   );
