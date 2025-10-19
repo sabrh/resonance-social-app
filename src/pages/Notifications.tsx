@@ -41,7 +41,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
   const fetchNotifications = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/notifications/${user?.uid}`
+        `https://resonance-social-server.vercel.app/notifications/${user?.uid}`
       );
       const data = await res.json();
       setNotifications(data);
@@ -55,7 +55,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
   const markAsRead = async (notificationId: string) => {
     try {
       await fetch(
-        `http://localhost:3000/notifications/${notificationId}/read`,
+        `https://resonance-social-server.vercel.app/notifications/${notificationId}/read`,
         {
           method: "PUT",
         }
@@ -77,7 +77,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
 
   const markAllAsRead = async () => {
     try {
-      await fetch(`http://localhost:3000/notifications/${user?.uid}/read-all`, {
+      await fetch(`https://resonance-social-server.vercel.app/notifications/${user?.uid}/read-all`, {
         method: "PUT",
       });
 
@@ -108,7 +108,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
     try {
       // For all notification types, add a new comment mentioning the user
       const commentRes = await fetch(
-        `http://localhost:3000/socialPost/${notification.postId}/comments`,
+        `https://resonance-social-server.vercel.app/socialPost/${notification.postId}/comments`,
         {
           method: "POST",
           headers: {
@@ -132,7 +132,7 @@ const Notifications: FC<NotificationsProps> = ({ onNotificationRead }) => {
 
       // Create a new notification for the original sender
       try {
-        await fetch(`http://localhost:3000/notifications`, {
+        await fetch(`https://resonance-social-server.vercel.app/notifications`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

@@ -20,7 +20,7 @@ export default function GeminiChat() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/AiChat", {
+      const res = await fetch("https://resonance-social-server.vercel.app/AiChat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: newMsg.text }),
@@ -107,7 +107,7 @@ export default function GeminiChat() {
       {/* Input Area */}
       <div className="p-4 bg-white/80 backdrop-blur-md border-t shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex items-center gap-3">
         <div className="relative flex-1">
-          <input
+          <TextareaAutosize
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white shadow-sm"
             placeholder="Ask me something..."
             value={input}

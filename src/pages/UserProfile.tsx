@@ -415,11 +415,11 @@ const UserProfile: FC = () => {
                     {targetUid !== uid ? (
                       <button
                         onClick={handleFollowToggle}
-                        className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                          isFollowing ? "btn-error" : "btn-primary"
+                        className={`  text-white btn px-4 py-2 rounded-full text-sm font-semibold ${
+                          isFollowing ? "bg-red-500 btn-error" : "bg-blue-500"
                         }`}
                       >
-                        {isFollowing ? "Unfollow" : "Follow"}
+                        {isFollowing ? " Unfollow" : " Follow"}
                       </button>
                     ) : (
                       <button
@@ -517,7 +517,144 @@ const UserProfile: FC = () => {
               {activeTab === "about" && (
                 <section className="bg-base-100 border border-base-200 rounded-xl p-6 mb-6 shadow-sm">
                   {/* About content */}
-                  ...
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-medium mb-2"> Add Bio</p>
+                      <p className="mt-3 text-sm text-gray-700 max-w-prose">
+                        {userDoc?.bio || "No bio yet. Add a short intro."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Basic info card */}
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <h4 className="font-medium mb-2">Basic info</h4>
+                      <div className="text-sm text-gray-700 space-y-2">
+                        <div>
+                          <span className="font-medium">Email:</span>{" "}
+                          {userDoc?.email || firebaseUser?.email}
+                        </div>
+                        <div>
+                          <span className="font-medium">Birthday / Age:</span>{" "}
+                          {userDoc?.birthday
+                            ? `${formatDate(userDoc.birthday)} (${Math.floor(
+                                (Date.now() -
+                                  new Date(userDoc.birthday).getTime()) /
+                                  (1000 * 60 * 60 * 24 * 365)
+                              )} yrs)`
+                            : "—"}
+                        </div>
+                        <div>
+                          <span className="font-medium">Languages:</span>{" "}
+                          {(userDoc?.languages || []).join(", ") || "—"}
+                        </div>
+                        <div>
+                          <span className="font-medium">Location:</span>{" "}
+                          {userDoc?.location || "—"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Work & education card */}
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <h4 className="font-medium mb-2">Work & Education</h4>
+                      <div className="text-sm text-gray-700 space-y-2">
+                        <div>
+                          <span className="font-medium">Occupation:</span>{" "}
+                          {userDoc?.occupation || "—"}
+                        </div>
+                        <div>
+                          <span className="font-medium">Company:</span>{" "}
+                          {userDoc?.company || "—"}
+                        </div>
+                        <div>
+                          <span className="font-medium">Education:</span>{" "}
+                          {userDoc?.education || "—"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Skills */}
+                    <div className="p-4 border border-gray-200 rounded-lg md:col-span-1">
+                      <h4 className="font-medium mb-2">Skills</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {(userDoc?.skills || []).length > 0 ? (
+                          userDoc!.skills!.map((s, i) => (
+                            <span
+                              key={i}
+                              className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-700"
+                            >
+                              #{s}
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-sm text-gray-400">
+                            No skills yet
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Social Links */}
+                    <div className="p-4 border border-gray-200 rounded-lg md:col-span-1">
+                      <h4 className="font-medium mb-2">Social links</h4>
+                      <div className="flex flex-col text-sm text-blue-600">
+                        {userDoc?.socialLinks?.website && (
+                          <a
+                            href={userDoc.socialLinks.website}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Website
+                          </a>
+                        )}
+                        {userDoc?.socialLinks?.github && (
+                          <a
+                            href={userDoc.socialLinks.github}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            GitHub
+                          </a>
+                        )}
+                        {userDoc?.socialLinks?.instagram && (
+                          <a
+                            href={userDoc.socialLinks.instagram}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Instagram
+                          </a>
+                        )}
+                        {userDoc?.socialLinks?.linkedin && (
+                          <a
+                            href={userDoc.socialLinks.linkedin}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            LinkedIn
+                          </a>
+                        )}
+                        {!userDoc?.socialLinks && (
+                          <div className="text-sm text-gray-400">
+                            No links added
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Activity (full width) */}
+                  <div className="mt-6 border-t border-gray-200 pt-4">
+                    <h4 className="font-medium mb-3">Activity</h4>
+                    <div className="flex flex-wrap gap-6 text-sm text-gray-700">
+                      <div>
+                        <span className="font-medium">Joined:</span>{" "}
+                        {formatDate(userDoc?.createdAt)}
+                      </div>
+                    </div>
+                  </div>
                 </section>
               )}
             </div>
@@ -546,6 +683,142 @@ const UserProfile: FC = () => {
                 className="input input-bordered w-full"
               />
               {/* ...remaining form inputs... */}
+
+              <input
+                type="date"
+                placeholder="Birthday"
+                value={formData.birthday}
+                onChange={(e) =>
+                  setFormData({ ...formData, birthday: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <input
+                type="text"
+                placeholder="Languages (comma separated)"
+                value={formData.languages}
+                onChange={(e) =>
+                  setFormData({ ...formData, languages: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <input
+                type="text"
+                placeholder="Occupation"
+                value={formData.occupation}
+                onChange={(e) =>
+                  setFormData({ ...formData, occupation: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Company"
+                value={formData.company}
+                onChange={(e) =>
+                  setFormData({ ...formData, company: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <input
+                type="text"
+                placeholder="Skills (comma separated)"
+                value={formData.skills}
+                onChange={(e) =>
+                  setFormData({ ...formData, skills: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <input
+                type="text"
+                placeholder="GitHub link"
+                value={formData.github}
+                onChange={(e) =>
+                  setFormData({ ...formData, github: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Instagram link"
+                value={formData.instagram}
+                onChange={(e) =>
+                  setFormData({ ...formData, instagram: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="LinkedIn link"
+                value={formData.linkedin}
+                onChange={(e) =>
+                  setFormData({ ...formData, linkedin: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Website"
+                value={formData.website}
+                onChange={(e) =>
+                  setFormData({ ...formData, website: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <textarea
+                placeholder="Short bio (2-3 lines)"
+                value={formData.bio}
+                onChange={(e) =>
+                  setFormData({ ...formData, bio: e.target.value })
+                }
+                className="textarea textarea-bordered w-full md:col-span-2"
+                rows={3}
+              ></textarea>
+
+              <input
+                type="text"
+                placeholder="Location"
+                value={formData.location}
+                onChange={(e) =>
+                  setFormData({ ...formData, location: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <select
+                value={formData.gender}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+                className="select select-bordered w-full"
+              >
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+
+              <select
+                value={formData.relationshipStatus}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    relationshipStatus: e.target.value,
+                  })
+                }
+                className="select select-bordered w-full"
+              >
+                <option value="">Relationship status</option>
+                <option value="single">Single</option>
+                <option value="in_a_relationship">In a relationship</option>
+                <option value="married">Married</option>
+              </select>
+
             </div>
 
             <div className="mt-6 flex justify-end gap-2">

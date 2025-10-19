@@ -72,7 +72,7 @@ const Home: FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`http://localhost:3000/feed/${currentUserId}`, {
+        const res = await fetch(`https://resonance-social-server.vercel.app/feed/${currentUserId}`, {
           signal: controller.signal,
         });
 
@@ -132,7 +132,7 @@ const Home: FC = () => {
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch("http://localhost:3000/socialPost", {
+      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
         method: "POST",
         body: formData,
       });
@@ -146,7 +146,7 @@ const Home: FC = () => {
 
         // Refresh the newsfeed after posting
         const feedRes = await fetch(
-          `http://localhost:3000/feed/${currentUserId}`
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`
         );
         const feedData = await feedRes.json();
         setPosts(feedData);
@@ -164,7 +164,7 @@ const Home: FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mt-20">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:mt-24">
       {/* Left Sidebar (sticky, hidden on mobile) */}
       <LeftSidebar />
 
