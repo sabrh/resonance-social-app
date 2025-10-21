@@ -13,6 +13,9 @@ type Comment = {
 type Post = {
   _id: string;
   text: string;
+  userId: string;
+  userEmail: string;
+  privacy: string;
   image?: string;
   mimetype?: string;
   filename?: string;
@@ -21,6 +24,11 @@ type Post = {
   userName: string;
   userPhoto: string;
   createdAt: string;
+  shared: string;
+  sharedUserName: string;
+  sharedUserPhoto: string;
+  sharedUserText: string;
+  sharedUserId: string;
 };
 
 type Props = {
@@ -32,7 +40,6 @@ const Posts = ({ refreshKey = 0 }: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const authContext = useContext(AuthContext);
-  console.log("auth", AuthContext);
 
   // Get current user id from context
   const currentUserId = authContext?.user?.uid ?? "";
@@ -45,12 +52,9 @@ const Posts = ({ refreshKey = 0 }: Props) => {
       try {
         setLoading(true); // start loading before fetch
         setError(null);
-        const res = await fetch(
-          "https://resonance-social-server.vercel.app/socialPost",
-          {
-            signal: controller.signal,
-          }
-        );
+        const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+          signal: controller.signal,
+        });
         if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
         const data = await res.json();
         if (mounted) setPosts(data);
@@ -81,13 +85,17 @@ const Posts = ({ refreshKey = 0 }: Props) => {
     return <div className="text-center text-red-500 mt-6">{error}</div>;
   }
 
-  if (posts.length === 0) {
+  const matchPost = posts.filter((post) => post?.privacy === "public");
+
+  console.log(posts);
+
+  if (matchPost.length === 0) {
     return <p className="text-gray-500 mt-6">No posts yet.</p>;
   }
 
   return (
     <div>
-      {posts.map((post) => (
+      {matchPost.map((post) => (
         <PostCard
           key={post._id}
           post={post}

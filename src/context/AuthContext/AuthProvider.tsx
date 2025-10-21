@@ -1,8 +1,18 @@
 import { useEffect, useState } from "react";
 import type { FC, ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
-import { createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
-import type { User, UserCredential } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  type User,
+  type UserCredential,
+} from "firebase/auth";
 import { auth } from "../../firebase/firebase.init";
 
 interface AuthProviderProps {
@@ -31,17 +41,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     return signOut(auth);
   };
 
-  useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => {
-      unSubscribe();
-    };
-  }, []);
-
   const googleSign = async (): Promise<UserCredential> => {
     setLoading(true);
     return await signInWithPopup(auth, googleProvider);
@@ -56,6 +55,13 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     return sendPasswordResetEmail(auth, email);
   };
 
+  useEffect(() => {
+    const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unSubscribe();
+  }, []);
 
   const authInfo = {
     loading,
@@ -65,10 +71,9 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     signOutUser,
     googleSign,
     githubSign,
-    forgotPassword
+    forgotPassword,
   };
 
-  console.log(user);
   return (
     <AuthContext.Provider value={authInfo}>
       {children}

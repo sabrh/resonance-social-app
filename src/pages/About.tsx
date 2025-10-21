@@ -7,7 +7,7 @@ import JoinUs from "../components/landingpage-components/JoinUs";
 
 const About: FC = () => {
   return (
-    <div>
+    <div className=" mx-auto">
       <Banner />
       <MissionVision />
       <CoreFeatures />

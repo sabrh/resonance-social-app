@@ -8,8 +8,7 @@ import toast from "react-hot-toast";
 import { updateProfile } from "firebase/auth";
 
 import axios from "axios";
-const API_URL =
-  import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
+const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
 
 const Signup: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,18 +39,18 @@ const Signup: FC = () => {
     }
   };
 
-  const handleGithub = async (): Promise<void> => {
-    try {
-      await githubSign();
-      toast.success("Logged in with GitHub!");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Login failed!");
-      }
-    }
-  };
+  // const handleGithub = async (): Promise<void> => {
+  //   try {
+  //     await githubSign();
+  //     toast.success("Logged in with GitHub!");
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error) {
+  //       toast.error(error.message);
+  //     } else {
+  //       toast.error("Login failed!");
+  //     }
+  //   }
+  // };
 
   const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,7 +66,7 @@ const Signup: FC = () => {
       return;
     }
 
-    console.log(fullName, email, imageUrl);
+    //console.log(fullName, email, imageUrl);
 
     //     // create user
     //     createUser(email, password)
@@ -152,16 +151,17 @@ const Signup: FC = () => {
 
   return (
     <div className="flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+      <div className="w-full max-w-md bg-base-100 rounded-lg shadow-md p-8 border border-base-300">
+        <h2 className="text-2xl font-bold text-center text-base-content mb-6">
           Signup
         </h2>
+
         <form onSubmit={handleSignup} className="space-y-5">
           {/* Full Name */}
           <div>
             <label
               htmlFor="fullName"
-              className="block text-sm font-medium text-gray-600"
+              className="block text-sm font-medium text-base-content/80"
             >
               Full Name
             </label>
@@ -169,7 +169,7 @@ const Signup: FC = () => {
               type="text"
               name="fullName"
               placeholder="Enter your full name"
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="input input-bordered w-full mt-1"
               required
             />
           </div>
@@ -178,7 +178,7 @@ const Signup: FC = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-600"
+              className="block text-sm font-medium text-base-content/80"
             >
               Email
             </label>
@@ -186,7 +186,7 @@ const Signup: FC = () => {
               type="email"
               name="email"
               placeholder="Enter your email"
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="input input-bordered w-full mt-1"
               required
             />
           </div>
@@ -195,7 +195,7 @@ const Signup: FC = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-600"
+              className="block text-sm font-medium text-base-content/80"
             >
               Password
             </label>
@@ -204,13 +204,13 @@ const Signup: FC = () => {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Create a password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="input input-bordered w-full"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/70 hover:text-base-content"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -221,7 +221,7 @@ const Signup: FC = () => {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-600"
+              className="block text-sm font-medium text-base-content/80"
             >
               Confirm Password
             </label>
@@ -230,13 +230,13 @@ const Signup: FC = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 placeholder="Confirm your password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="input input-bordered w-full"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/70 hover:text-base-content"
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -247,7 +247,7 @@ const Signup: FC = () => {
           <div>
             <label
               htmlFor="imageUrl"
-              className="block text-sm font-medium text-gray-600"
+              className="block text-sm font-medium text-base-content/80"
             >
               Profile Image URL
             </label>
@@ -255,35 +255,40 @@ const Signup: FC = () => {
               type="url"
               name="imageUrl"
               placeholder="Paste your image URL"
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="input input-bordered w-full mt-1"
             />
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition"
-          >
+          <button type="submit" className="btn btn-primary w-full">
             Signup
           </button>
 
-          <p className="text-lg text-center">
+          <p className="text-center text-base-content mt-3">
             Already have an account?{" "}
-            <Link to="/login">
-              <span className="text-blue-500">Login</span>
+            <Link to="/login" className="text-primary hover:underline">
+              Login
             </Link>
           </p>
         </form>
 
-        {/* Social login */}
-        <div className="mt-4 flex items-center justify-center">
-          <p className="text-gray-600 text-lg mr-4">Or join us using</p>
-          <button onClick={handleGoogle} className="cursor-pointer">
-            <FcGoogle size={30} />
-          </button>
-          <button onClick={githubSign} className="cursor-pointer ml-4">
-            <FaGithub className="text-gray-700" size={30} />
-          </button>
+        {/* Social Login */}
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <p className="text-base-content/70">Or join us using</p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleGoogle}
+              className="btn btn-outline btn-neutral btn-sm"
+            >
+              <FcGoogle size={22} />
+            </button>
+            <button
+              onClick={githubSign}
+              className="btn btn-outline btn-neutral btn-sm"
+            >
+              <FaGithub size={22} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

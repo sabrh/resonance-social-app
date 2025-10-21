@@ -5,12 +5,21 @@ import {
   AuthContext,
   type AuthContextType,
 } from "../context/AuthContext/AuthContext";
-
 import PostProfile from "../components/post-components/PostProfile";
+import { useParams } from "react-router";
+import toast from "react-hot-toast";
+
+type SocialLinks = {
+  github?: string;
+  instagram?: string;
+  linkedin?: string;
+  website?: string;
+}; // update about
 
 type UserDoc = {
   uid: string;
   displayName?: string;
+  username?: string;
   photoURL?: string;
   email?: string;
   banner?: string;
@@ -21,12 +30,25 @@ type UserDoc = {
   relationshipStatus?: string;
   followers?: string[];
   following?: string[];
+  // NEW FIELDS
+  birthday?: string; // ISO date string
+  languages?: string[];
+  bio?: string;
+  occupation?: string;
+  company?: string;
+  skills?: string[];
+  socialLinks?: SocialLinks;
+  createdAt?: string; // stored as ISO in DB
+  lastActive?: string;
 };
 
 const UserProfile: FC = () => {
   const authContext = useContext<AuthContextType | null>(AuthContext);
   const firebaseUser = authContext?.user; // get user from context
+
+  const { uid: routeUid } = useParams<{ uid?: string }>(); // route uid, may be undefined
   const uid = firebaseUser?.uid;
+  const targetUid = routeUid || uid; // final user id to load
 
   const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -42,48 +64,79 @@ const UserProfile: FC = () => {
     location: "",
     gender: "",
     relationshipStatus: "",
+    // NEW
+    username: "",
+    birthday: "",
+    languages: "",
+    bio: "",
+    occupation: "",
+    company: "",
+    skills: "",
+    github: "",
+    instagram: "",
+    linkedin: "",
+    website: "",
   });
 
+  // tab state
+  const [activeTab, setActiveTab] = useState("posts");
+
+  // added for navigate
   useEffect(() => {
-    if (!firebaseUser?.uid) return;
+    if (!targetUid) return;
 
-    const syncUser = async () => {
+    const fetchUser = async () => {
       try {
-        //  Ensure user doc exists in MongoDB
-        await axios.post("https://resonance-social-server.vercel.app/users", {
-          uid: firebaseUser.uid,
-          displayName: firebaseUser.displayName,
-          email: firebaseUser.email,
-          photoURL: firebaseUser.photoURL,
-        });
+        // Only ensure user exists in DB if it's your own profile
+        if (targetUid === uid && firebaseUser) {
+          await axios.post("https://resonance-social-server.vercel.app/users", {
+            uid: firebaseUser.uid,
+            displayName: firebaseUser.displayName,
+            email: firebaseUser.email,
+            photoURL: firebaseUser.photoURL,
+          });
+        }
 
-        //  Fetch user document
-        const res = await axios.get(
-          `https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`
-        );
+        // fetch the profile we want to show
+        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
         setUserDoc(res.data);
 
-        console.log(res.data);
-        // preload bio values
-        setFormData({
-          education: res.data.education || "",
-          location: res.data.location || "",
-          gender: res.data.gender || "",
-          relationshipStatus: res.data.relationshipStatus || "",
-        });
+        // preload form values only for your own profile
+        if (targetUid === uid) {
+          setFormData({
+            education: res.data.education || "",
+            location: res.data.location || "",
+            gender: res.data.gender || "",
+            relationshipStatus: res.data.relationshipStatus || "",
+            // New
+            username: res.data.username || "",
+            birthday: res.data.birthday ? res.data.birthday.split("T")[0] : "",
+            languages: (res.data.languages || []).join(", "),
+            bio: res.data.bio || "",
+            occupation: res.data.occupation || "",
+            company: res.data.company || "",
+            skills: (res.data.skills || []).join(", "),
+            github: res.data.socialLinks?.github || "",
+            instagram: res.data.socialLinks?.instagram || "",
+            linkedin: res.data.socialLinks?.linkedin || "",
+            website: res.data.socialLinks?.website || "",
+          });
+        }
 
+        // followers + follow status
         setFollowersCount(res.data.followers?.length || 0);
-        // check if current user is already following
-        setIsFollowing(
-          res.data.followers?.includes(firebaseUser?.uid) || false
-        );
+        if (uid && targetUid !== uid) {
+          setIsFollowing(res.data.followers?.includes(uid) || false);
+        } else {
+          setIsFollowing(false);
+        }
       } catch (err) {
-        console.error("User sync error:", err);
+        console.error("Fetch user error:", err);
       }
     };
 
-    syncUser();
-  }, [firebaseUser]);
+    fetchUser();
+  }, [targetUid, uid, firebaseUser]);
 
   // Handle preview of selected file
   useEffect(() => {
@@ -108,17 +161,11 @@ const UserProfile: FC = () => {
     form.append("banner", file);
 
     try {
-      await axios.post(
-        `https://resonance-social-server.vercel.app/users/${uid}/banner`,
-        form,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      await axios.post(`https://resonance-social-server.vercel.app/users/${uid}/banner`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       // refresh user data
-      const res = await axios.get(
-        `https://resonance-social-server.vercel.app/users/${uid}`
-      );
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
       setUserDoc(res.data);
       console.log(res.data);
       setFile(null);
@@ -131,30 +178,79 @@ const UserProfile: FC = () => {
     }
   };
 
-  // handle bio update
+  // full about details
   const handleBioSave = async () => {
     if (!uid) return;
-    try {
-      await axios.put(
-        `https://resonance-social-server.vercel.app/users/${uid}/details`,
-        formData
-      );
+    // prepare payload: convert comma lists to arrays
+    const payload = {
+      education: formData.education || null,
+      location: formData.location || null,
+      gender: formData.gender || null,
+      relationshipStatus: formData.relationshipStatus || null,
+      username: formData.username || null,
+      birthday: formData.birthday || null,
+      languages: formData.languages
+        ? formData.languages.split(",").map((s) => s.trim())
+        : [],
+      bio: formData.bio || null,
+      occupation: formData.occupation || null,
+      company: formData.company || null,
+      skills: formData.skills
+        ? formData.skills.split(",").map((s) => s.trim())
+        : [],
+      socialLinks: {
+        github: formData.github || null,
+        instagram: formData.instagram || null,
+        linkedin: formData.linkedin || null,
+        website: formData.website || null,
+      },
+    };
 
-      const res = await axios.get(
-        `https://resonance-social-server.vercel.app/users/${uid}`
-      );
-      console.log(res);
+    try {
+      await axios.put(`https://resonance-social-server.vercel.app/users/${uid}/details`, payload);
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
       setUserDoc(res.data);
       setShowModal(false);
+      toast.success("Profile updated");
     } catch (err) {
       console.error("Bio update failed:", err);
-      alert("Failed to update bio");
+      toast.error("Update failed");
     }
   };
 
+  // useEffect to handle follow status properly
+  useEffect(() => {
+    if (!targetUid || !uid) return;
+
+    const checkFollowStatus = async () => {
+      try {
+        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
+        const userData = res.data;
+
+        setUserDoc(userData);
+        setFollowersCount(userData.followers?.length || 0);
+
+        // Check if current user is following target user
+        if (uid && targetUid !== uid) {
+          const isUserFollowing = userData.followers?.includes(uid) || false;
+          setIsFollowing(isUserFollowing);
+        } else {
+          setIsFollowing(false);
+        }
+      } catch (err) {
+        console.error("Error checking follow status:", err);
+      }
+    };
+
+    checkFollowStatus();
+  }, [targetUid, uid]);
+
+  // Improved follow toggle handler
   const handleFollowToggle = async () => {
-    if (!uid || !userDoc?.uid) return;
+    if (!uid || !userDoc?.uid || uid === userDoc.uid) return;
+
     try {
+      setLoading(true);
       const res = await axios.put(
         `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
         { currentUid: uid }
@@ -162,8 +258,18 @@ const UserProfile: FC = () => {
 
       setIsFollowing(res.data.isFollowing);
       setFollowersCount(res.data.followersCount);
-    } catch (err) {
-      console.error("Follow toggle failed:", err);
+
+      // Show feedback to user
+      toast.success(
+        res.data.isFollowing
+          ? "Followed successfully!"
+          : "Unfollowed successfully!"
+      );
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      toast.error(error.response?.data?.error || "Failed to fetch posts");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -172,10 +278,21 @@ const UserProfile: FC = () => {
     ? `data:${userDoc.bannerMimetype};base64,${userDoc.banner}`
     : preview || null;
 
+  // helper to format date
+  const formatDate = (iso?: string) => {
+    if (!iso) return "";
+    try {
+      return new Date(iso).toLocaleDateString();
+    } catch (e) {
+      console.log(e);
+      return iso;
+    }
+  };
+
   return (
-    <div className="mx-auto bg-white shadow rounded-lg overflow-hidden">
-      {/* Banner Section */}
-      <div className="h-100 bg-gray-100 relative">
+    <div className="mx-auto bg-base-100 shadow rounded-lg overflow-hidden">
+      {/* Banner */}
+      <div className="h-100 bg-base-200 relative">
         {bannerSrc ? (
           <img
             src={bannerSrc}
@@ -183,66 +300,544 @@ const UserProfile: FC = () => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-500">
+          <div className="w-full h-full flex items-center justify-center text-base-content/60">
             No banner yet
           </div>
         )}
 
-        <div className="absolute right-4 bottom-4 flex items-center gap-2">
-          <label className="btn btn-sm btn-primary cursor-pointer">
-            Change banner
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </label>
-          {file && (
+        {firebaseUser?.uid === userDoc?.uid && (
+          <div className="absolute right-4 bottom-4 flex items-center gap-2">
+            <label className="btn btn-sm btn-primary cursor-pointer">
+              Change banner
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
+
+            {file && (
+              <button
+                onClick={handleUpload}
+                className="btn btn-sm btn-success"
+                disabled={loading}
+              >
+                {loading ? "Uploading..." : "Upload"}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Profile Info */}
+      <div className="p-4 mt-8 border-b-2 border-base-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 lg:hidden">
+        <div className="flex items-start sm:items-center gap-4 relative">
+          <img
+            src={
+              userDoc?.photoURL ||
+              firebaseUser?.photoURL ||
+              "/avatar-placeholder.png"
+            }
+            alt="avatar"
+            className="w-24 h-24 lg:w-35 lg:h-35 rounded-full border-4 object-cover -mt-18 sm:-mt-25 md:-mt-25 lg:-mt-25"
+          />
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-base-content">
+              {userDoc?.displayName || firebaseUser?.displayName || "User"}
+            </h2>
+
+            <div className="flex gap-6 mt-1 text-sm sm:text-base text-base-content/80">
+              <p>
+                <span className="font-medium">Followers:</span> {followersCount}
+              </p>
+              <p>
+                <span className="font-medium">Following:</span>{" "}
+                {userDoc?.following?.length || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          {targetUid !== uid && (
             <button
-              onClick={handleUpload}
-              className="btn btn-sm btn-success"
-              disabled={loading}
+              onClick={handleFollowToggle}
+              className={`px-3 py-1 rounded-md font-semibold ${
+                isFollowing ? "btn-error" : "btn-primary"
+              }`}
             >
-              {loading ? "Uploading..." : "Upload"}
+              {isFollowing ? "Unfollow" : "Follow"}
+            </button>
+          )}
+
+          {targetUid === uid && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="btn btn-sm btn-outline"
+            >
+              Edit about
             </button>
           )}
         </div>
       </div>
 
-      {/* Profile Info */}
-      <div className="p-4 flex items-center mt-8 gap-4 border-[#f0f0f0] border-b-2">
-        <div className="p-4 flex items-center gap-4">
-          <img
-            src={
-              firebaseUser?.photoURL ||
-              userDoc?.photoURL ||
-              "/avatar-placeholder.png"
-            }
-            alt="avatar"
-            className="w-20 h-20 rounded-full border-4 -mt-10 object-cover"
-          />
-          <div>
-            <h2 className="text-xl font-bold">
-              {userDoc?.displayName || firebaseUser?.displayName || "User"}
+      {/* Sidebar + main content */}
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <aside className="hidden lg:block md:col-span-6 lg:col-span-4">
+            <div className="sticky top-24 space-y-4">
+              <div className="bg-base-100 border border-base-200 rounded-xl p-4 shadow-sm">
+                <div className="flex justify-center items-center gap-3">
+                  <img
+                    src={
+                      userDoc?.photoURL ||
+                      firebaseUser?.photoURL ||
+                      "/avatar-placeholder.png"
+                    }
+                    alt="avatar"
+                    className="w-34 h-34 rounded-full object-cover border-2 border-base-100 shadow"
+                  />
+                </div>
+
+                <div className="flex justify-between items-center my-3">
+                  <div>
+                    <div className="text-lg font-bold text-base-content">
+                      {userDoc?.displayName ||
+                        firebaseUser?.displayName ||
+                        "User"}
+                    </div>
+                    <div className="text-sm text-base-content/60">
+                      @{userDoc?.username || "username"}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {targetUid !== uid ? (
+                      <button
+                        onClick={handleFollowToggle}
+                        className={`  text-white btn px-4 py-2 rounded-full text-sm font-semibold ${
+                          isFollowing ? "bg-red-500 btn-error" : "bg-blue-500"
+                        }`}
+                      >
+                        {isFollowing ? " Unfollow" : " Follow"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setShowModal(true)}
+                        className="px-4 py-2 border rounded-full text-sm"
+                      >
+                        Edit about
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-3 text-sm text-base-content/80">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-medium">{followersCount}</span>
+                      <div className="text-xs text-base-content/40">
+                        Followers
+                      </div>
+                    </div>
+                    <div>
+                      <span className="font-medium">
+                        {userDoc?.following?.length || 0}
+                      </span>
+                      <div className="text-xs text-base-content/40">
+                        Following
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  {["posts", "about"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`w-full text-sm py-2 rounded-md mb-2 ${
+                        activeTab === tab
+                          ? "bg-primary/10 text-primary border border-primary/20"
+                          : "bg-base-100 hover:bg-base-200"
+                      }`}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-base-100 border border-base-200 rounded-xl p-4 shadow-sm">
+                <div className="text-xs text-base-content/60">Joined</div>
+                <div className="text-sm font-semibold text-base-content">
+                  {formatDate(userDoc?.createdAt)}
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <main className="col-span-1 md:col-span-6 lg:col-span-8">
+            {/* Mobile tab nav */}
+            <div className="block lg:hidden mb-4">
+              <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                {["posts", "about"].map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setActiveTab(t)}
+                    className={`whitespace-nowrap px-4 py-2 text-sm rounded-full border ${
+                      activeTab === t
+                        ? "bg-primary/10 text-primary border-primary/20"
+                        : "bg-base-100 text-base-content/80 border-base-200"
+                    }`}
+                  >
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-6 mb-6">
+              {/* POSTS */}
+              {activeTab === "posts" && (
+                <section className="bg-base-100 border border-base-200 rounded-xl p-4 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-base-content">
+                      Posts
+                    </h3>
+                    <div className="text-sm text-base-content/60">
+                      All posts by this user
+                    </div>
+                  </div>
+                  <PostProfile targetUid={targetUid} />
+                </section>
+              )}
+
+              {/* ABOUT */}
+              {activeTab === "about" && (
+                <section className="bg-base-100 border border-base-200 rounded-xl p-6 mb-6 shadow-sm">
+                  {/* About content */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-medium mb-2"> Add Bio</p>
+                      <p className="mt-3 text-sm text-gray-700 max-w-prose">
+                        {userDoc?.bio || "No bio yet. Add a short intro."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Basic info card */}
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <h4 className="font-medium mb-2">Basic info</h4>
+                      <div className="text-sm text-gray-700 space-y-2">
+                        <div>
+                          <span className="font-medium">Email:</span>{" "}
+                          {userDoc?.email || firebaseUser?.email}
+                        </div>
+                        <div>
+                          <span className="font-medium">Birthday / Age:</span>{" "}
+                          {userDoc?.birthday
+                            ? `${formatDate(userDoc.birthday)} (${Math.floor(
+                                (Date.now() -
+                                  new Date(userDoc.birthday).getTime()) /
+                                  (1000 * 60 * 60 * 24 * 365)
+                              )} yrs)`
+                            : "—"}
+                        </div>
+                        <div>
+                          <span className="font-medium">Languages:</span>{" "}
+                          {(userDoc?.languages || []).join(", ") || "—"}
+                        </div>
+                        <div>
+                          <span className="font-medium">Location:</span>{" "}
+                          {userDoc?.location || "—"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Work & education card */}
+                    <div className="p-4 border border-gray-200 rounded-lg">
+                      <h4 className="font-medium mb-2">Work & Education</h4>
+                      <div className="text-sm text-gray-700 space-y-2">
+                        <div>
+                          <span className="font-medium">Occupation:</span>{" "}
+                          {userDoc?.occupation || "—"}
+                        </div>
+                        <div>
+                          <span className="font-medium">Company:</span>{" "}
+                          {userDoc?.company || "—"}
+                        </div>
+                        <div>
+                          <span className="font-medium">Education:</span>{" "}
+                          {userDoc?.education || "—"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Skills */}
+                    <div className="p-4 border border-gray-200 rounded-lg md:col-span-1">
+                      <h4 className="font-medium mb-2">Skills</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {(userDoc?.skills || []).length > 0 ? (
+                          userDoc!.skills!.map((s, i) => (
+                            <span
+                              key={i}
+                              className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-700"
+                            >
+                              #{s}
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-sm text-gray-400">
+                            No skills yet
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Social Links */}
+                    <div className="p-4 border border-gray-200 rounded-lg md:col-span-1">
+                      <h4 className="font-medium mb-2">Social links</h4>
+                      <div className="flex flex-col text-sm text-blue-600">
+                        {userDoc?.socialLinks?.website && (
+                          <a
+                            href={userDoc.socialLinks.website}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Website
+                          </a>
+                        )}
+                        {userDoc?.socialLinks?.github && (
+                          <a
+                            href={userDoc.socialLinks.github}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            GitHub
+                          </a>
+                        )}
+                        {userDoc?.socialLinks?.instagram && (
+                          <a
+                            href={userDoc.socialLinks.instagram}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Instagram
+                          </a>
+                        )}
+                        {userDoc?.socialLinks?.linkedin && (
+                          <a
+                            href={userDoc.socialLinks.linkedin}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            LinkedIn
+                          </a>
+                        )}
+                        {!userDoc?.socialLinks && (
+                          <div className="text-sm text-gray-400">
+                            No links added
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Activity (full width) */}
+                  <div className="mt-6 border-t border-gray-200 pt-4">
+                    <h4 className="font-medium mb-3">Activity</h4>
+                    <div className="flex flex-wrap gap-6 text-sm text-gray-700">
+                      <div>
+                        <span className="font-medium">Joined:</span>{" "}
+                        {formatDate(userDoc?.createdAt)}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              )}
+            </div>
+          </main>
+        </div>
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-base-100 rounded-lg shadow-lg p-6 w-full max-w-2xl">
+            <h2 className="text-xl font-semibold mb-4 text-base-content">
+              Edit About
             </h2>
-            <p className="text-sm text-gray-500">
-              {userDoc?.email || firebaseUser?.email}
-            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input
+                type="text"
+                placeholder="Full name"
+                value={formData.education}
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Username"
+                value={formData.username}
+                className="input input-bordered w-full"
+              />
+              {/* ...remaining form inputs... */}
+
+              <input
+                type="date"
+                placeholder="Birthday"
+                value={formData.birthday}
+                onChange={(e) =>
+                  setFormData({ ...formData, birthday: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <input
+                type="text"
+                placeholder="Languages (comma separated)"
+                value={formData.languages}
+                onChange={(e) =>
+                  setFormData({ ...formData, languages: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <input
+                type="text"
+                placeholder="Occupation"
+                value={formData.occupation}
+                onChange={(e) =>
+                  setFormData({ ...formData, occupation: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Company"
+                value={formData.company}
+                onChange={(e) =>
+                  setFormData({ ...formData, company: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <input
+                type="text"
+                placeholder="Skills (comma separated)"
+                value={formData.skills}
+                onChange={(e) =>
+                  setFormData({ ...formData, skills: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <input
+                type="text"
+                placeholder="GitHub link"
+                value={formData.github}
+                onChange={(e) =>
+                  setFormData({ ...formData, github: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Instagram link"
+                value={formData.instagram}
+                onChange={(e) =>
+                  setFormData({ ...formData, instagram: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="LinkedIn link"
+                value={formData.linkedin}
+                onChange={(e) =>
+                  setFormData({ ...formData, linkedin: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+              <input
+                type="text"
+                placeholder="Website"
+                value={formData.website}
+                onChange={(e) =>
+                  setFormData({ ...formData, website: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <textarea
+                placeholder="Short bio (2-3 lines)"
+                value={formData.bio}
+                onChange={(e) =>
+                  setFormData({ ...formData, bio: e.target.value })
+                }
+                className="textarea textarea-bordered w-full md:col-span-2"
+                rows={3}
+              ></textarea>
+
+              <input
+                type="text"
+                placeholder="Location"
+                value={formData.location}
+                onChange={(e) =>
+                  setFormData({ ...formData, location: e.target.value })
+                }
+                className="input input-bordered w-full"
+              />
+
+              <select
+                value={formData.gender}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+                className="select select-bordered w-full"
+              >
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+
+              <select
+                value={formData.relationshipStatus}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    relationshipStatus: e.target.value,
+                  })
+                }
+                className="select select-bordered w-full"
+              >
+                <option value="">Relationship status</option>
+                <option value="single">Single</option>
+                <option value="in_a_relationship">In a relationship</option>
+                <option value="married">Married</option>
+              </select>
+
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setShowModal(false)}
+                className="btn btn-sm btn-ghost"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBioSave}
+                className="btn btn-sm btn-primary"
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>
-
-        <div>
-          <button className=" bg-blue-400 text-white px-4 py-2 rounded-sm font-semibold">
-            Follow
-          </button>
-        </div>
-      </div>
-
-      {/* Post Feed Section */}
-      <div className="mt-6">
-        <PostProfile></PostProfile>
-      </div>
+      )}
     </div>
   );
 };
