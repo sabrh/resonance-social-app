@@ -1,22 +1,11 @@
-export function formatMessageTime(date: Date | string): string {
-  const messageDate = new Date(date);
+export const formatMessageTime = (date: string | Date | undefined) => {
+  if (!date) return "";
+  const d = typeof date === "string" ? new Date(date) : date;
   const now = new Date();
-  const diffInHours = (now.getTime() - messageDate.getTime()) / (1000 * 60 * 60);
-
-  if (diffInHours < 24) {
-    return messageDate.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  } else {
-    return messageDate.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
+  if (d.toDateString() === now.toDateString()) {
+    // show hours:minutes
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
-}
-
-export const classNames = (...classes: (string | undefined | null | boolean)[]): string => {
-  return classes.filter(Boolean).join(' ');
+  // else show short date
+  return d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 };

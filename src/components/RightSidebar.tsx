@@ -27,6 +27,7 @@ const RightSidebar: React.FC = () => {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [reload, setReload] = useState<boolean>(false);
+  const [postLoad,setPostLoad ] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [info, setInfo] = useState(false);
@@ -69,6 +70,7 @@ const RightSidebar: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setPostLoad(true);
     const formData = new FormData();
     if (imageFile) formData.append("photo", imageFile);
     if (user?.displayName) formData.append("userName", user.displayName);
@@ -86,11 +88,13 @@ const RightSidebar: React.FC = () => {
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Your story created successfully!");
+        setPostLoad(false);
         setReload((prev) => !prev);
         setImage(null);
         setImageFile(null);
       } else {
         toast.error("Could not create story. Try again.");
+        setPostLoad(false);
       }
     } catch (err) {
       console.error(err);
@@ -167,8 +171,22 @@ const RightSidebar: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Decorative gradient border (subtle) */}
-                <div className="absolute inset-0 rounded-2xl ring-1 ring-white/10"></div>
+            <input
+              onChange={handleImageChange}
+              type="file"
+              accept="image/*"
+              className="hidden"
+            />
+          </label>
+        </form>
+        {stories.map((story) => (
+          <div key={story?._id}>
+            <div
+              onClick={() => setSelectedStory(story)}
+              className=" md:w-[180px] md:h-[200px] w-[130px] h-[150px] rounded-2xl relative cursor-pointer"
+            >
+              <div className="h-[50px] w-[50px] absolute md:top-4 md:left-4 top-2 left-2 bg-gradient-to-r from-green-400 via-emerald-400 to-sky-500 animate-gradient-x p-1 rounded-full">
+                <img className=" rounded-full h-full w-full" src={story?.userPhoto} />
               </div>
 
               <input
@@ -301,7 +319,11 @@ const RightSidebar: React.FC = () => {
                     type="submit"
                     className="btn text-white bg-blue-500 rounded-xl float-right mt-5"
                   >
-                    Share Now
+                    {postLoad ? 
+                  <div>
+                    <span className="loading loading-spinner text-white"></span>
+                  </div> 
+                  : "Share now"}
                   </button>
                 </div>
               )}
