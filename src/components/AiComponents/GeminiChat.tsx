@@ -20,14 +20,11 @@ export default function GeminiChat() {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        "https://resonance-social-server.vercel.app/AiChat",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: newMsg.text }),
-        }
-      );
+      const res = await fetch("http://localhost:3000/AiChat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: newMsg.text }),
+      });
       const data = await res.json();
       setMessages((prev) => [...prev, { role: "bot", text: data.reply }]);
     } catch (err) {

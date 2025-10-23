@@ -35,9 +35,7 @@ const RightSidebar: React.FC = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const response = await fetch(
-          `https://resonance-social-server.vercel.app/story`
-        );
+        const response = await fetch(`http://localhost:3000/story`);
         if (!response.ok) throw new Error("Network error");
         const data: Story[] = await response.json();
         setStories(data);
@@ -78,13 +76,10 @@ const RightSidebar: React.FC = () => {
     if (user?.uid) formData.append("userId", user.uid);
 
     try {
-      const res = await fetch(
-        "https://resonance-social-server.vercel.app/story",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const res = await fetch("http://localhost:3000/story", {
+        method: "POST",
+        body: formData,
+      });
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Your story created successfully!");
@@ -118,12 +113,9 @@ const RightSidebar: React.FC = () => {
           <button
             onClick={async () => {
               try {
-                const res = await fetch(
-                  `https://resonance-social-server.vercel.app/story/${id}`,
-                  {
-                    method: "DELETE",
-                  }
-                );
+                const res = await fetch(`http://localhost:3000/story/${id}`, {
+                  method: "DELETE",
+                });
 
                 if (res.ok) {
                   setSelectedStory(null);
