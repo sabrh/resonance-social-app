@@ -53,11 +53,15 @@ const CoreFeatures: FC = () => {
         </p>
 
         {/* Grid Layout */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {features.map((feature, idx) => (
             <div
               key={idx}
-              className="flex flex-col items-center text-center p-6 rounded-2xl bg-base-100 border border-transparent dark:border-base-300 transition-all duration-300 hover:bg-base-200 hover:shadow-lg"
+              className="flex flex-col items-center text-center p-6 rounded-2xl 
+              bg-base-100 border border-base-300/60 shadow-sm
+              dark:bg-base-200 dark:border-base-300/50
+              hover:shadow-md hover:border-primary/40 
+              transition-all duration-300"
             >
               {feature.icon}
               <h3 className="text-lg font-semibold text-base-content mb-2">

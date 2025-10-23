@@ -72,9 +72,12 @@ const Home: FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`https://resonance-social-server.vercel.app/feed/${currentUserId}`, {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`,
+          {
+            signal: controller.signal,
+          }
+        );
 
         if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
 
@@ -132,10 +135,13 @@ const Home: FC = () => {
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "https://resonance-social-server.vercel.app/socialPost",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Your post is updated successfully!");
@@ -174,9 +180,9 @@ const Home: FC = () => {
       </div>
 
       {/* Main Content */}
-      <main className="col-span-1 md:col-span-6">
+      <main className="col-span-1 md:col-span-6  md:mt-0">
         <div className="w-full">
-          <div className="rounded-sm">
+          <div className="rounded-sm border-2 border-base-300/60 shadow-sm p-4 mb-4 bg-base-100">
             <form
               onSubmit={handleSubmit}
               className="shadow-sm bg-base-100 rounded-xl px-4 py-4"
@@ -283,8 +289,10 @@ const Home: FC = () => {
       </main>
 
       {/* Right Sidebar (sticky, hidden on mobile) */}
-      <div className="hidden md:block">
-        <RightSidebar />
+      <div className="hidden md:block md:col-span-3">
+        <div className="sticky top-24 h-[calc(100vh-96px)] overflow-y-auto">
+          <RightSidebar />
+        </div>
       </div>
     </div>
   );

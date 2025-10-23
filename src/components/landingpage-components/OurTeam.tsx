@@ -35,17 +35,17 @@ const OurTeam: FC = () => {
     dots: true,
     infinite: true,
     autoplay: true,
-    autoplaySpeed: 2000,
-    slidesToShow: 3, // default desktop
+    autoplaySpeed: 2500,
+    slidesToShow: 3,
     slidesToScroll: 1,
-    arrows: true, // show arrows on desktop
+    arrows: true,
     responsive: [
       {
-        breakpoint: 1024, // tablets
+        breakpoint: 1024,
         settings: { slidesToShow: 2, arrows: false },
       },
       {
-        breakpoint: 768, // mobile
+        breakpoint: 768,
         settings: { slidesToShow: 1, arrows: false, dots: true },
       },
     ],
@@ -61,11 +61,17 @@ const OurTeam: FC = () => {
         <Slider {...settings}>
           {team.map((member, idx) => (
             <div key={idx} className="px-2">
-              <div className="flex flex-col items-center text-center bg-base-100 p-6 rounded-xl shadow-md border border-transparent dark:border-base-300 hover:bg-base-200 hover:shadow-lg transition">
+              <div
+                className="flex flex-col items-center text-center p-6 rounded-2xl 
+                bg-base-100 border border-base-300/60 shadow-sm 
+                dark:bg-base-200 dark:border-base-300/50 
+                hover:shadow-md hover:border-primary/40 hover:-translate-y-1 
+                transition-all duration-300 ease-in-out"
+              >
                 <img
                   src={member.img}
                   alt={member.name}
-                  className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover mb-4 border-2 border-base-300"
+                  className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover mb-4 border-2 border-base-300 shadow-sm"
                 />
                 <h3 className="text-lg md:text-xl font-semibold text-base-content">
                   {member.name}

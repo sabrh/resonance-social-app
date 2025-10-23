@@ -34,7 +34,9 @@ const RightSidebar: React.FC = () => {
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const response = await fetch(`https://resonance-social-server.vercel.app/story`);
+        const response = await fetch(
+          `https://resonance-social-server.vercel.app/story`
+        );
         if (!response.ok) throw new Error("Network error");
         const data: Story[] = await response.json();
         setStories(data);
@@ -74,10 +76,13 @@ const RightSidebar: React.FC = () => {
     if (user?.uid) formData.append("userId", user.uid);
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/story", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "https://resonance-social-server.vercel.app/story",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Your story created successfully!");
@@ -109,9 +114,12 @@ const RightSidebar: React.FC = () => {
           <button
             onClick={async () => {
               try {
-                const res = await fetch(`https://resonance-social-server.vercel.app/story/${id}`, {
-                  method: "DELETE",
-                });
+                const res = await fetch(
+                  `https://resonance-social-server.vercel.app/story/${id}`,
+                  {
+                    method: "DELETE",
+                  }
+                );
 
                 if (res.ok) {
                   setSelectedStory(null);
@@ -136,115 +144,127 @@ const RightSidebar: React.FC = () => {
   return (
     <div>
       {/* side bar */}
-      <aside className="md:block md:col-span-3 flex gap-4 items-center overflow-x-auto md:overflow-x-visible mb-3 md:space-y-6">
-        <form>
-          <label className="cursor-pointer">
-            <div className="relative md:w-[180px] md:h-[200px] w-[130px] h-[150px] bg-gradient-to-br from-blue-500/20 to-purple-500/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl group ">
-              {/* Floating gradient circle */}
-              <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+      <aside className="md:block md:col-span-3 flex gap-4 items-center overflow-x-auto md:overflow-x-visible md:space-y-6">
+        <div
+          className="md:fixed md:top-20 md:right-8 w-full md:w-[260px] bg-base-100 rounded-lg 
+     overflow-hidden max-h-[calc(100vh-6rem)] 
+     md:space-y-4 md:overflow-y-auto overflow-x-auto 
+     flex md:flex-col p-4 md:p-0  [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
+          {" "}
+          <form className="flex-shrink-0 md:flex-shrink md:mb-4">
+            <label className="cursor-pointer">
+              <div className="relative md:w-[180px] md:h-[200px] w-[130px] h-[150px] bg-gradient-to-br from-blue-500/20 to-purple-500/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl group mx-auto md:mx-0 md:mb-4">
+                <div className="absolute   -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
 
-              {/* Icon Section */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-white shadow-md group-hover:scale-110 transition-transform duration-300">
-                  <Plus className="w-6 h-6" />
+                {/* Icon Section */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                  <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-white shadow-md group-hover:scale-110 transition-transform duration-300">
+                    <Plus className="w-6 h-6" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                    Create Story
+                  </p>
                 </div>
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-                  Create Story
-                </p>
+
+                {/* Decorative gradient border (subtle) */}
+                <div className="absolute inset-0 rounded-2xl ring-1 ring-white/10"></div>
               </div>
 
-              {/* Decorative gradient border (subtle) */}
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-white/10"></div>
-            </div>
-
-            <input
-              onChange={handleImageChange}
-              type="file"
-              accept="image/*"
-              className="hidden"
-            />
-          </label>
-        </form>
-        {stories.map((story) => (
-          <div key={story?._id}>
-            <div
-              onClick={() => setSelectedStory(story)}
-              className=" md:w-[180px] md:h-[200px] w-[130px] h-[150px] rounded-2xl relative cursor-pointer"
-            >
-              <div className="h-[50px] w-[50px] absolute top-4 left-4 bg-gradient-to-r from-green-400 via-emerald-400 to-sky-500 animate-gradient-x p-1 rounded-full">
-                <img className=" rounded-full h-full w-full" src={story?.userPhoto} />
-              </div>
-              <img
-                className="h-full w-full rounded-2xl"
-                src={`data:${story?.mimetype};base64,${story?.image}`}
+              <input
+                onChange={handleImageChange}
+                type="file"
+                accept="image/*"
+                className="hidden"
               />
-              <div className="absolute bottom-2 left-2 flex justify-center w-full">
-                <p className=" text-white  text-[13px]">
-                  {story?.userName}
-                </p>
-              </div>
-            </div>
-            {/* view story modal */}
-            {selectedStory && (
-              <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xl flex justify-center items-center">
-                <div className="h-[400px] w-[300px] rounded-3xl relative">
-                  <img
-                    className="h-full w-full rounded-3xl"
-                    src={`data:${selectedStory?.mimetype};base64,${selectedStory?.image}`}
-                  />
-                  <div className="h-[50px] w-[50px] absolute top-4 left-4 bg-gradient-to-r from-green-400 via-emerald-400 to-sky-500 animate-gradient-x p-1 rounded-full flex gap-4 items-center">
+            </label>
+          </form>
+          <div className="flex md:flex-col md:space-y-4 md:space-x-0 overflow-x-auto md:overflow-x-visible gap-4 md:gap-0">
+            {stories.map((story) => (
+              <div
+                key={story._id}
+                className="relative md:w-[180px] md:h-[200px] w-[130px] h-[150px] rounded-2xl overflow-hidden shadow-lg flex-shrink-0 cursor-pointer"
+              >
+                <div
+                  onClick={() => setSelectedStory(story)}
+                  className="md:w-[180px] md:h-[200px] w-[130px] h-[150px] rounded-2xl relative cursor-pointer"
+                >
+                  <div className="h-[50px] w-[50px] absolute top-4 left-4 bg-gradient-to-r from-green-400 via-emerald-400 to-sky-500 animate-gradient-x p-1 rounded-full">
                     <img
-                      className="rounded-full "
-                      src={selectedStory?.userPhoto}
+                      className="rounded-full h-full w-full"
+                      src={story?.userPhoto}
                     />
-                    <div className="w-fit">
-                      <p className="text-white font-bold text-xl text-nowrap">
-                        {selectedStory?.userName}
-                      </p>
-                      <p className="text-white font-bold text-[12px] text-nowrap">
-                        {selectedStory?.createdAt}
-                      </p>
-                    </div>
                   </div>
-                  <div
-                    onClick={() => {
-                      setSelectedStory(null);
-                      setInfo(false);
-                    }}
-                    className="absolute top-3 right-3 cursor-pointer"
-                  >
-                    <X className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="absolute top-4 right-12 cursor-pointer">
-                    <div
-                      onClick={() => setInfo(!info)}
-                      className={
-                        selectedStory?.userId === user?.uid ? "" : "hidden"
-                      }
-                    >
-                      <BsThreeDotsVertical className="w-5 h-5 text-white" />
-                    </div>
-                    <div
-                      className={`absolute top-10 right-4 h-[60px] w-[150px] bg-white shadow-2xl rounded-2xl ${
-                        info ? "" : "hidden"
-                      }`}
-                    >
-                      <p
-                        onClick={() => confirmDelete(selectedStory._id)}
-                        className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4"
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                        <span>Delete story</span>
-                      </p>
-                    </div>
+                  <img
+                    className="h-full w-full rounded-2xl"
+                    src={`data:${story?.mimetype};base64,${story?.image}`}
+                  />
+                  <div className="absolute bottom-2 left-2 flex justify-center w-full">
+                    <p className="text-white text-[13px]">{story?.userName}</p>
                   </div>
                 </div>
+                {/* view story modal */}
+                {selectedStory && (
+                  <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xl flex justify-center items-center">
+                    <div className="h-[400px] w-[300px] rounded-3xl relative">
+                      <img
+                        className="h-full w-full rounded-3xl"
+                        src={`data:${selectedStory?.mimetype};base64,${selectedStory?.image}`}
+                      />
+                      <div className="h-[50px] w-[50px] absolute top-4 left-4 bg-gradient-to-r from-green-400 via-emerald-400 to-sky-500 animate-gradient-x p-1 rounded-full flex gap-4 items-center">
+                        <img
+                          className="rounded-full"
+                          src={selectedStory?.userPhoto}
+                        />
+                        <div className="w-fit">
+                          <p className="text-white font-bold text-xl text-nowrap">
+                            {selectedStory?.userName}
+                          </p>
+                          <p className="text-white font-bold text-[12px] text-nowrap">
+                            {selectedStory?.createdAt}
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        onClick={() => {
+                          setSelectedStory(null);
+                          setInfo(false);
+                        }}
+                        className="absolute top-3 right-3 cursor-pointer"
+                      >
+                        <X className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="absolute top-4 right-12 cursor-pointer">
+                        <div
+                          onClick={() => setInfo(!info)}
+                          className={
+                            selectedStory?.userId === user?.uid ? "" : "hidden"
+                          }
+                        >
+                          <BsThreeDotsVertical className="w-5 h-5 text-white" />
+                        </div>
+                        <div
+                          className={`absolute top-10 right-4 h-[60px] w-[150px] bg-white shadow-2xl rounded-2xl ${
+                            info ? "" : "hidden"
+                          }`}
+                        >
+                          <p
+                            onClick={() => confirmDelete(selectedStory._id)}
+                            className="flex gap-2 items-center mt-4 cursor-pointer hover:bg-gray-200 px-4"
+                          >
+                            <i className="fa-solid fa-trash"></i>
+                            <span>Delete story</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            ))}
           </div>
-        ))}
+        </div>
       </aside>
-
       {/* story Upload Modal .............................................*/}
 
       {image && (
