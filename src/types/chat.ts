@@ -1,24 +1,16 @@
-export interface User {
-  _id: string;
+export type User = {
+  _id?: string;
   uid: string;
-  displayName: string;
-  email: string;
+  displayName?: string;
   photoURL?: string;
-  online?: boolean;
-}
+  email?: string;
+};
 
-export interface Message {
+export type Message = {
   _id: string;
   senderId: string;
   receiverId: string;
-  text?: string;
-  image?: string;
-  createdAt: Date;
-}
-
-export interface ChatState {
-  selectedUser: User | null;
-  messages: Message[];
-  users: User[];
-  onlineUsers: string[];
-}
+  text?: string | null;
+  image?: string | null;
+  createdAt: string | Date;
+};
