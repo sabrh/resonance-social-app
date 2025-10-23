@@ -2,7 +2,6 @@ import { createContext } from "react";
 import type { User, UserCredential } from "firebase/auth";
 import { useContext } from "react";
 
-
 export interface AuthContextType {
   loading: boolean;
   user: User | null;
