@@ -75,7 +75,7 @@ const Home: FC = () => {
         setError(null);
 
         const res = await fetch(
-          `http://localhost:3000/feed/${currentUserId}`,
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`,
           {
             signal: controller.signal,
           }
@@ -139,7 +139,7 @@ const Home: FC = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/socialPost",
+        "https://resonance-social-server.vercel.app/socialPost",
         {
           method: "POST",
           body: formData,
@@ -156,7 +156,7 @@ const Home: FC = () => {
 
         // Refresh the newsfeed after posting
         const feedRes = await fetch(
-          `http://localhost:3000/feed/${currentUserId}`
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`
         );
         const feedData = await feedRes.json();
         setPosts(feedData);
@@ -180,7 +180,7 @@ const Home: FC = () => {
     const prompt = `Enhance this social media caption to make it sound natural, engaging, and written by a real person. Keep the same meaning and format it in exactly three lines. This is the original caption: "${text}"`
     setAiLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/AiChat", {
+      const res = await fetch("https://resonance-social-server.vercel.app/AiChat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: prompt }),

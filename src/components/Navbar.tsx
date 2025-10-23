@@ -37,7 +37,7 @@ export default function Navbar() {
   const fetchUnreadCount = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/notifications/${user?.uid}/unread-count`
+        `https://resonance-social-server.vercel.app/notifications/${user?.uid}/unread-count`
       );
       if (res.ok) {
         const data = await res.json();
@@ -103,7 +103,7 @@ export default function Navbar() {
 
       {/* Center Navigation - Desktop & Tablet - Fixed spacing for md devices */}
       {user && (
-        <div className="hidden sm:flex items-center gap-1 md:gap-1 lg:gap-3 flex-shrink-0 absolute left-1/2 transform -translate-x-1/2">
+        <div className="hidden md:ml-4 sm:flex items-center gap-1 md:gap-1 lg:gap-3 flex-shrink-0 absolute left-1/2 transform -translate-x-1/2">
           <NavLink
             to="/home"
             className={({ isActive }) =>
@@ -114,7 +114,7 @@ export default function Navbar() {
               }`
             }
           >
-            <HiHome size={22} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+            <HiHome size={22} className=" md:w-5 md:h-5 lg:w-6 lg:h-6" />
             <span className="text-xs font-medium hidden lg:block">
               Home
             </span>
