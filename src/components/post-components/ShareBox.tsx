@@ -81,7 +81,7 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
     }
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+      const res = await fetch("http://localhost:3000/socialPost", {
         method: "POST",
         body: formData,
       });
