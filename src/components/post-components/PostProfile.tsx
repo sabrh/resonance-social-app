@@ -65,7 +65,7 @@ const PostProfile = ({ refreshKey = 0, targetUid }: Props) => {
 
         // Use the new endpoint with privacy filtering
         const res = await fetch(
-          `https://resonance-social-server.vercel.app/users/${profileUid}/posts?viewerUid=${currentUserId}`,
+          `http://localhost:3000/users/${profileUid}/posts?viewerUid=${currentUserId}`,
           {
             signal: controller.signal,
           }
