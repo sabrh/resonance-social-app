@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router";
 import { BsBell, BsSearch } from "react-icons/bs";
 import { FaArrowRightToBracket } from "react-icons/fa6";
 import { HiHome, HiUser, HiChatAlt2 } from "react-icons/hi";
+import { RiRobot2Line } from "react-icons/ri"; // Smart Assistant icon
 import toast from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext/AuthContext";
 import Search from "./Search";
@@ -36,7 +37,7 @@ export default function Navbar() {
   const fetchUnreadCount = async () => {
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/notifications/${user?.uid}/unread-count`
+        `http://localhost:3000/notifications/${user?.uid}/unread-count`
       );
       if (res.ok) {
         const data = await res.json();
@@ -68,193 +69,231 @@ export default function Navbar() {
   return (
     <>
       {/* Main Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-base-100 border-b border-base-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo & Search Section */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              {/* Logo */}
-              <Link
-                to="/"
-                className="flex-shrink-0 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary text-primary-content font-bold text-xl sm:text-2xl hover:scale-105 transition-transform shadow-lg"
-              >
-                R
-              </Link>
+     <nav className="fixed top-0 left-0 right-0 z-50 bg-base-100 border-b border-base-300">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-between h-16">
+      {/* Logo & Search Section */}
+      <div className="flex items-center gap-3 flex-shrink-0">
+        {/* Logo */}
+        <Link
+          to="/"
+          className="flex-shrink-0 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary text-primary-content font-bold text-xl sm:text-2xl hover:scale-105 transition-transform shadow-lg"
+        >
+          R
+        </Link>
 
-              {/* Desktop Search */}
-              <div className="hidden md:block w-64 lg:w-80">
-                <Search />
-              </div>
-
-              {/* Mobile Search Icon */}
-              <button
-                onClick={() => setShowSearch(!showSearch)}
-                className="md:hidden btn btn-ghost btn-circle btn-sm"
-              >
-                <BsSearch size={20} />
-              </button>
+        {/* Desktop Search with Icon - Fixed for md devices */}
+        <div className="hidden md:block w-48 lg:w-64 xl:w-80 relative">
+          <div className="relative">
+            
+            <div className="pl-10">
+              <Search />
             </div>
+          </div>
+        </div>
 
-            {/* Center Navigation - Desktop & Tablet */}
-            {user && (
-              <div className="hidden sm:flex items-center gap-1 md:gap-2 lg:gap-3 flex-shrink-0 absolute left-1/2 transform -translate-x-1/2">
-                <NavLink
-                  to="/home"
-                  className={({ isActive }) =>
-                    `flex flex-col items-center gap-1 px-3 md:px-5 lg:px-7 py-2 rounded-lg transition-all ${
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
-                    }`
-                  }
-                >
-                  <HiHome size={24} />
-                  <span className="text-xs font-medium hidden lg:block">
-                    Home
-                  </span>
-                </NavLink>
+        {/* Mobile Search Icon */}
+        <button
+          onClick={() => setShowSearch(!showSearch)}
+          className="md:hidden btn btn-ghost btn-circle btn-sm"
+        >
+          <BsSearch size={20} />
+        </button>
+      </div>
 
-                <NavLink
-                  to="/profile"
-                  className={({ isActive }) =>
-                    `flex flex-col items-center gap-1 px-3 md:px-5 lg:px-7 py-2 rounded-lg transition-all ${
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
-                    }`
-                  }
-                >
-                  <HiUser size={24} />
-                  <span className="text-xs font-medium hidden lg:block">
-                    Profile
-                  </span>
-                </NavLink>
+      {/* Center Navigation - Desktop & Tablet - Fixed spacing for md devices */}
+      {user && (
+        <div className="hidden sm:flex items-center gap-1 md:gap-1 lg:gap-3 flex-shrink-0 absolute left-1/2 transform -translate-x-1/2">
+          <NavLink
+            to="/home"
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 px-2 md:px-3 lg:px-7 py-2 rounded-lg transition-all ${
+                isActive
+                  ? "bg-primary/10 text-primary"
+                  : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+              }`
+            }
+          >
+            <HiHome size={22} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+            <span className="text-xs font-medium hidden lg:block">
+              Home
+            </span>
+          </NavLink>
 
-                <NavLink
-                  to="/messages"
-                  className={({ isActive }) =>
-                    `flex flex-col items-center gap-1 px-3 md:px-5 lg:px-7 py-2 rounded-lg transition-all ${
-                      isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-base-content/70 hover:text-base-content hover:bg-base-200"
-                    }`
-                  }
-                >
-                  <HiChatAlt2 size={24} />
-                  <span className="text-xs font-medium hidden lg:block">
-                    Messages
-                  </span>
-                </NavLink>
-              </div>
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 px-2 md:px-3 lg:px-7 py-2 rounded-lg transition-all ${
+                isActive
+                  ? "bg-primary/10 text-primary"
+                  : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+              }`
+            }
+          >
+            <HiUser size={22} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+            <span className="text-xs font-medium hidden lg:block">
+              Profile
+            </span>
+          </NavLink>
+
+          <NavLink
+            to="/messages"
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 px-2 md:px-3 lg:px-7 py-2 rounded-lg transition-all ${
+                isActive
+                  ? "bg-primary/10 text-primary"
+                  : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+              }`
+            }
+          >
+            <HiChatAlt2 size={22} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+            <span className="text-xs font-medium hidden lg:block">
+              Messages
+            </span>
+          </NavLink>
+
+          {/* Smart Assistant Icon */}
+          <NavLink
+            to="/AiChat"
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 px-2 md:px-3 lg:px-7 py-2 rounded-lg transition-all ${
+                isActive
+                  ? "bg-primary/10 text-primary"
+                  : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+              }`
+            }
+          >
+            <RiRobot2Line size={22} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
+            <span className="text-xs font-medium hidden lg:block">
+              AI Assistant
+            </span>
+          </NavLink>
+        </div>
+      )}
+
+      {/* Right Section - Adjusted for md devices */}
+      <div className="flex items-center gap-2 sm:gap-2 lg:gap-3 flex-shrink-0">
+        {/* Theme Toggle */}
+        <ThemeToggle />
+
+        {/* Notification Bell - Desktop/Tablet Only */}
+        {user && (
+          <Link
+            to="/notifications"
+            onClick={refreshNotificationCount}
+            className="hidden sm:flex btn btn-ghost btn-circle relative hover:bg-base-200"
+          >
+            <BsBell size={20} className="text-base-content md:w-5 md:h-5 lg:w-6 lg:h-6" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-error text-error-content text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
             )}
+          </Link>
+        )}
 
-            {/* Right Section */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Theme Toggle */}
-              <ThemeToggle />
+        {user ? (
+          /* Profile Dropdown */
+          <div className="dropdown dropdown-end">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform"
+            >
+              <div className="w-8 h-8  md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
+                <img
+                  alt="User Avatar"
+                  src={user.photoURL ?? "https://via.placeholder.com/150"}
+                  className="rounded-full object-cover"
+                />
+              </div>
+            </div>
+            <ul
+              tabIndex={0}
+              className="mt-3 p-2 shadow-xl menu dropdown-content bg-base-100 rounded-box w-56 border border-base-300"
+            >
+              <li className="menu-title px-4 py-2">
+                <span className="text-base font-semibold">
+                  {user.displayName ?? "User"}
+                </span>
+              </li>
+              <div className="divider my-0"></div>
 
-              {/* Notification Bell - Desktop/Tablet Only */}
-              {user && (
+              <li>
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-3 py-3"
+                >
+                  <HiUser size={20} />
+                  <span>My Profile</span>
+                </Link>
+              </li>
+
+              <li>
                 <Link
                   to="/notifications"
                   onClick={refreshNotificationCount}
-                  className="hidden sm:flex btn btn-ghost btn-circle relative hover:bg-base-200"
+                  className="flex items-center gap-3 py-3"
                 >
-                  <BsBell size={22} className="text-base-content" />
+                  <BsBell size={20} />
+                  <span>Notifications</span>
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-error text-error-content text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
-                      {unreadCount > 9 ? "9+" : unreadCount}
+                    <span className="badge badge-primary badge-sm ml-auto">
+                      {unreadCount}
                     </span>
                   )}
                 </Link>
-              )}
+              </li>
 
-              {user ? (
-                /* Profile Dropdown */
-                <div className="dropdown dropdown-end">
-                  <div
-                    tabIndex={0}
-                    role="button"
-                    className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform"
-                  >
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
-                      <img
-                        alt="User Avatar"
-                        src={user.photoURL ?? "https://via.placeholder.com/150"}
-                        className="rounded-full object-cover"
-                      />
-                    </div>
-                  </div>
-                  <ul
-                    tabIndex={0}
-                    className="mt-3 p-2 shadow-xl menu dropdown-content bg-base-100 rounded-box w-56 border border-base-300"
-                  >
-                    <li className="menu-title px-4 py-2">
-                      <span className="text-base font-semibold">
-                        {user.displayName ?? "User"}
-                      </span>
-                    </li>
-                    <div className="divider my-0"></div>
-
-                    <li>
-                      <Link
-                        to="/profile"
-                        className="flex items-center gap-3 py-3"
-                      >
-                        <HiUser size={20} />
-                        <span>My Profile</span>
-                      </Link>
-                    </li>
-
-                    <li>
-                      <Link
-                        to="/notifications"
-                        onClick={refreshNotificationCount}
-                        className="flex items-center gap-3 py-3"
-                      >
-                        <BsBell size={20} />
-                        <span>Notifications</span>
-                        {unreadCount > 0 && (
-                          <span className="badge badge-primary badge-sm ml-auto">
-                            {unreadCount}
-                          </span>
-                        )}
-                      </Link>
-                    </li>
-
-                    <div className="divider my-0"></div>
-
-                    <li>
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-3 py-3 text-error hover:bg-error/10"
-                      >
-                        <FaArrowRightToBracket size={20} />
-                        <span>Logout</span>
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              ) : (
+              {/* Smart Assistant in Dropdown */}
+              <li>
                 <Link
-                  className="btn btn-primary btn-sm sm:btn-md text-primary-content rounded-full font-semibold"
-                  to="/login"
+                  to="/AiChat"
+                  className="flex items-center gap-3 py-3"
                 >
-                  <span className="hidden sm:inline">Login / Signup</span>
-                  <span className="sm:hidden">Login</span>
+                  <RiRobot2Line size={20} />
+                  <span>Smart Assistant</span>
                 </Link>
-              )}
-            </div>
-          </div>
+              </li>
 
-          {/* Mobile Search Bar */}
-          {showSearch && (
-            <div className="md:hidden pb-4 animate-fade-in">
-              <Search />
-            </div>
-          )}
+              <div className="divider my-0"></div>
+
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 py-3 text-error hover:bg-error/10"
+                >
+                  <FaArrowRightToBracket size={20} />
+                  <span>Logout</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <Link
+            className="btn btn-primary btn-sm md:btn-md text-primary-content rounded-full font-semibold"
+            to="/login"
+          >
+            <span className="hidden sm:inline">Login / Signup</span>
+            <span className="sm:hidden">Login</span>
+          </Link>
+        )}
+      </div>
+    </div>
+
+    {/* Mobile Search Bar */}
+    {showSearch && (
+      <div className="md:hidden pb-4 animate-fade-in">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <BsSearch className="w-4 h-4 text-base-content/40" />
+          </div>
+          <Search />
         </div>
-      </nav>
+      </div>
+    )}
+  </div>
+</nav>
 
       {/* Bottom Navigation - Mobile Only */}
       {user && (
@@ -294,6 +333,19 @@ export default function Navbar() {
             >
               <HiChatAlt2 size={24} />
               <span className="text-xs font-medium">Messages</span>
+            </NavLink>
+
+            {/* Smart Assistant Mobile */}
+            <NavLink
+            to="/AiChat"
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all flex-1 ${
+                  isActive ? "text-primary" : "text-base-content/70"
+                }`
+              }
+            >
+              <RiRobot2Line size={24} />
+              <span className="text-xs font-medium">AI</span>
             </NavLink>
 
             <NavLink

@@ -75,7 +75,7 @@ const Home: FC = () => {
         setError(null);
 
         const res = await fetch(
-          `https://resonance-social-server.vercel.app/feed/${currentUserId}`,
+          `http://localhost:3000/feed/${currentUserId}`,
           {
             signal: controller.signal,
           }
@@ -139,7 +139,7 @@ const Home: FC = () => {
 
     try {
       const res = await fetch(
-        "https://resonance-social-server.vercel.app/socialPost",
+        "http://localhost:3000/socialPost",
         {
           method: "POST",
           body: formData,
@@ -156,7 +156,7 @@ const Home: FC = () => {
 
         // Refresh the newsfeed after posting
         const feedRes = await fetch(
-          `https://resonance-social-server.vercel.app/feed/${currentUserId}`
+          `http://localhost:3000/feed/${currentUserId}`
         );
         const feedData = await feedRes.json();
         setPosts(feedData);
@@ -180,7 +180,7 @@ const Home: FC = () => {
     const prompt = `Enhance this social media caption to make it sound natural, engaging, and written by a real person. Keep the same meaning and format it in exactly three lines. This is the original caption: "${text}"`
     setAiLoading(true);
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/AiChat", {
+      const res = await fetch("http://localhost:3000/AiChat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: prompt }),
@@ -206,9 +206,9 @@ const Home: FC = () => {
       </div>
 
       {/* Main Content */}
-      <main className="col-span-1 md:col-span-6">
+      <main className="col-span-1 md:col-span-6  md:mt-0">
         <div className="w-full">
-          <div className="rounded-sm">
+          <div className="rounded-sm border-2 border-base-300/60 shadow-sm p-4 mb-4 bg-base-100">
             <form
               onSubmit={handleSubmit}
               className="shadow-sm bg-base-100 rounded-xl px-4 py-4"
@@ -341,8 +341,10 @@ const Home: FC = () => {
       </main>
 
       {/* Right Sidebar (sticky, hidden on mobile) */}
-      <div className="hidden md:block">
-        <RightSidebar />
+      <div className="hidden md:block md:col-span-3">
+        <div className="sticky top-24 h-[calc(100vh-96px)] overflow-y-auto">
+          <RightSidebar />
+        </div>
       </div>
     </div>
   );

@@ -16,20 +16,15 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ selectedUser, messages }) =
     );
   }
 
-  //  Extract all shared images between current chat users
   const sharedImages = messages
-    .filter(msg => msg.image)
-    .map(msg => msg.image as string)
-    .reverse(); // show latest first
+    .filter((msg) => msg.image && (msg.senderId === selectedUser.uid || msg.receiverId === selectedUser.uid))
+    .map((msg) => msg.image as string)
+    .reverse();
 
   return (
-    <div className="  w-full h-full overflow-y-auto max-md:hidden">
+    <div className="w-full h-full overflow-y-auto max-md:hidden">
       <div className="p-6 flex flex-col items-center gap-4">
-        <img
-          src={selectedUser.photoURL || '/default-avatar.png'}
-          alt={selectedUser.displayName}
-          className="w-24 h-24 rounded-full object-cover border-4 border-white/20"
-        />
+        <img src={selectedUser.photoURL || "/default-avatar.png"} alt={selectedUser.displayName} className="w-24 h-24 rounded-full object-cover border-4 border-white/20" />
         <div className="text-center">
           <h1 className="text-xl font-semibold flex items-center justify-center gap-2">
             {selectedUser.displayName}
@@ -42,30 +37,18 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ selectedUser, messages }) =
       <hr className="border-white/20 my-4" />
 
       <div className="px-6 pb-6">
-        <p className="font-semibold text-sm uppercase tracking-wider text-gray-700 mb-3">
-          Shared Media
-        </p>
+        <p className="font-semibold text-sm uppercase tracking-wider text-gray-700 mb-3">Shared Media</p>
 
         {sharedImages.length > 0 ? (
           <div className="grid grid-cols-2 gap-2">
             {sharedImages.map((url, index) => (
-              <div
-                key={index}
-                onClick={() => window.open(url, "_blank")}
-                className="cursor-pointer rounded-lg overflow-hidden aspect-square bg-gray-600 hover:opacity-80 transition-opacity"
-              >
-                <img
-                  src={url}
-                  alt={`Shared media ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
+              <div key={index} onClick={() => window.open(url, "_blank")} className="cursor-pointer rounded-lg overflow-hidden aspect-square bg-gray-600 hover:opacity-80 transition-opacity">
+                <img src={url} alt={`Shared media ${index + 1}`} className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-400 text-sm text-center py-4">
-            No media shared yet
-          </p>
+          <p className="text-gray-400 text-sm text-center py-4">No media shared yet</p>
         )}
       </div>
     </div>

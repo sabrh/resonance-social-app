@@ -118,7 +118,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/react`,
+        `http://localhost:3000/socialPost/${post._id}/react`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -145,7 +145,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     if (likeUsers.length > 0 && openLikes) return;
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/reactions`
+        `http://localhost:3000/socialPost/${post._id}/reactions`
       );
       const data = await res.json();
       setLikeUsers(data);
@@ -169,7 +169,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comments`,
+        `http://localhost:3000/socialPost/${post._id}/comments`,
         {
           method: "POST",
           headers: {
@@ -204,7 +204,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
 
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}`,
+        `http://localhost:3000/socialPost/${post._id}/comment/${commentId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -233,7 +233,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
   ) => {
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies`,
+        `http://localhost:3000/socialPost/${post._id}/replies`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -313,7 +313,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     try {
       // Backend request
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies/${replyId}`,
+        `http://localhost:3000/socialPost/${post._id}/replies/${replyId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -390,7 +390,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     try {
       // Send DELETE request to backend
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/replies/${replyId}`,
+        `http://localhost:3000/socialPost/${post._id}/replies/${replyId}`,
         { method: "DELETE" }
       );
 
@@ -471,7 +471,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
     // 🔹 Delete logic
     try {
       const res = await fetch(
-        `https://resonance-social-server.vercel.app/socialPost/${post._id}/comment/${commentId}`,
+        `http://localhost:3000/socialPost/${post._id}/comment/${commentId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -519,7 +519,7 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={async () => {
               try {
                 const res = await fetch(
-                  `https://resonance-social-server.vercel.app/socialPost/${post._id}`,
+                  `http://localhost:3000/socialPost/${post._id}`,
                   { method: "DELETE" }
                 );
 
@@ -683,13 +683,21 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={handlePickerButtonClick}
             className="flex items-center gap-2 py-2 px-2 md:px-6 rounded-lg hover:bg-base-300 w-full justify-center transition"
           >
-            <span className="text-2xl">
+            <span
+              className={`text-2xl transition-transform ${
+                userReaction ? "text-blue-600" : "text-gray-400"
+              }`}
+            >
               {userReaction
                 ? reactionTypes.find((r) => r.type === userReaction)?.emoji
                 : "👍"}
             </span>
-            <span className="font-semibold capitalize">
-              {userReaction || "Love"}
+            <span
+              className={`font-semibold capitalize ${
+                userReaction ? "text-blue-600" : "text-gray-500"
+              }`}
+            >
+              {userReaction ? userReaction : "Like"}
             </span>
           </button>
 

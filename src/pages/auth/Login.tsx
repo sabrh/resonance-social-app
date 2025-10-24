@@ -67,84 +67,85 @@ const Login: FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2>
-        <form onSubmit={handleLogin} className="space-y-5">
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-600">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              onChange={(e) => setEmailInputValue(e.target.value)}
-              required
-            />
-          </div>
+   <div className="flex items-center justify-center px-4">
+  <div className="w-full max-w-md bg-base-100 rounded-lg shadow-md p-8 border border-base-300">
+    <h2 className="text-2xl font-bold text-center text-base-content mb-6">Login</h2>
+    <form onSubmit={handleLogin} className="space-y-5">
+      {/* Email */}
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-base-content">
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          className="w-full mt-1 px-3 py-2 border border-base-300 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-base-100 text-base-content"
+          onChange={(e) => setEmailInputValue(e.target.value)}
+          required
+        />
+      </div>
 
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-600">
-              Password
-            </label>
-            <div className="relative mt-1">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-          </div>
-
-          {/* Forgot password */}
-          <div className="text-right">
-            <Link to="/auth/forget-password" state={{ email: emailInputValue }}>Forget password?</Link>
-          </div>
-
-
-          {/* Submit */}
+      {/* Password */}
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-base-content">
+          Password
+        </label>
+        <div className="relative mt-1">
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            className="w-full px-3 py-2 border border-base-300 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-base-100 text-base-content"
+            required
+          />
           <button
-            type="submit"
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition"
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/70 hover:text-base-content"
           >
-            Login
-          </button>
-
-          <p className="text-lg text-center">
-            Don't have an account?{" "}
-            <Link to="/signup">
-              <span className="text-blue-500">Signup</span>
-            </Link>
-          </p>
-        </form>
-
-        {/* Social login */}
-        <div className="mt-4 flex items-center justify-center">
-          <p className="text-gray-600 text-lg mr-4">Or join us using</p>
-          <button onClick={handleGoogle} className="cursor-pointer">
-            <FcGoogle size={30} />
-          </button>
-          <button onClick={handleGithub} className="cursor-pointer ml-4">
-            <FaGithub className="text-gray-700" size={30} />
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
       </div>
+
+      {/* Forgot password */}
+      <div className="text-right">
+        <Link to="/auth/forget-password" state={{ email: emailInputValue }} className="link link-primary">
+          Forget password?
+        </Link>
+      </div>
+
+      {/* Submit */}
+      <button
+        type="submit"
+        className="w-full py-2 px-4 bg-primary hover:bg-primary-focus text-primary-content font-semibold rounded-lg shadow-md transition"
+      >
+        Login
+      </button>
+
+      <p className="text-lg text-center text-base-content">
+        Don't have an account?{" "}
+        <Link to="/signup">
+          <span className="link link-primary">Signup</span>
+        </Link>
+      </p>
+    </form>
+
+    {/* Social login */}
+    <div className="mt-4 flex items-center justify-center">
+      <p className="text-base-content/70 text-lg mr-4">Or join us using</p>
+      <button onClick={handleGoogle} className="cursor-pointer">
+        <FcGoogle size={30} />
+      </button>
+      <button onClick={handleGithub} className="cursor-pointer ml-4">
+        <FaGithub className="text-base-content" size={30} />
+      </button>
     </div>
+  </div>
+</div>
   );
 };
 

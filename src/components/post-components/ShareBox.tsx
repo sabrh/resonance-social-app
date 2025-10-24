@@ -81,7 +81,7 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
     }
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
+      const res = await fetch("http://localhost:3000/socialPost", {
         method: "POST",
         body: formData,
       });
@@ -101,108 +101,105 @@ const ShareBox: FC<ShareProps> = ({ setShare, post }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xl flex justify-center overflow-y-auto">
-      <div className="min-h-screen flex justify-center items-start w-full p-4">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white w-full max-w-md rounded-lg p-4 mx-1 relative my-8"
-        >
-          <div
-            onClick={() => setShare(false)}
-            className="absolute top-3 right-3 cursor-pointer"
-          >
-            <i className="fa-solid fa-delete-left text-2xl"></i>
-          </div>
-
-          <div>
-            <p className="font-bold text-xl mb-3">Share this Post</p>
-
-            <div className="w-[100px] ">
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                Select Privacy
-              </label>
-              <select
-                id="privacy"
-                name="privacy"
-                value={privacy}
-                onChange={(e) => setPrivacy(e.target.value)}
-                className="block w-full p-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              >
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </select>
-            </div>
-
-            <TextareaAutosize
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              minRows={1}
-              placeholder="Write your update here..."
-              className="bg-white rounded-2xl border border-gray-700 w-full mt-3 p-5"
-            />
-
-            <div>
-              <div className="mt-3 flex items-center gap-3">
-                <Link to={`/profile/${post.userId}`}>
-                  <img
-                    className="h-[55px] w-[55px] rounded-full cursor-pointer"
-                    src={post?.userPhoto}
-                    alt="User"
-                  />
-                </Link>
-                <div>
-                  {/* <p className="text-lg text-blue-400 font-bold">{post?.userName}</p> */}
-
-                  <Link
-                    to={`/profile/${post.userId}`}
-                    className="text-lg text-blue-400 font-bold hover:underline"
-                  >
-                    {post?.userName}
-                  </Link>
-
-                  <p className="text-gray-500 text-sm">{post.createdAt}</p>
-                  <div className="text-gray-500 text-sm bg-gray-200 p-1 px-2 mt-1 rounded-xl w-fit">
-                    {post.privacy === "public" ? (
-                      <div className="flex gap-1 items-center">
-                        <i className="fa-solid fa-earth-americas"></i>
-                        <span>Public</span>
-                      </div>
-                    ) : (
-                      <div className="flex gap-1 items-center">
-                        <i className="fa-solid fa-lock"></i>
-                        <span>Private</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Post body */}
-              <p className="mt-4">{post.text}</p>
-
-              {/* Original post image */}
-              {/* <p className="mt-2">{post.text}</p> */}
-              {imageSrc && (
-                <img
-                  src={imageSrc}
-                  alt={post.filename}
-                  className="max-w-full max-h-[400px] object-cover mt-2 rounded"
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="mt-4 float-right">
-            <button
-              type="submit"
-              className="btn bg-blue-500 rounded-2xl text-white"
-            >
-              Share Now
-            </button>
-          </div>
-        </form>
+   <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xl flex justify-center overflow-y-auto">
+  <div className="min-h-screen flex justify-center items-start w-full p-4">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-base-100 w-full max-w-md rounded-lg p-4 mx-1 relative my-8 border border-base-300 shadow-xl"
+    >
+      <div
+        onClick={() => setShare(false)}
+        className="absolute top-3 right-3 cursor-pointer hover:text-error transition-colors"
+      >
+        <i className="fa-solid fa-delete-left text-2xl"></i>
       </div>
-    </div>
+
+      <div>
+        <p className="font-bold text-xl mb-3 text-base-content">Share this Post</p>
+
+        <div className="w-[100px]">
+          <label className="block mb-2 text-sm font-medium text-base-content">
+            Select Privacy
+          </label>
+          <select
+            id="privacy"
+            name="privacy"
+            value={privacy}
+            onChange={(e) => setPrivacy(e.target.value)}
+            className="block w-full p-2 border border-base-300 rounded-md bg-base-100 text-base-content focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+          >
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+
+        <TextareaAutosize
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          minRows={1}
+          placeholder="Write your update here..."
+          className="bg-base-100 rounded-2xl border border-base-300 w-full mt-3 p-5 text-base-content focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+        />
+
+        <div>
+          <div className="mt-3 flex items-center gap-3">
+            <Link to={`/profile/${post.userId}`}>
+              <img
+                className="h-[55px] w-[55px] rounded-full cursor-pointer"
+                src={post?.userPhoto}
+                alt="User"
+              />
+            </Link>
+            <div>
+              <Link
+                to={`/profile/${post.userId}`}
+                className="text-lg text-primary font-bold hover:underline"
+              >
+                {post?.userName}
+              </Link>
+
+              <p className="text-base-content/70 text-sm">{post.createdAt}</p>
+              <div className="text-base-content/70 text-sm bg-base-300 p-1 px-2 mt-1 rounded-xl w-fit">
+                {post.privacy === "public" ? (
+                  <div className="flex gap-1 items-center">
+                    <i className="fa-solid fa-earth-americas"></i>
+                    <span>Public</span>
+                  </div>
+                ) : (
+                  <div className="flex gap-1 items-center">
+                    <i className="fa-solid fa-lock"></i>
+                    <span>Private</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Post body */}
+          <p className="mt-4 text-base-content">{post.text}</p>
+
+          {/* Original post image */}
+          {imageSrc && (
+            <img
+              src={imageSrc}
+              alt={post.filename}
+              className="max-w-full max-h-[400px] object-cover mt-2 rounded"
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="mt-4 float-right">
+        <button
+          type="submit"
+          className="btn btn-primary rounded-2xl text-primary-content"
+        >
+          Share Now
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
   );
 };
 
