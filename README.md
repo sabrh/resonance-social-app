@@ -1,69 +1,97 @@
-# React + TypeScript + Vite
+# 🪶 Resonance – A Minimalist Social Media Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Team Name:** EG-1107.3 Six Hunters  
+**Team Leader:** Sabrina Haque  
+**Team Members:** Muhammad Rifat, Rahat Khan, Redoy Ghosh Antu, Md. Jamil Uddin  
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧩 Overview
+**Resonance** is a distraction-free, privacy-first social media platform built to encourage meaningful conversations and authentic connections.  
+It focuses on **minimalism, privacy, and mindful interaction** rather than endless scrolling and algorithmic feeds.  
 
-## Expanding the ESLint configuration
+This full-stack web app is built using the **MERN stack with TypeScript**, featuring secure authentication, AI-powered tools, and real-time communication.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Key Features
+- 🔐 **User Authentication:** Signup, Login, Logout, Google/Facebook OAuth, Password Reset  
+- 👤 **User Profiles:** Bio, Banner Upload, Follow/Unfollow, Public/Private Posts  
+- 📝 **Posts & Interaction:** Create, Like, Comment (Threaded), Share Posts  
+- 💬 **Real-time Chat:** One-on-one chat powered by **Socket.io**  
+- 🎨 **UI/UX Enhancements:** Responsive design, Dark/Light mode, Clean minimal layout  
+- 🤖 **AI Features:** AI Chat & AI Caption Enhancer (Gemini API)  
+- 🛡️ **Security:** JWT, Bcrypt password hashing, Authorized routes  
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## ⚙️ Tech Stack
+**Frontend:** React.js, TypeScript, Tailwind CSS, DaisyUI  
+**Backend:** Node.js, Express.js  
+**Database:** MongoDB (Mongoose ODM)  
+**Authentication:** Firebase (Google/Facebook), JWT  
+**Real-time:** Socket.io  
+**AI Integration:** Gemini API  
+**Deployment:** Vercel  
+**Version Control:** GitHub  
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🧠 Project Goals
+- Build a minimalist and responsive MERN-based social platform.  
+- Enable secure and authentic communication.  
+- Integrate AI features for intelligent, creative interaction.  
+- Promote mindful usage with a distraction-free design.  
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## 🧑‍💻 Individual Contributions
+
+### **Sabrina Haque (Team Leader)**
+- Built Login/Signup flow with Firebase + JWT  
+- Implemented Logout & dynamic Navbar update  
+- Integrated Follow/Unfollow system and frontend UI improvements  
+- Developed Real-time Chat with Socket.io  
+- Coordinated team tasks, GitHub management, and documentation (SRS)
+
+### **Muhammad Rifat**
+- Developed threaded Comment system (Edit/Delete)  
+- Implemented Dark/Light mode and UI enhancements  
+
+### **Rahat Khan**
+- Built Post creation, Homepage feed, and AI tools (Chat & Caption Enhancer)  
+- Implemented Public/Private post toggle  
+
+### **Redoy Ghosh Antu**
+- Created User Profile page with banner upload, About section, and search feature  
+- Integrated backend Follow/Unfollow logic  
+
+### **Md. Jamil Uddin**
+- Added Forgot/Reset password and Social login  
+- Built Like/Comment/Follower notifications  
+
+---
+
+## 🧩 Unique Selling Point
+- ✨ AI-powered yet distraction-free experience  
+- 🚫 No infinite scroll — promotes mindful usage  
+- 💬 Seamless real-time chat & community interaction  
+- 🌙 Dark/Light mode for comfort  
+- 🔒 Privacy-first architecture with secure authentication  
+
+---
+
+## 📈 Lessons Learned
+- Handling real-time communication synchronization  
+- Managing complex React state (nested comments, likes)  
+- Improving collaboration through version control and teamwork  
+
+---
+
+## 🏁 Conclusion
+Resonance represents our shared effort to build a **simple, human, and intelligent** social media platform that values privacy, focus, and genuine connection.  
+It’s more than a social app — it’s a mindful digital space powered by teamwork, creativity, and technology.
+
+---
+
+**Developed with by Team Six Hunters**
