@@ -96,7 +96,7 @@ const UserProfile: FC = () => {
       try {
         // Only ensure user exists in DB if it's your own profile
         if (targetUid === uid && firebaseUser) {
-          await axios.post("http://localhost:3000/users", {
+          await axios.post("https://resonance-social-server.vercel.app/users", {
             uid: firebaseUser.uid,
             displayName: firebaseUser.displayName,
             email: firebaseUser.email,
@@ -105,7 +105,7 @@ const UserProfile: FC = () => {
         }
 
         // fetch the profile we want to show
-        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
+        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
         setUserDoc(res.data);
 
         // preload form values only for your own profile
@@ -168,11 +168,11 @@ const UserProfile: FC = () => {
     form.append("banner", file);
 
     try {
-      await axios.post(`http://localhost:3000/users/${uid}/banner`, form, {
+      await axios.post(`https://resonance-social-server.vercel.app/users/${uid}/banner`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       // refresh user data
-      const res = await axios.get(`http://localhost:3000/users/${uid}`);
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
       setUserDoc(res.data);
       console.log(res.data);
       setFile(null);
@@ -214,8 +214,8 @@ const UserProfile: FC = () => {
     };
 
     try {
-      await axios.put(`http://localhost:3000/users/${uid}/details`, payload);
-      const res = await axios.get(`http://localhost:3000/users/${uid}`);
+      await axios.put(`https://resonance-social-server.vercel.app/users/${uid}/details`, payload);
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
       setUserDoc(res.data);
       setShowModal(false);
       toast.success("Profile updated");
@@ -231,7 +231,7 @@ const UserProfile: FC = () => {
 
     const checkFollowStatus = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
+        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
         const userData = res.data;
 
         setUserDoc(userData);
@@ -259,7 +259,7 @@ const UserProfile: FC = () => {
     try {
       setLoading(true);
       const res = await axios.put(
-        `http://localhost:3000/users/${userDoc.uid}/follow`,
+        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
         { currentUid: uid }
       );
 
@@ -285,7 +285,7 @@ const UserProfile: FC = () => {
     if (!targetUid) return;
     try {
       const res = await axios.get(
-        `http://localhost:3000/users/${targetUid}/followers`
+        `https://resonance-social-server.vercel.app/users/${targetUid}/followers`
       );
       setFollowersList(res.data);
       setShowFollowers(true);
@@ -298,7 +298,7 @@ const UserProfile: FC = () => {
     if (!targetUid) return;
     try {
       const res = await axios.get(
-        `http://localhost:3000/users/${targetUid}/following`
+        `https://resonance-social-server.vercel.app/users/${targetUid}/following`
       );
       setFollowingList(res.data);
       setShowFollowing(true);

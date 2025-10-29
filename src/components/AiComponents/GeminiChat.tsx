@@ -20,7 +20,7 @@ export default function GeminiChat() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/AiChat", {
+      const res = await fetch("https://resonance-social-server.vercel.app/AiChat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: newMsg.text }),
@@ -68,47 +68,22 @@ export default function GeminiChat() {
     </div>
   </div>
 
-  {/* Chat Messages - Increased bottom padding for mobile */}
-  <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 bg-base-100 scrollbar-thin scrollbar-thumb-base-300 scrollbar-track-base-100 pb-[140px] sm:pb-6">
-    {messages.map((m, i) => (
-      <div
-        key={i}
-        className={`flex ${
-          m.role === "user" ? "justify-end" : "justify-start"
-        } mb-4`}
-      >
-        <div className="relative max-w-[90%] sm:max-w-[75%] md:max-w-[65%]">
-          {m.role !== "user" && (
-            <div className="flex items-center gap-2 mb-1 ml-2">
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"
-                alt="AI Logo"
-                className="w-4 h-4"
-              />
-              <span className="text-[11px] sm:text-xs font-medium text-base-content/60">
-                Resonance Ai
-              </span>
-            </div>
-          )}
-
-          <div
-            className={`px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl break-words ${
-              m.role === "user"
-                ? "bg-primary text-primary-content rounded-br-md shadow-sm"
-                : "bg-base-200 text-base-content border border-base-300 rounded-bl-md shadow-sm"
-            }`}
-          >
-            <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
-              {m.text}
-            </p>
-          </div>
-        </div>
-      </div>
-    ))}
-
-    {loading && (
-      <div className="flex justify-start mb-4">
-        <div className="relative max-w-[90%] sm:max-w-[75%] md:max-w-[65%]">
+  <div
+  className="flex-1 overflow-y-auto scroll-smooth px-3 sm:px-6 py-4 bg-base-100 scrollbar-thin scrollbar-thumb-base-300 scrollbar-track-base-100 mb-9"
+  style={{
+    height: "calc(100vh - 220px)", // ensures space for header & input
+    paddingBottom: "140px", // space for input bar
+  }}
+>
+  {messages.map((m, i) => (
+    <div
+      key={i}
+      className={`flex ${
+        m.role === "user" ? "justify-end" : "justify-start"
+      } mb-4`}
+    >
+      <div className="relative max-w-[90%] sm:max-w-[75%] md:max-w-[65%]">
+        {m.role !== "user" && (
           <div className="flex items-center gap-2 mb-1 ml-2">
             <img
               src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"
@@ -119,21 +94,51 @@ export default function GeminiChat() {
               Resonance Ai
             </span>
           </div>
+        )}
 
-          <div className="bg-base-200 border border-base-300 rounded-2xl rounded-bl-md px-4 py-3">
-            <div className="flex items-center gap-2 text-base-content/70 text-sm">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-150"></div>
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-300"></div>
-              </div>
-              <span>Thinking...</span>
+        <div
+          className={`px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl break-words ${
+            m.role === "user"
+              ? "bg-primary text-primary-content rounded-br-md shadow-sm"
+              : "bg-base-200 text-base-content border border-base-300 rounded-bl-md shadow-sm"
+          }`}
+        >
+          <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
+            {m.text}
+          </p>
+        </div>
+      </div>
+    </div>
+  ))}
+
+  {loading && (
+    <div className="flex justify-start mb-4">
+      <div className="relative max-w-[90%] sm:max-w-[75%] md:max-w-[65%]">
+        <div className="flex items-center gap-2 mb-1 ml-2">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"
+            alt="AI Logo"
+            className="w-4 h-4"
+          />
+          <span className="text-[11px] sm:text-xs font-medium text-base-content/60">
+            Resonance Ai
+          </span>
+        </div>
+
+        <div className="bg-base-200 border border-base-300 rounded-2xl rounded-bl-md px-4 py-3">
+          <div className="flex items-center gap-2 text-base-content/70 text-sm">
+            <div className="flex gap-1">
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-150"></div>
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-300"></div>
             </div>
+            <span>Thinking...</span>
           </div>
         </div>
       </div>
-    )}
-  </div>
+    </div>
+  )}
+</div>
 
   {/* Input Area - Fixed for mobile with proper spacing above bottom navbar */}
   <div 

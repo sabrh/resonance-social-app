@@ -10,7 +10,7 @@ import { FaRegUser } from "react-icons/fa";
 import { TiMessages } from "react-icons/ti";
 import { AiFillAndroid } from "react-icons/ai";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
 
 type UserDoc = {
   uid: string;
@@ -56,8 +56,8 @@ const LeftSidebar: React.FC = () => {
     : null;
 
   return (
-    <aside className="hidden md:block md:col-span-3">
-     <div className="fixed top-20 left-8 w-[260px] bg-base-100 rounded-lg shadow-lg 
+    <aside className="hidden md:block md:col-span-3 ">
+     <div className="sticky top-10  bg-base-100 rounded-lg shadow-lg 
                 overflow-hidden max-h-[calc(100vh-6rem)] overflow-y-auto 
                 scrollbar-thin scrollbar-thumb-base-300 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
