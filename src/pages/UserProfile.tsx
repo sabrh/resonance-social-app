@@ -9,6 +9,10 @@ import {
 import PostProfile from "../components/post-components/PostProfile";
 import { useParams } from "react-router";
 import toast from "react-hot-toast";
+import ChangeProfileImage, {
+  type UserDocument,
+} from "../components/Profile/ChangeProfileImage";
+import { FaCamera } from "react-icons/fa6";
 
 type SocialLinks = {
   github?: string;
@@ -85,8 +89,16 @@ const UserProfile: FC = () => {
     website: "",
   });
 
+  // profile modal
+  const [profileModal, setProfileModal] = useState(false);
+  const isOwner = uid === firebaseUser?.uid;
+
   // tab state
   const [activeTab, setActiveTab] = useState("posts");
+
+
+  const [refreshKey, setRefreshKey] = useState(0); // added for profile post
+
 
   // added for navigate
   useEffect(() => {
@@ -338,6 +350,10 @@ const UserProfile: FC = () => {
     }
   };
 
+  if (loading) return <p className="text-center py-10">Loading profile...</p>;
+  if (!userDoc)
+    return <p className="text-center py-10 text-error">User not found.</p>;
+
   return (
     <div className="mx-auto bg-base-100 shadow rounded-lg overflow-hidden">
       {/* Banner */}
@@ -382,31 +398,33 @@ const UserProfile: FC = () => {
       {/* Profile Info */}
       <div className="p-4 mt-8 border-b-2 border-base-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 lg:hidden">
         <div className="flex items-start sm:items-center gap-4 relative">
-          <img
-            src={
-              userDoc?.photoURL ||
-              firebaseUser?.photoURL ||
-              "/avatar-placeholder.png"
-            }
-            alt="avatar"
-            className="w-24 h-24 lg:w-35 lg:h-35 rounded-full border-4 object-cover -mt-18 sm:-mt-25 md:-mt-25 lg:-mt-25"
-          />
+          {/* new profile added */}
+          <div className="relative ">
+            <img
+              src={userDoc?.photoURL || "/default-avatar.png"}
+              alt="avatar"
+              className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full border-4 border-primary object-cover shadow-md transition-all duration-300 -mt-18 sm:-mt-25 md:-mt-25 lg:-mt-25"
+            />
+
+            {/* Camera Icon - Only for owner */}
+            {isOwner && (
+              <button
+                onClick={() => setProfileModal(true)}
+                className="absolute bottom-2 right-2 bg-primary text-white p-2 rounded-full shadow-md hover:scale-110 transition-transform duration-200 focus:outline-none"
+                aria-label="Change Profile Photo"
+              >
+                <FaCamera className="text-sm sm:text-base " />
+              </button>
+            )}
+          </div>
+
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-base-content">
               {userDoc?.displayName || firebaseUser?.displayName || "User"}
             </h2>
 
             <div className="flex gap-6 mt-1 text-sm sm:text-base text-base-content/80">
-
-              {/* <p>
-                <span className="font-medium">Followers:</span> {followersCount}
-              </p>
-              <p>
-                <span className="font-medium">Following:</span>{" "}
-                {userDoc?.following?.length || 0}
-              </p> */}
-
-
+            
               {/* Followers and Following modal */}
               <p>
                 <span
@@ -459,16 +477,30 @@ const UserProfile: FC = () => {
           <aside className="hidden lg:block md:col-span-6 lg:col-span-4">
             <div className="sticky top-24 space-y-4">
               <div className="bg-base-100 border border-base-200 rounded-xl p-4 shadow-sm">
-                <div className="flex justify-center items-center gap-3">
-                  <img
-                    src={
-                      userDoc?.photoURL ||
-                      firebaseUser?.photoURL ||
-                      "/avatar-placeholder.png"
-                    }
-                    alt="avatar"
-                    className="w-34 h-34 rounded-full object-cover border-2 border-base-100 shadow"
-                  />
+                <div className="flex justify-center items-center gap-3 relative">
+                  {/* new profile added */}
+
+                  <div className="relative inline-block">
+                    <img
+                      src={userDoc?.photoURL || "/default-avatar.png"}
+                      alt="avatar"
+                      className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full border-4 border-primary object-cover shadow-md transition-all duration-300"
+                    />
+
+                    {/* Camera Icon (Only Owner) */}
+                    {isOwner && (
+                      <button
+                        onClick={() => setProfileModal(true)}
+                        className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 md:bottom-3.5 md:right-3.5 lg:bottom-4 lg:right-4 
+                   bg-primary text-white p-2 sm:p-2.5 rounded-full shadow-md 
+                   flex justify-center items-center hover:scale-110 transition-transform duration-200 focus:outline-none"
+                        aria-label="Change Profile Photo"
+                      >
+                        <FaCamera className="text-base sm:text-lg md:text-xl" />
+                      </button>
+                    )}
+                  </div>
+
                 </div>
 
                 <div className="flex justify-between items-center my-3">
@@ -495,7 +527,7 @@ const UserProfile: FC = () => {
                     ) : (
                       <button
                         onClick={() => setShowModal(true)}
-                        className="px-4 py-2 border rounded-full text-sm"
+                        className="px-4 py-2 border border-base-200 rounded-lg text-sm"
                       >
                         Edit about
                       </button>
@@ -505,22 +537,8 @@ const UserProfile: FC = () => {
 
                 <div className="mt-3 text-sm text-base-content/80">
                   <div className="flex items-center justify-between">
-                    {/* <div>
-                      <span className="font-medium">{followersCount}</span>
-                      <div className="text-xs text-base-content/40">
-                        Followers
-                      </div>
-                    </div>
-                    <div>
-                      <span className="font-medium">
-                        {userDoc?.following?.length || 0}
-                      </span>
-                      <div className="text-xs text-base-content/40">
-                        Following
-                      </div>
-                    </div> */}
+                
                     {/* Followers and Following modal */}
-
                     <p>
                       <span
                         className="font-medium cursor-pointer hover:underline"
@@ -600,7 +618,7 @@ const UserProfile: FC = () => {
                       All posts by this user
                     </div>
                   </div>
-                  <PostProfile targetUid={targetUid} />
+                  <PostProfile targetUid={targetUid} refreshKey={refreshKey} />
                 </section>
               )}
 
@@ -623,7 +641,7 @@ const UserProfile: FC = () => {
                       <h4 className="font-medium mb-2">Basic info</h4>
                       <div className="text-sm text-gray-700 space-y-2">
                         <div>
-                          {/* <span className="font-medium ">Email:</span>{" "} */}
+                          {/* <span className="font-medium ">Email:</span>{" "}  */}
                           {/* {userDoc?.email || firebaseUser?.email} */}
                         </div>
                         <div>
@@ -755,12 +773,14 @@ const UserProfile: FC = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-base-100 rounded-lg shadow-lg p-6 w-full max-w-2xl">
-            <h2 className="text-xl font-semibold mb-4 text-base-content">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-base-100 rounded-2xl shadow-xl w-full max-w-2xl mx-auto my-8 sm:my-10 p-4 sm:p-6 overflow-y-auto max-h-[90vh] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 text-base-content text-center sm:text-left">
               Edit About
             </h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
               <input
                 type="text"
                 placeholder="Full name"
@@ -773,7 +793,7 @@ const UserProfile: FC = () => {
                 value={formData.username}
                 className="input input-bordered w-full"
               />
-            
+
               <input
                 type="date"
                 placeholder="Birthday"
@@ -822,7 +842,7 @@ const UserProfile: FC = () => {
                 }
                 className="input input-bordered w-full"
               />
-
+              
               <input
                 type="text"
                 placeholder="GitHub link"
@@ -910,7 +930,7 @@ const UserProfile: FC = () => {
               </select>
             </div>
 
-            <div className="mt-6 flex justify-end gap-2">
+            <div className="mt-6 flex justify-end gap-2 sticky bottom-0 bg-base-100 pt-2">
               <button
                 onClick={() => setShowModal(false)}
                 className="btn btn-sm btn-ghost"
@@ -1000,6 +1020,45 @@ const UserProfile: FC = () => {
                 className="btn btn-sm"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile modal  */}
+
+      {/* Modal */}
+      {profileModal && isOwner && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-6">
+          <div className="bg-base-100 rounded-2xl shadow-xl w-full max-w-sm sm:max-w-md mx-auto my-8 p-5 sm:p-6 relative overflow-hidden">
+            <h2 className="text-lg sm:text-xl font-semibold text-center mb-4">
+              Change Profile Picture
+            </h2>
+
+            {/* Change Profile Component */}
+            <ChangeProfileImage
+              userDoc={userDoc as unknown as UserDocument}
+              setUserDoc={(updatedDoc) => {
+          // update user document normally
+          (
+            setUserDoc as React.Dispatch<
+              React.SetStateAction<UserDocument | null>
+            >
+          )(updatedDoc);
+
+          // Trigger refresh so PostProfile refetches posts with new photo
+          setRefreshKey((prev) => prev + 1);
+        }}
+            />
+
+            {/* Buttons */}
+            <div className="mt-6 flex justify-center gap-3">
+              <button
+                onClick={() => setProfileModal(false)}
+                className="btn btn-sm btn-ghost"
+              >
+                Cancel
               </button>
             </div>
           </div>
