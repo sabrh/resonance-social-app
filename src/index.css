@@ -2,27 +2,32 @@
 
 /* DaisyUI active themes */
 @plugin "daisyui" {
-    themes: light --default, dark --prefersdark;
+  themes: light --default, dark --prefersdark;
 }
 
 @plugin "daisyui/theme" {
-    name: "light";
-    default: true;
+  name: "light";
+  default: true;
 
-    --color-primary: #2563eb;
-    --color-secondary: #1e293b;
-    --color-accent: #14b8a6;
-
+  --color-primary: #2563eb;
+  --color-secondary: #1e293b;
+  --color-accent: #14b8a6;
+}
+/* Safe area padding for mobile devices */
+.safe-area-padding {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
 @plugin "daisyui/theme" {
-    name: "dark";
+  name: "dark";
 
-    --color-primary: #16b6cf;
-    --color-secondary: #334155;
-    --color-accent: #f43f5e;
-
+  --color-primary: #16b6cf;
+  --color-secondary: #334155;
+  --color-accent: #f43f5e;
 }
 
 /* Optional: slick carousel styles */
@@ -31,5 +36,5 @@
 
 body,
 html {
-    overflow-x: hidden;
+  overflow-x: hidden;
 }

@@ -8,6 +8,7 @@ import AuthProvider from "./context/AuthContext/AuthProvider";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "./context/ThemeProvider";
 
+
 const queryClient = new QueryClient();
 
 const root = createRoot(document.getElementById("root")!);
@@ -18,8 +19,10 @@ root.render(
       <div>
         <ThemeProvider>
           <AuthProvider>
-            <RouterProvider router={router} />
-            <Toaster position="top-right" reverseOrder={false} />
+            
+              <RouterProvider router={router} />
+              <Toaster position="top-right" reverseOrder={false} />
+            
           </AuthProvider>
         </ThemeProvider>
       </div>

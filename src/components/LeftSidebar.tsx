@@ -56,8 +56,11 @@ const LeftSidebar: React.FC = () => {
     : null;
 
   return (
-    <aside className="hidden md:block md:col-span-3">
-      <div className="sticky top-10 bg-base-100 rounded-lg shadow-lg overflow-hidden">
+    <aside className="hidden md:block md:col-span-3 ">
+     <div className="sticky top-10  bg-base-100 rounded-lg shadow-lg 
+                overflow-hidden max-h-[calc(100vh-6rem)] overflow-y-auto 
+                scrollbar-thin scrollbar-thumb-base-300 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
         {/* Banner */}
         <div className="relative h-28 bg-base-200">
           {bannerSrc ? (

@@ -29,7 +29,13 @@ const MissionVision: FC = () => {
           {/* Features */}
           <div className="grid grid-cols-2 gap-6">
             {/* Box 1 */}
-            <div className="flex flex-col items-center justify-center p-6 bg-base-100 shadow rounded-2xl">
+            <div
+              className="flex flex-col items-center justify-center p-6 rounded-2xl 
+              bg-base-100 border border-base-300/60 shadow-sm 
+              dark:bg-base-200 dark:border-base-300/50 
+              hover:shadow-md hover:border-primary/40 
+              transition-all duration-300"
+            >
               <Shield className="w-8 h-8 text-primary mb-3" />
               <h3 className="text-sm font-semibold text-base-content">
                 Data Privacy
@@ -37,7 +43,13 @@ const MissionVision: FC = () => {
             </div>
 
             {/* Box 2 */}
-            <div className="flex flex-col items-center justify-center p-6 bg-base-100 shadow rounded-2xl">
+            <div
+              className="flex flex-col items-center justify-center p-6 rounded-2xl 
+              bg-base-100 border border-base-300/60 shadow-sm 
+              dark:bg-base-200 dark:border-base-300/50 
+              hover:shadow-md hover:border-secondary/40 
+              transition-all duration-300"
+            >
               <Lock className="w-8 h-8 text-secondary mb-3" />
               <h3 className="text-sm font-semibold text-base-content">
                 Secure Messaging
@@ -45,7 +57,13 @@ const MissionVision: FC = () => {
             </div>
 
             {/* Box 3 */}
-            <div className="flex flex-col items-center justify-center p-6 bg-base-100 shadow rounded-2xl">
+            <div
+              className="flex flex-col items-center justify-center p-6 rounded-2xl 
+              bg-base-100 border border-base-300/60 shadow-sm 
+              dark:bg-base-200 dark:border-base-300/50 
+              hover:shadow-md hover:border-accent/40 
+              transition-all duration-300"
+            >
               <Users className="w-8 h-8 text-accent mb-3" />
               <h3 className="text-sm font-semibold text-base-content">
                 Meaningful Connections
@@ -53,7 +71,13 @@ const MissionVision: FC = () => {
             </div>
 
             {/* Box 4 */}
-            <div className="flex flex-col items-center justify-center p-6 bg-base-100 shadow rounded-2xl">
+            <div
+              className="flex flex-col items-center justify-center p-6 rounded-2xl 
+              bg-base-100 border border-base-300/60 shadow-sm 
+              dark:bg-base-200 dark:border-base-300/50 
+              hover:shadow-md hover:border-info/40 
+              transition-all duration-300"
+            >
               <MessageCircle className="w-8 h-8 text-info mb-3" />
               <h3 className="text-sm font-semibold text-base-content">
                 Distraction-Free

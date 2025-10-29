@@ -249,7 +249,7 @@ const RightSidebar: React.FC = () => {
 
       {image && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xl flex justify-center overflow-y-auto">
-          <div className="min-h-screen flex justify-center items-start w-full p-4">
+          <div className="mt-15 min-h-screen flex justify-center items-start w-full p-4">
             <form
               onSubmit={handleSubmit}
               className="bg-white w-full max-w-md rounded-lg p-4 mx-1 relative my-8 "
