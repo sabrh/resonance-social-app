@@ -37,7 +37,7 @@ export default function Navbar() {
   const fetchUnreadCount = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/notifications/${user?.uid}/unread-count`
+        `https://resonance-social-server.vercel.app/notifications/${user?.uid}/unread-count`
       );
       if (res.ok) {
         const data = await res.json();
@@ -79,7 +79,7 @@ export default function Navbar() {
           to="/"
           className="flex-shrink-0 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary text-primary-content font-bold text-xl sm:text-2xl hover:scale-105 transition-transform shadow-lg"
         >
-          R
+          <img src="./logo.png"/>
         </Link>
 
         {/* Desktop Search with Icon - Fixed for md devices */}

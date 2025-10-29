@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import type { FC } from "react";
 import axios from "axios";
+
 import {
   AuthContext,
   type AuthContextType,
@@ -57,6 +58,12 @@ const UserProfile: FC = () => {
   const [followersCount, setFollowersCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
 
+  // New modal states for followers/following list
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
+  const [followersList, setFollowersList] = useState<UserDoc[]>([]);
+  const [followingList, setFollowingList] = useState<UserDoc[]>([]);
+
   // modal state
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -89,7 +96,7 @@ const UserProfile: FC = () => {
       try {
         // Only ensure user exists in DB if it's your own profile
         if (targetUid === uid && firebaseUser) {
-          await axios.post("http://localhost:3000/users", {
+          await axios.post("https://resonance-social-server.vercel.app/users", {
             uid: firebaseUser.uid,
             displayName: firebaseUser.displayName,
             email: firebaseUser.email,
@@ -98,7 +105,7 @@ const UserProfile: FC = () => {
         }
 
         // fetch the profile we want to show
-        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
+        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
         setUserDoc(res.data);
 
         // preload form values only for your own profile
@@ -161,11 +168,11 @@ const UserProfile: FC = () => {
     form.append("banner", file);
 
     try {
-      await axios.post(`http://localhost:3000/users/${uid}/banner`, form, {
+      await axios.post(`https://resonance-social-server.vercel.app/users/${uid}/banner`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       // refresh user data
-      const res = await axios.get(`http://localhost:3000/users/${uid}`);
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
       setUserDoc(res.data);
       console.log(res.data);
       setFile(null);
@@ -207,8 +214,8 @@ const UserProfile: FC = () => {
     };
 
     try {
-      await axios.put(`http://localhost:3000/users/${uid}/details`, payload);
-      const res = await axios.get(`http://localhost:3000/users/${uid}`);
+      await axios.put(`https://resonance-social-server.vercel.app/users/${uid}/details`, payload);
+      const res = await axios.get(`https://resonance-social-server.vercel.app/users/${uid}`);
       setUserDoc(res.data);
       setShowModal(false);
       toast.success("Profile updated");
@@ -224,7 +231,7 @@ const UserProfile: FC = () => {
 
     const checkFollowStatus = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/users/${targetUid}`);
+        const res = await axios.get(`https://resonance-social-server.vercel.app/users/${targetUid}`);
         const userData = res.data;
 
         setUserDoc(userData);
@@ -252,7 +259,7 @@ const UserProfile: FC = () => {
     try {
       setLoading(true);
       const res = await axios.put(
-        `http://localhost:3000/users/${userDoc.uid}/follow`,
+        `https://resonance-social-server.vercel.app/users/${userDoc.uid}/follow`,
         { currentUid: uid }
       );
 
@@ -270,6 +277,33 @@ const UserProfile: FC = () => {
       toast.error(error.response?.data?.error || "Failed to fetch posts");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // fetch followers and following users
+  const fetchFollowers = async () => {
+    if (!targetUid) return;
+    try {
+      const res = await axios.get(
+        `https://resonance-social-server.vercel.app/users/${targetUid}/followers`
+      );
+      setFollowersList(res.data);
+      setShowFollowers(true);
+    } catch (err) {
+      console.error("Error fetching followers:", err);
+    }
+  };
+
+  const fetchFollowing = async () => {
+    if (!targetUid) return;
+    try {
+      const res = await axios.get(
+        `https://resonance-social-server.vercel.app/users/${targetUid}/following`
+      );
+      setFollowingList(res.data);
+      setShowFollowing(true);
+    } catch (err) {
+      console.error("Error fetching following:", err);
     }
   };
 
@@ -348,11 +382,33 @@ const UserProfile: FC = () => {
             </h2>
 
             <div className="flex gap-6 mt-1 text-sm sm:text-base text-base-content/80">
-              <p>
+
+              {/* <p>
                 <span className="font-medium">Followers:</span> {followersCount}
               </p>
               <p>
                 <span className="font-medium">Following:</span>{" "}
+                {userDoc?.following?.length || 0}
+              </p> */}
+
+
+              {/* Followers and Following modal */}
+              <p>
+                <span
+                  className="font-medium cursor-pointer hover:underline"
+                  onClick={fetchFollowers}
+                >
+                  Followers:
+                </span>{" "}
+                {followersCount}
+              </p>
+              <p>
+                <span
+                  className="font-medium cursor-pointer hover:underline"
+                  onClick={fetchFollowing}
+                >
+                  Following:
+                </span>{" "}
                 {userDoc?.following?.length || 0}
               </p>
             </div>
@@ -363,8 +419,8 @@ const UserProfile: FC = () => {
           {targetUid !== uid && (
             <button
               onClick={handleFollowToggle}
-              className={`px-3 py-1 rounded-md font-semibold ${
-                isFollowing ? "btn-error" : "btn-primary"
+              className={`px-3 py-1 btn rounded-md font-semibold  ${
+                isFollowing ? "bg-red-500 " : "bg-blue-500"
               }`}
             >
               {isFollowing ? "Unfollow" : "Follow"}
@@ -415,7 +471,7 @@ const UserProfile: FC = () => {
                     {targetUid !== uid ? (
                       <button
                         onClick={handleFollowToggle}
-                        className={`  text-white btn px-4 py-2 rounded-full text-sm font-semibold ${
+                        className={`  text-white btn px-4 py-2 rounded-md text-sm font-semibold ${
                           isFollowing ? "bg-red-500 btn-error" : "bg-blue-500"
                         }`}
                       >
@@ -434,7 +490,7 @@ const UserProfile: FC = () => {
 
                 <div className="mt-3 text-sm text-base-content/80">
                   <div className="flex items-center justify-between">
-                    <div>
+                    {/* <div>
                       <span className="font-medium">{followersCount}</span>
                       <div className="text-xs text-base-content/40">
                         Followers
@@ -447,7 +503,27 @@ const UserProfile: FC = () => {
                       <div className="text-xs text-base-content/40">
                         Following
                       </div>
-                    </div>
+                    </div> */}
+                    {/* Followers and Following modal */}
+
+                    <p>
+                      <span
+                        className="font-medium cursor-pointer hover:underline"
+                        onClick={fetchFollowers}
+                      >
+                        Followers:
+                      </span>{" "}
+                      {followersCount}
+                    </p>
+                    <p>
+                      <span
+                        className="font-medium cursor-pointer hover:underline"
+                        onClick={fetchFollowing}
+                      >
+                        Following:
+                      </span>{" "}
+                      {userDoc?.following?.length || 0}
+                    </p>
                   </div>
                 </div>
 
@@ -532,8 +608,8 @@ const UserProfile: FC = () => {
                       <h4 className="font-medium mb-2">Basic info</h4>
                       <div className="text-sm text-gray-700 space-y-2">
                         <div>
-                          <span className="font-medium">Email:</span>{" "}
-                          {userDoc?.email || firebaseUser?.email}
+                          {/* <span className="font-medium ">Email:</span>{" "} */}
+                          {/* {userDoc?.email || firebaseUser?.email} */}
                         </div>
                         <div>
                           <span className="font-medium">Birthday / Age:</span>{" "}
@@ -682,8 +758,7 @@ const UserProfile: FC = () => {
                 value={formData.username}
                 className="input input-bordered w-full"
               />
-              {/* ...remaining form inputs... */}
-
+            
               <input
                 type="date"
                 placeholder="Birthday"
@@ -818,7 +893,6 @@ const UserProfile: FC = () => {
                 <option value="in_a_relationship">In a relationship</option>
                 <option value="married">Married</option>
               </select>
-
             </div>
 
             <div className="mt-6 flex justify-end gap-2">
@@ -833,6 +907,84 @@ const UserProfile: FC = () => {
                 className="btn btn-sm btn-primary"
               >
                 Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*  Followers Modal */}
+      {showFollowers && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-base-100 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Followers</h2>
+            <ul className="max-h-80 overflow-y-auto space-y-2">
+              {followersList.length > 0 ? (
+                followersList.map((f) => (
+                  <li
+                    key={f.uid}
+                    className="flex items-center gap-3 border-b light:border-gray-200 dark:border-gray-800 pb-2"
+                  >
+                    <img
+                      src={f.photoURL || "/avatar-placeholder.png"}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <div className="font-medium">{f.displayName}</div>
+                    </div>
+                  </li>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No followers yet</p>
+              )}
+            </ul>
+            <div className="mt-4 text-right">
+              <button
+                onClick={() => setShowFollowers(false)}
+                className="btn btn-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*  Following Modal */}
+      {showFollowing && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-base-100 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Following</h2>
+            <ul className="max-h-80 overflow-y-auto space-y-2">
+              {followingList.length > 0 ? (
+                followingList.map((f) => (
+                  <li
+                    key={f.uid}
+                    className="flex items-center gap-3 border-b light:border-gray-200 dark:border-gray-800 pb-2"
+                  >
+                    <img
+                      src={f.photoURL || "/avatar-placeholder.png"}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <div className="font-medium">{f.displayName}</div>
+                    </div>
+                  </li>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Not following anyone yet
+                </p>
+              )}
+            </ul>
+            <div className="mt-4 text-right">
+              <button
+                onClick={() => setShowFollowing(false)}
+                className="btn btn-sm"
+              >
+                Close
               </button>
             </div>
           </div>
