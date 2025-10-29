@@ -6,7 +6,7 @@ import {
   type FormEvent,
   useEffect,
 } from "react";
-import { X } from "lucide-react";
+import {  X } from "lucide-react";
 import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
 import PostCard from "../components/post-components/PostCard"; // Import PostCard directly
@@ -52,6 +52,8 @@ const Home: FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
+  const [postLoading, setPostLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // Get current user id
@@ -72,9 +74,12 @@ const Home: FC = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch(`https://resonance-social-server.vercel.app/feed/${currentUserId}`, {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `https://resonance-social-server.vercel.app/feed/${currentUserId}`,
+          {
+            signal: controller.signal,
+          }
+        );
 
         if (!res.ok) throw new Error(`Failed to load feed: ${res.status}`);
 
@@ -122,6 +127,7 @@ const Home: FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setPostLoading(true);
     const formData = new FormData();
     if (user) formData.append("privacy", privacy);
     if (user?.displayName) formData.append("userName", user.displayName);
@@ -132,13 +138,17 @@ const Home: FC = () => {
     if (imageFile) formData.append("photo", imageFile);
 
     try {
-      const res = await fetch("https://resonance-social-server.vercel.app/socialPost", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "https://resonance-social-server.vercel.app/socialPost",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       const data = await res.json();
       if (data.insertedId) {
         toast.success("Your post is updated successfully!");
+        setPostLoading(false);
         setText("");
         setImage(null);
         setImageFile(null);
@@ -152,16 +162,38 @@ const Home: FC = () => {
         setPosts(feedData);
       } else {
         toast.error("Could not add post. Try again.");
+        setPostLoading(false);
       }
     } catch (err) {
       console.error(err);
       toast.error("Failed to post. Check console.");
-    }
+    } 
   };
 
   const handleDeletePost = (deletedId: string) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== deletedId));
   };
+
+
+  // Caption Enhance
+  const handleEnhance = async () => {
+    const prompt = `Enhance this social media caption to make it sound natural, engaging, and written by a real person. Keep the same meaning and format it in exactly three lines. This is the original caption: "${text}"`
+    setAiLoading(true);
+    try {
+      const res = await fetch("https://resonance-social-server.vercel.app/AiChat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: prompt }),
+      });
+      const data = await res.json();
+      setText(data.reply);
+    } catch (err) {
+      console.error(err);
+      setText("⚠️ Error: failed Enhance caption.");
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:mt-24">
@@ -174,9 +206,9 @@ const Home: FC = () => {
       </div>
 
       {/* Main Content */}
-      <main className="col-span-1 md:col-span-6">
+      <main className="col-span-1 md:col-span-6  md:mt-0">
         <div className="w-full">
-          <div className="rounded-sm">
+          <div className="rounded-sm border-2 border-base-300/60 shadow-sm p-4 mb-4 bg-base-100">
             <form
               onSubmit={handleSubmit}
               className="shadow-sm bg-base-100 rounded-xl px-4 py-4"
@@ -210,7 +242,29 @@ const Home: FC = () => {
                 placeholder="Write your update here..."
                 className="textarea textarea-bordered w-full mt-3 bg-base-200 text-base-content rounded-2xl p-5"
               />
-
+              <div className={` mt-3 ${text ? "":"hidden"}`}>
+                <p onClick={handleEnhance} className="relative flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-purple-400/40 transition-all duration-300 hover:shadow-pink-400/50 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-purple-300 active:scale-95 w-fit cursor-pointer">
+                  {
+                    aiLoading ? 
+                    <div>
+                      <span className="loading loading-spinner text-white"></span>
+                    </div>: 
+                    <div>
+                      <img
+                    src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png"
+                    alt="AI Logo"
+                    className="w-5 h-5 animate-pulse"
+                  />
+                    </div>
+                  }
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 3v18m9-9H3"
+                  />
+                  Enhance Caption with AI
+                </p>
+              </div>
               {image && (
                 <div className="relative mt-5">
                   <img
@@ -248,7 +302,11 @@ const Home: FC = () => {
                   className="btn btn-primary rounded-full text-white mt-4"
                   disabled={!text.trim() && !image}
                 >
-                  Post Now
+                  {postLoading ? 
+                  <div>
+                    <span className="loading loading-spinner text-white"></span>
+                  </div> 
+                  : "Post now"}
                 </button>
               </div>
             </form>
@@ -283,8 +341,10 @@ const Home: FC = () => {
       </main>
 
       {/* Right Sidebar (sticky, hidden on mobile) */}
-      <div className="hidden md:block">
-        <RightSidebar />
+      <div className="hidden md:block md:col-span-3">
+        <div className="sticky top-24 h-[calc(100vh-96px)] overflow-y-auto">
+          <RightSidebar />
+        </div>
       </div>
     </div>
   );

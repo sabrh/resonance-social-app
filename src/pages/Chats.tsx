@@ -7,7 +7,7 @@ import { io, type Socket } from "socket.io-client";
 import axios from "axios";
 import type { Message, User } from "../types/chat";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "https://resonance-social-server.vercel.app";
 
 const Chats: FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);

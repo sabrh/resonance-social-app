@@ -36,7 +36,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ selectedUser, messages }) =
 
       <hr className="border-white/20 my-4" />
 
-      <div className="px-6 pb-6">
+      {/*<div className="px-6 pb-6">
         <p className="font-semibold text-sm uppercase tracking-wider text-gray-700 mb-3">Shared Media</p>
 
         {sharedImages.length > 0 ? (
@@ -50,7 +50,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ selectedUser, messages }) =
         ) : (
           <p className="text-gray-400 text-sm text-center py-4">No media shared yet</p>
         )}
-      </div>
+      </div>*/}
     </div>
   );
 };

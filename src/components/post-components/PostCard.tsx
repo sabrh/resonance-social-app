@@ -683,13 +683,21 @@ const PostCard = ({ post, currentUserId, onDelete }: Props) => {
             onClick={handlePickerButtonClick}
             className="flex items-center gap-2 py-2 px-2 md:px-6 rounded-lg hover:bg-base-300 w-full justify-center transition"
           >
-            <span className="text-2xl">
+            <span
+              className={`text-2xl transition-transform ${
+                userReaction ? "text-blue-600" : "text-gray-400"
+              }`}
+            >
               {userReaction
                 ? reactionTypes.find((r) => r.type === userReaction)?.emoji
                 : "👍"}
             </span>
-            <span className="font-semibold capitalize">
-              {userReaction || "Love"}
+            <span
+              className={`font-semibold capitalize ${
+                userReaction ? "text-blue-600" : "text-gray-500"
+              }`}
+            >
+              {userReaction ? userReaction : "Like"}
             </span>
           </button>
 
