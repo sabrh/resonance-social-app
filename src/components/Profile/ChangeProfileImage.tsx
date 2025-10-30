@@ -53,13 +53,13 @@ const ChangeProfileImage: React.FC<ChangeProfileImageProps> = ({
 
       // 2. Update MongoDB (via your backend)
       await axios.put(
-        `http://localhost:3000/users/${firebaseUser.uid}/photo`,
+        `https://resonance-social-server.vercel.app/users/${firebaseUser.uid}/photo`,
         { photoURL: trimmedURL }
       );
 
       //  3. Fetch updated user document
       const { data } = await axios.get<UserDocument>(
-        `http://localhost:3000/users/${firebaseUser.uid}`
+        `https://resonance-social-server.vercel.app/users/${firebaseUser.uid}`
       );
       setUserDoc(data);
 
